@@ -28,17 +28,22 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 
 Clone the repository to your local machine:
 
-``` git clone https://github.com/Data-Fi-Nigeria-LAMISPlus/lamisplus_sync_ingestion_process.git
+``` 
+git clone https://github.com/Data-Fi-Nigeria-LAMISPlus/lamisplus_sync_ingestion_process.git
+```
 
 Navigate to the project directory:
 
 
-``` cd lamisplus_sync_ingestion_process
+``` 
+cd lamisplus_sync_ingestion_process
+```
 
 Install the required Python packages:
 
-``` pip install -r requirements.txt
-
+```
+pip install -r requirements.txt
+```
 
 ## Usage
 To use the File Ingestion Process, follow these steps:
