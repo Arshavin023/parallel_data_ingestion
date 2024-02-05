@@ -4,10 +4,10 @@ The File Ingestion Process is a Python-based data pipeline designed to ingest JS
 
 # Table of Contents
 - [Introduction](#introduction)
-- [Prerequisites](#Prerequisites)
-- [Installation](#Installation)
-- [Usage](#Usage)
-- [Configuration](#Configuration)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
 - [File-Structure](#File-Structure)
 - [Contributing](#Contributing)
 - [License](#License)
@@ -16,7 +16,7 @@ The File Ingestion Process is a Python-based data pipeline designed to ingest JS
 ## Introduction <a name="introduction"></a>
 The File Ingestion Process consists of Python scripts that facilitate the ingestion of JSON files into a PostgreSQL database. It leverages the psycopg2 library for database connectivity and the pandas library for data manipulation.
 
-## Prerequisites <a name="Prerequisites"></a>
+## Prerequisites <a name="prerequisites"></a>
 Before running the File Ingestion Process, ensure you have the following prerequisites installed:
 
 - Python 3.x
@@ -25,7 +25,7 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 - pandas library (pip install pandas)
 - sqlalchemy (pip install sqlalchemy)
 
-## Installation <a name="Installation"></a>
+## Installation <a name="installation"></a>
 
 Clone the repository to your local machine:
 
@@ -46,7 +46,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-## Usage <a name="Usage"></a>
+## Usage <a name="usage"></a>
 To use the File Ingestion Process, follow these steps:
 
 - Update the database connection parameters in the Python scripts (file_ingestion_loader.py and run_ingestion_process.py) to match your PostgreSQL database configuration.
@@ -59,7 +59,7 @@ To use the File Ingestion Process, follow these steps:
 ./orchestration_script.sh
 ```
 
-## Configuration <a name="Configuration"></a>
+## Configuration <a name="configuration"></a>
 The configuration of the File Ingestion Process can be customized by modifying the following parameters in the Python scripts:
 
 - Database connection parameters (host, database, user, password, port)
