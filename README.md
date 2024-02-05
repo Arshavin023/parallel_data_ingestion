@@ -8,7 +8,7 @@ The File Ingestion Process is a Python-based data pipeline designed to ingest JS
 - [Installation](#Installation)
 - [Usage](#Usage)
 - [Configuration](#Configuration)
-- [File Structure](#File Structure)
+- [File-Structure](#File-Structure)
 - [Contributing](#Contributing)
 - [License](#License)
 
@@ -23,6 +23,7 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 - PostgreSQL database
 - psycopg2 library (pip install psycopg2)
 - pandas library (pip install pandas)
+- sqlalchemy (pip install sqlalchemy)
 
 ## Installation <a name="Installation"></a>
 
@@ -67,7 +68,7 @@ The configuration of the File Ingestion Process can be customized by modifying t
 
 - JSON file processing logic and data manipulation (in file_ingestion_loader.py)
 
-## File Structure <a name="File Structure"></a>
+## File Structure <a name="File-Structure"></a>
 The File Ingestion Process repository has the following structure:
 
 **lamisplus_sync_ingestion_process** ---> *file_ingestion_loader.py* >> *run_ingestion_process.py* >> *orchestration_script.sh*
