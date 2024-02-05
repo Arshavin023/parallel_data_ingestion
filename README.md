@@ -16,28 +16,31 @@ License
 ## Introduction
 The File Ingestion Process consists of Python scripts that facilitate the ingestion of JSON files into a PostgreSQL database. It leverages the psycopg2 library for database connectivity and the pandas library for data manipulation.
 
-Prerequisites
+## Prerequisites
 Before running the File Ingestion Process, ensure you have the following prerequisites installed:
 
-Python 3.x
-PostgreSQL database
-psycopg2 library (pip install psycopg2)
-pandas library (pip install pandas)
+- Python 3.x
+- PostgreSQL database
+- psycopg2 library (pip install psycopg2)
+- pandas library (pip install pandas)
 
-Installation
-Clone the repository to your local machine:
-bash
-Copy code
-git clone https://github.com/Data-Fi-Nigeria-LAMISPlus/lamisplus_sync_ingestion_process.git
-Navigate to the project directory:
-bash
-Copy code
-cd lamisplus_sync_ingestion_process
-Install the required Python packages:
-bash
-Copy code
-pip install -r requirements.txt
-Usage
+## Installation
+
+### Clone the repository to your local machine:
+
+``` git clone https://github.com/Data-Fi-Nigeria-LAMISPlus/lamisplus_sync_ingestion_process.git
+
+### Navigate to the project directory:
+
+
+``` cd lamisplus_sync_ingestion_process
+
+### Install the required Python packages:
+
+``` pip install -r requirements.txt
+
+
+## Usage
 To use the File Ingestion Process, follow these steps:
 
 Update the database connection parameters in the Python scripts (file_ingestion_loader.py and run_ingestion_process.py) to match your PostgreSQL database configuration.
