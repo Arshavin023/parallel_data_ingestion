@@ -26,16 +26,16 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 
 ## Installation
 
-### Clone the repository to your local machine:
+Clone the repository to your local machine:
 
 ``` git clone https://github.com/Data-Fi-Nigeria-LAMISPlus/lamisplus_sync_ingestion_process.git
 
-### Navigate to the project directory:
+Navigate to the project directory:
 
 
 ``` cd lamisplus_sync_ingestion_process
 
-### Install the required Python packages:
+Install the required Python packages:
 
 ``` pip install -r requirements.txt
 
@@ -49,31 +49,33 @@ Place your JSON files to be ingested into the designated directory (/home/lamisp
 
 Run the pipeline orchestration script (orchestration_script.sh) to start the ingestion process:
 
-bash
-Copy code
 ./orchestration_script.sh
-Configuration
+
+## Configuration
 The configuration of the File Ingestion Process can be customized by modifying the following parameters in the Python scripts:
 
 Database connection parameters (host, database, user, password, port)
 Directory for storing JSON files (demo_path in file_ingestion_loader.py)
 JSON file processing logic and data manipulation (in file_ingestion_loader.py)
-File Structure
+
+## File Structure
 The File Ingestion Process repository has the following structure:
 
-Copy code
+
 lamisplus_sync_ingestion_process/
 │
 ├── file_ingestion_loader.py
 ├── run_ingestion_process.py
 └── orchestration_script.sh
-file_ingestion_loader.py: Python script responsible for ingesting JSON files into the PostgreSQL database.
-run_ingestion_process.py: Python script to execute the file ingestion process.
-orchestration_script.sh: Bash script to orchestrate the execution of the ingestion process.
 
+- file_ingestion_loader.py: Python script responsible for ingesting JSON files into the PostgreSQL database.
 
-Contributing
+- run_ingestion_process.py: Python script to execute the file ingestion process.
+
+- orchestration_script.sh: Bash script to orchestrate the execution of the ingestion process.
+
+## Contributing
 Contributions to the File Ingestion Process project are welcome! If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request on GitHub.
 
-License
+## License
 This project is licensed under the MIT License - see the LICENSE file for details.
