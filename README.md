@@ -49,7 +49,9 @@ pip install -r requirements.txt
 To use the File Ingestion Process, follow these steps:
 
 - Update the database connection parameters in the Python scripts (file_ingestion_loader.py and run_ingestion_process.py) to match your PostgreSQL database configuration.
+
 - Place your JSON files to be ingested into the designated directory (/home/lamisplus/server/temp by default).
+
 - Run the pipeline orchestration script (orchestration_script.sh) to start the ingestion process:
 
 ```
@@ -60,17 +62,15 @@ To use the File Ingestion Process, follow these steps:
 The configuration of the File Ingestion Process can be customized by modifying the following parameters in the Python scripts:
 
 - Database connection parameters (host, database, user, password, port)
+
 - Directory for storing JSON files (demo_path in file_ingestion_loader.py)
+
 - JSON file processing logic and data manipulation (in file_ingestion_loader.py)
 
 ## File Structure <a name="File Structure"></a>
 The File Ingestion Process repository has the following structure:
 
-lamisplus_sync_ingestion_process/
-│
-├── file_ingestion_loader.py
-├── run_ingestion_process.py
-└── orchestration_script.sh
+**lamisplus_sync_ingestion_process** ---> *file_ingestion_loader.py* >> *run_ingestion_process.py* >> *orchestration_script.sh*
 
 
 - **file_ingestion_loader.py**: Python script responsible for ingesting JSON files into the PostgreSQL database.
