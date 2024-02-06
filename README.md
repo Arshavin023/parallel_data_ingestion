@@ -11,7 +11,7 @@ The File Ingestion Process is a Python-based data pipeline designed to ingest JS
 - [Configuration](#configuration)
 - [File-Structure](#file-structure)
 - [Contributing](#contributing)
-- [License](#license)
+- [License](#license)   
 - [Improvements](#improvements)
 
 
@@ -54,20 +54,22 @@ This process consists of two parts:
 a Python script for data ingestion and processing, and a Bash script for orchestrating the execution of the Python script.
 
 ### Python Script (Data Ingestion and Processing)
-This Python script defines a class FileLoader with methods for ingesting JSON data into a PostgreSQL database, logging ingestion activities, and updating related tables. Here's a breakdown of the key processes:
+This Python script defines a class FileLoader with methods for ingesting JSON data into a PostgreSQL database, logging ingestion activities, and updating related tables. Here's a breakdown of the key processes
 
-#### Initialization and Setup:
+[Use this link for a further breakdown of the FileLoader class](FileLoader_Deep_Dive.md)
+
+#### Initialization and Setup
 
 The FileLoader class initializes attributes such as facility_id, syncfile_entryID, and directory paths.
 Database connection parameters are defined in methods _db_connect and _db_connect_filedb.
 
-- Database Operations:
+- Database Operations
 Methods _get_and_map_cols, _insert_into_log, _fakeupsert_synclog, _update_log, _update_flag_syncfile, and _update_centralpartnermapper handle database operations such as retrieving column information, inserting log entries, and updating flags in the sync file.
 
-- File Processing:
+- File Processing
 Methods _retrieve_localdir_from_syncfile, _process_derive_tablename, and _process_file_by_name manage file processing tasks. Files are retrieved from the sync file, processed based on their names, and ingested into the database.
 
-- Data Ingestion:
+- Data Ingestion
 Method _ingest_json_data reads JSON files, converts PostgreSQL data types to SQLAlchemy data types, and ingests the data into staging tables in the database.
 
 - Bash Script (Orchestration)
@@ -89,20 +91,20 @@ Overall, this setup orchestrates the ingestion and processing of data files into
 
 
 ## Usage <a name="usage"></a>
-To use the File Ingestion Process, follow these steps:
+To use the File Ingestion Process, follow these steps
 
 - Update the database connection parameters in the Python scripts (file_ingestion_loader.py and run_ingestion_process.py) to match your PostgreSQL database configuration.
 
 - Place your JSON files to be ingested into the designated directory (/home/lamisplus/server/temp by default).
 
-- Run the pipeline orchestration script (orchestration_script.sh) to start the ingestion process:
+- Run the pipeline orchestration script (orchestration_script.sh) to start the ingestion process
 
 ```
 ./orchestration_script.sh
 ```
 
 ## Configuration <a name="configuration"></a>
-The configuration of the File Ingestion Process can be customized by modifying the following parameters in the Python scripts:
+The configuration of the File Ingestion Process can be customized by modifying the following parameters in the Python scripts
 
 - Database connection parameters (host, database, user, password, port)
 
@@ -111,7 +113,7 @@ The configuration of the File Ingestion Process can be customized by modifying t
 - JSON file processing logic and data manipulation (in file_ingestion_loader.py)
 
 ## File Structure <a name="file-structure"></a>
-The File Ingestion Process repository has the following structure:
+The File Ingestion Process repository has the following structure
 
 **lamisplus_sync_ingestion_process** ---> *file_ingestion_loader.py* >> *run_ingestion_process.py* >> *orchestration_script.sh*
 
