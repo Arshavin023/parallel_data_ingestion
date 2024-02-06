@@ -87,9 +87,6 @@ The Bash script is scheduled to run periodically using cron.
 
 Overall, this setup orchestrates the ingestion and processing of data files into a PostgreSQL database and ensures proper error handling and logging during the process.
 
-
-
-
 ## Usage <a name="usage"></a>
 To use the File Ingestion Process, follow these steps
 
@@ -115,7 +112,7 @@ The configuration of the File Ingestion Process can be customized by modifying t
 ## File Structure <a name="file-structure"></a>
 The File Ingestion Process repository has the following structure
 
-**lamisplus_sync_ingestion_process** ---> *file_ingestion_loader.py* >> *run_ingestion_process.py* >> *orchestration_script.sh*
+**lamisplus_sync_ingestion_process** --->*file_ingestion_loader.py*>> *run_ingestion_process.py* >> *orchestration_script.sh*
 
 
 - **file_ingestion_loader.py**: Python script responsible for ingesting JSON files into the PostgreSQL database.
