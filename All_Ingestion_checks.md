@@ -1,6 +1,6 @@
 
 
-##Quick Summary Overview of Ingestion Process
+## Quick Summary Overview of Ingestion Process
 ```
 select count(id) Total_Files, 
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
@@ -15,7 +15,7 @@ SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_da
 FROM sync_file
 ```
 
-##Quick Summary Overview of Ingestion Process for a Specific Date Period
+## Quick Summary Overview of Ingestion Process for a Specific Date Period
 
 ```
 select count(id) Total_Files, 
