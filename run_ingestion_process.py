@@ -21,8 +21,8 @@ if __name__ == '__main__':
     log_id = f'IPP_{start_time.strftime("%Y%m%d_%H_%M")}'
     print(log_id)
 
-    insert_pipeline_query = """insert into file_ingestion_pipeline_log (log_id, start_time, status) 
-    VALUES ('{}','{}','{}')""".format(log_id, start_time, 'Job Started')
+    insert_pipeline_query = """insert into file_ingestion_pipeline_log (log_id, start_time, status, process_type) 
+    VALUES ('{}','{}','{}', '{}')""".format(log_id, start_time, 'Job Started', 'file ingestion')
 
     cur.execute(insert_pipeline_query)
     conn.commit()
