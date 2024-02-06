@@ -87,13 +87,13 @@ with _cte_24hours_exceptions as (select CASE WHEN current_timestamp - create_dat
 THEN 'exception' ELSE 'compliant' END AS check_compliance, * from sync_file
 where processed = -1)
 
-select * from _cte_24hours_exceptions
+select * from _cte_24hours_exceptions;
 
 --select count(*) from _cte_24hours_exceptions where check_compliance = 'exception' --1047
 
---update sync_file
---set processed = 0
---where id in (select id from _cte_24hours_exceptions where check_compliance = 'compliant') --1047
+update sync_file
+set processed = 0
+where id in (select id from _cte_24hours_exceptions where check_compliance = 'exception');
 ```
 
 ## PgSQL Anonymous block to truncate all tables in DWH 
