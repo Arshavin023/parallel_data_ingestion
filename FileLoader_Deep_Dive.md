@@ -1,6 +1,6 @@
 # FileLoader Class Overview
-T
-he FileLoader class is designed to handle the ingestion and processing of JSON files into a PostgreSQL database. It contains methods for database operations, file processing, data ingestion, and error handling.
+
+The FileLoader class is designed to handle the ingestion and processing of JSON files into a PostgreSQL database. It contains methods for database operations, file processing, data ingestion, and error handling.
 
 ## Initialization and Setup
 
@@ -8,7 +8,7 @@ he FileLoader class is designed to handle the ingestion and processing of JSON f
 
 Initializes instance attributes such as facility_id, syncfile_entryID, demo_path, count_of_df, load_end_time, and load_start_time.
 
-##Database Operations
+## Database Operations
 
 ### _db_connect Method
 
@@ -60,5 +60,5 @@ Catches exceptions during file processing, such as UnicodeDecodeError and Progra
 
 Updates log entries in the database for file ingestion, including the start time, end time, status, error message, and record count.
 
-##Conclusion
+## Conclusion
 The FileLoader class encapsulates various methods and processes for efficiently ingesting and processing JSON files into a PostgreSQL database. It handles database connections, file retrieval, data ingestion, error handling, and logging, ensuring the reliability and integrity of the ingestion process.
