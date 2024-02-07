@@ -29,7 +29,7 @@ if __name__ == '__main__':
     cur2 = conn2.cursor()
 
     start_time = datetime.now() 
-    log_id = f'IPP_{start_time.strftime("%Y%m%d_%H_%M")}'
+    log_id = f'IPP_DEL_{start_time.strftime("%Y%m%d_%H_%M")}'
     print(log_id)
 
     insert_pipeline_query = """insert into file_ingestion_pipeline_log (log_id, start_time, status, process_type) 
