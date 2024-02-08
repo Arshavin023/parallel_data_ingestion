@@ -122,6 +122,9 @@ sudo crontab -e {edits crontab}
 
 */30 * * * * /home/oluwaloseyi/orchestration_script.sh >> /home/oluwaloseyi/ingestion_logfile.log 2>&1 {pipeline scheduled to run every 30 minutes}
 
+*/30 * * * * /home/oluwaloseyi/run_report_summary.sh >> /home/oluwaloseyi/report_summary_log.log 2>&1 {pipeline scheduled to run every 30 minutes}
+0 * * * * /home/oluwaloseyi/filedb_file_deletion_process/orchestrate_file_deletion.sh >> /home/oluwaloseyi/filedb_file_deletion_process/deletion_logfile.log 2>&1 {pipeline scheduled to run every hour}
+
 sudo crontab -l {see available crontabs schedules}
 
 ```
