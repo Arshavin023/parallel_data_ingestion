@@ -18,7 +18,7 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     start_time = datetime.now() 
-    log_id = f'IPP_ING_{start_time.strftime("%Y%m%d_%H_%M")}'
+    log_id = f'IPID_{start_time.strftime("%Y%m%d_%H_%M")}' #ingestion process ID
     print(log_id)
 
     insert_pipeline_query = """insert into file_ingestion_pipeline_log (log_id, start_time, status, process_type) 
