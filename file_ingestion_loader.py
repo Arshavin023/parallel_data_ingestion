@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import numpy as np
 import psycopg2
 import pandas as pd
 import sqlalchemy
@@ -168,9 +169,9 @@ class FileLoader:
         cur = self._db_connect_filedb().cursor()
         retrieve_query = """
         select id, facility_id,decrypted_file_name 
-        from sync_file where processed = 1
+        from sync_file where processed = 1 and create_date >= '2024-03-21' and decrypted_file_name not like '%dsd_devolvement%'
         ORDER BY create_date asc
-        LIMIT 1000
+        LIMIT 20000
         """
         cur.execute(retrieve_query)
 
@@ -306,8 +307,8 @@ class FileLoader:
                 
     def _replace_empty_strings_with_null(self, df):
         # Replace empty strings or spaces with NaN
-        df.replace('', pd.NA, inplace=True)
-        df.replace(' ', pd.NA, inplace=True)
+        df.replace('', np.nan, inplace=True)
+        df.replace(' ', np.nan, inplace=True)
   
     def _ingest_json_data(self, file_path, staging_table, dtype=None, parse_dates=None):
         conn = self._db_connect()[0]
@@ -385,4 +386,4 @@ class FileLoader:
             conn.commit()
             cur.close()
             self._update_log('success', file_name, self.count_of_df, 'No errors')
-            self._update_flag_syncfile('success', 2 ,self.count_of_df, 'No errors' )  
+            self._update_flag_syncfile('success', 2 ,self.count_of_df, 'No errors')  

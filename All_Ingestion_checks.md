@@ -29,7 +29,7 @@ min(create_date) first_upload_date,
 max(create_date) latest_upload_date,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM sync_file 
-where DATE_TRUNC('day', create_date) >= '2024-01-31'
+where DATE_TRUNC('day', create_date) >= '2024-03-25';
 ```
 
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to your Python script
-SCRIPT_PATH=/home/oluwaloseyi/filedb_file_deletion_process/run_deletion_process.py
+SCRIPT_PATH=/home/lamisplus/lamisplus_ingestion_pipeline/filedb_file_deletion_process/run_deletion_process.py
 
 # Function to check if the pipeline is running
 is_pipeline_running() {
