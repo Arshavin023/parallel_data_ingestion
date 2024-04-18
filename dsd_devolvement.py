@@ -1,0 +1,85 @@
+import pandas as pd
+
+# Provided JSON data
+json_data = [
+    {
+        "client_return_to_site": "",
+        "person_uuid": "4ec59aec-282c-4312-9710-fa4ce8fd377f",
+        "last_modified_date": "2024-03-25 11:26:57.844",
+        "uuid": "3754f66d-dff8-4c21-9c94-d4168cf67aba",
+        "score": 0,
+        "archived": 0,
+        "dsd_eligible": "No",
+        "facility_id": 1636,
+        "id": 6720,
+        "viral_load_test_result_date": "2024-02-16",
+        "completed_by": "Bernard Jackson",
+        "viral_load_test_result": "0",
+        "date_devolved": "2024-03-20",
+        "dsd_accept": "Yes",
+        "dsd_eligibility_assessment": {
+            "type": "jsonb",
+            "value": "{\"notPregnant\": \"\", \"notBreastfeeding\": \"\", \"hasNoComorbidities\": \"No\", \"onArtForAtLeast1Year\": \"No\", \"doesNotHaveTBCoInfection\": \"No\", \"mostRecentVLWithin6Months\": \"No\", \"evidenceOfTreatmentSuccess\": \"No\", \"completedTBPreventiveTherapy\": \"No\", \"goodUnderstandingOfAdherence\": \"No\", \"noADRRequireRegularMonitoring\": \"No\", \"noChildOnArtLessThan3YearsOld\": \"No\", \"currentRegimenGreaterThan6Months\": \"No\", \"clinicallyStableNoOpportunisticInfections\": \"No\"}",
+            "null": True
+        },
+        "service_provider": "",
+        "last_modified_by": "jackson.bernard99@gmail.com",
+        "created_by": "jackson.bernard99@gmail.com",
+        "date_return_to_site": "",
+        "comment": "",
+        "created_date": "2024-03-25 11:26:57.837",
+        "designation": "DEC",
+        "dsd_type": "DSD_MODEL_COMMUNITY_HOME_DELIVERY",
+        "service_provided": {
+            "type": "jsonb",
+            "value": "{}",
+            "null": True
+        },
+        "dsd_model": "Community"
+    },
+    {
+        "client_return_to_site": "",
+        "person_uuid": "de2504f6-93f8-4585-9271-b190d89ac16e",
+        "last_modified_date": "2024-03-26 22:37:45.699",
+        "uuid": "3ffbdba1-71c4-48be-b3a7-ac669e226230",
+        "score": 3,
+        "archived": 0,
+        "dsd_eligible": "No",
+        "facility_id": 1636,
+        "id": 6935,
+        "viral_load_test_result_date": "2022-05-01",
+        "completed_by": "Peace Clement",
+        "viral_load_test_result": "20",
+        "date_devolved": "2024-03-26",
+        "dsd_accept": "Yes",
+        "dsd_eligibility_assessment": {
+            "type": "jsonb",
+            "value": "{\"notPregnant\": \"No\", \"notBreastfeeding\": \"No\", \"hasNoComorbidities\": \"No\", \"onArtForAtLeast1Year\": \"Yes\", \"doesNotHaveTBCoInfection\": \"No\", \"mostRecentVLWithin6Months\": \"No\", \"evidenceOfTreatmentSuccess\": \"No\", \"completedTBPreventiveTherapy\": \"No\", \"goodUnderstandingOfAdherence\": \"Yes\", \"noADRRequireRegularMonitoring\": \"No\", \"noChildOnArtLessThan3YearsOld\": \"No\", \"currentRegimenGreaterThan6Months\": \"No\", \"clinicallyStableNoOpportunisticInfections\": \"Yes\"}",
+            "null": True
+        },
+        "service_provider": "",
+        "last_modified_by": "Kusuafelix@gmail.com",
+        "created_by": "Kusuafelix@gmail.com",
+        "date_return_to_site": "",
+        "comment": "",
+        "created_date": "2024-03-26 22:37:45.699",
+        "designation": "FSP",
+        "dsd_type": "DSD_MODEL_COMMUNITY_HOME_DELIVERY",
+        "service_provided": {
+            "type": "jsonb",
+            "value": "{}",
+            "null": True
+        },
+        "dsd_model": "Community"
+    }
+]
+
+# Convert JSON data to DataFrame
+# df = pd.DataFrame('test.json')
+df = pd.read_json('test.json')
+
+# Select desired columns
+# df = df[['uuid', 'score', 'facility_id', 'completed_by', 'viral_load_test_result_date', 'date_devolved', 'dsd_accept', 'dsd_model']]
+
+# Output DataFrame
+print(type(df["dsd_eligibility_assessment"].astype(str)[0]))
