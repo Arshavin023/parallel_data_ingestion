@@ -1,6 +1,6 @@
 import psycopg2
 from datetime import datetime
-from file_loader import FileLoader
+from test_file_ingestion_process.test_file_loader import FileLoader
 
 def insert_pipeline_log(cur, log_id, start_time):
     insert_pipeline_query = """
