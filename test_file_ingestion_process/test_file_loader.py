@@ -566,8 +566,7 @@ class FileLoader:
             elif staging_table == 'stg_biometric':
                 df = pd.read_json(file_path, convert_dates=parse_dates)
                 # Specify columns to exclude
-                columns_to_exclude = ['match_type','match_person_uuid','match_biometric_id']  # Replace with the columns you want to exclude
-                # Exclude specified columns
+                columns_to_exclude = ['match_type','match_person_uuid','match_biometric_id']  
                 columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
                 # Read JSON data into DataFrame, including only the specified columns
                 df = df[columns_to_include]
@@ -588,10 +587,30 @@ class FileLoader:
                     self._replace_empty_strings_with_null(df)
                     df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
                                 dtype=dtype_mapping)
-                    conn.commit()
-                    
+                    conn.commit()        
                 self.count_of_df = len(df)
-                
+            
+            else:
+                df = pd.read_json(file_path, convert_dates=parse_dates)
+                if df.empty:
+                    logger.info(f"The JSON file is empty: {file_path}")
+                    self._update_log('failed', file_name, 0, 'JSON file is empty')
+                    self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                    return
+                else:
+                    df = df.dropna(how='all')
+                    logger.info(len(df))
+                    logger.info('Processing...')
+                    df['stg_batch_id'] = batch_id
+                    df['stg_load_time'] = load_time
+                    df['stg_file_name'] = file_name
+                    df['stg_datim_id'] = datim_id
+                    self._replace_empty_strings_with_null(df)
+                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
+                                dtype=dtype_mapping)
+                    conn.commit()        
+                self.count_of_df = len(df)
+
             cur = conn.cursor()
             count_of_stg = pd.read_sql(
                 "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
@@ -605,6 +624,7 @@ class FileLoader:
             cur.close()
             self._update_log('success', file_name, self.count_of_df, 'No errors')
             self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+        
             
         except Exception as e:
             logger.exception(e)
