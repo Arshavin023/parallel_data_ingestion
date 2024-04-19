@@ -574,15 +574,13 @@ class FileLoader:
                 else:
                     df = df.dropna(how='all')
                     logger.info(len(df))
-                    
-                    print('Processing...')
-
+                    logger.info('Processing...')
                     df['stg_batch_id'] = batch_id
                     df['stg_load_time'] = load_time
                     df['stg_file_name'] = file_name
                     df['stg_datim_id'] = datim_id
-                    
                     self._replace_empty_strings_with_null(df)
+                    
                     
                     df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
                                 dtype=dtype_mapping)
