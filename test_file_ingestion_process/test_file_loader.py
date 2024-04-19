@@ -268,9 +268,8 @@ class FileLoader:
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' 
-            and decrypted_file_name like '%biometric%'
             ORDER BY modified_date ASC
-            LIMIT 3"""
+            LIMIT 30000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -564,88 +563,49 @@ class FileLoader:
             if staging_table == 'stg_dsd_devolvement':
                 pass
 
-            else:
+            elif staging_table == 'stg_biometric':
                 df = pd.read_json(file_path, convert_dates=parse_dates)
+                # Specify columns to exclude
+                columns_to_exclude = ['match_type','match_person_uuid','match_biometric_id']  # Replace with the columns you want to exclude
+                # Exclude specified columns
+                columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+                # Read JSON data into DataFrame, including only the specified columns
+                df = df[columns_to_include]
+                
                 if df.empty:
                     logger.info(f"The JSON file is empty: {file_path}")
                     self._update_log('failed', file_name, 0, 'JSON file is empty')
                     self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
                     return
-                
                 else:
                     df = df.dropna(how='all')
                     logger.info(len(df))
                     logger.info('Processing...')
-                    # Define your SQL query to obtain columns
-                    sql_query = f"SELECT column_name FROM information_schema.columns WHERE table_name = '{staging_table}';"
-                    # Execute the query
-                    cursor = conn.cursor()
-                    cursor.execute(sql_query)
-                    # Fetch all the results and store them in a list
-                    column_names_from_sql = [row[0] for row in cursor.fetchall()]
-                    column_names_from_df = df.columns.tolist()
-
-                    if len(column_names_from_sql) > len(column_names_from_df):
-                        missing_columns_in_df = list(set(column_names_from_sql) - set(column_names_from_df))
-                        for missing_df_column in missing_columns_in_df:
-                            df[missing_df_column] = None
-                        df['stg_batch_id'] = batch_id
-                        df['stg_load_time'] = load_time
-                        df['stg_file_name'] = file_name
-                        df['stg_datim_id'] = datim_id
-                        self._replace_empty_strings_with_null(df)
-                        df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
-
-                    elif len(column_names_from_df) > len(column_names_from_sql):
-                        missing_columns_in_db = list(set(column_names_from_df) - set(column_names_from_sql))
-                        for missing_db_column in missing_columns_in_db:
-                            df_type = df[missing_db_column].dtype
-                            postgresql_type = convert_postgresql_to_sqlalchemy(str(df_type))
-                            # Define the SQL query to alter the existing table and add the column
-                            alter_query = f"ALTER TABLE {staging_table} ADD COLUMN {missing_db_column} {postgresql_type};"
-
-                            try:
-                                cursor = conn.cursor()
-                                cursor.execute(alter_query)
-                                logger.info(f'{staging_table} altered and {missing_db_column} added with {postgresql_type}')
-                            except Exception as e:
-                                logger.exception(e)
-
-                        df['stg_batch_id'] = batch_id
-                        df['stg_load_time'] = load_time
-                        df['stg_file_name'] = file_name
-                        df['stg_datim_id'] = datim_id
-                        self._replace_empty_strings_with_null(df)
-                        df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                                  dtype=dtype_mapping)
-                                            
-                    else:
-                        df['stg_batch_id'] = batch_id
-                        df['stg_load_time'] = load_time
-                        df['stg_file_name'] = file_name
-                        df['stg_datim_id'] = datim_id
-                        self._replace_empty_strings_with_null(df)    
-                        df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                                    dtype=dtype_mapping)
-                        
-                    self.count_of_df = len(df)
-
+                    df['stg_batch_id'] = batch_id
+                    df['stg_load_time'] = load_time
+                    df['stg_file_name'] = file_name
+                    df['stg_datim_id'] = datim_id
+                    self._replace_empty_strings_with_null(df)
+                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
+                                dtype=dtype_mapping)
                     conn.commit()
-                    cur = conn.cursor()
-
-                    count_of_stg = pd.read_sql(
-                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-
-                    ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                    ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-                    cur.execute(ins_counts)
-                    conn.commit()
-                    cur.close()
-                    self._update_log('success', file_name, self.count_of_df, 'No errors')
-                    self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+                    
+                self.count_of_df = len(df)
                 
+            cur = conn.cursor()
+            count_of_stg = pd.read_sql(
+                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+            ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
+            ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
+
+            cur.execute(ins_counts)
+            conn.commit()
+            cur.close()
+            self._update_log('success', file_name, self.count_of_df, 'No errors')
+            self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+            
         except Exception as e:
             logger.exception(e)
             raise e
