@@ -2,7 +2,6 @@ import psycopg2
 import os
 from datetime import datetime
 from src import logger
-import json 
 
 def _db_connect_filedb():
         db_params = {
@@ -94,7 +93,7 @@ def delete_stg_table_records():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '105' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
