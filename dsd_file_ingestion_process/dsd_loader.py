@@ -556,7 +556,7 @@ class FileLoader:
             # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
             dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
 
-            if staging_table == 'stg_dsd_devolvement':
+            if staging_table == 'stg_dsd_devolvement' or 'stg_mhpss_confirmation':
                 self.count_of_df = load_dsd_into_postgres(file_path=file_path,
                                                           staging_table=staging_table,
                                                           connection=conn)

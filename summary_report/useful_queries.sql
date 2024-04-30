@@ -21,3 +21,7 @@ SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_da
 FROM public.sync_file
 where create_date >= '2024-03-21'
 and decrypted_file_name like '%dsd_devolvement%';
+
+
+
+
