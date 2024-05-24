@@ -16,6 +16,19 @@ def _db_connect_filedb():
         conn = psycopg2.connect(**db_params)
         return conn
 
+def _db_connect_lamisplus_staging_dwh():
+        db_params = {
+        'host': 'localhost',
+        'database': 'lamisplus_staging_dwh',
+        'user': 'lamisplus',
+        'password': '37EpE&U&H?',
+        'port': '5432',
+         }
+
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
+        
 def _insert_into_log(tableName, fileName, facilityId):
         conn=_db_connect_filedb()
         cur = conn.cursor()
@@ -85,7 +98,7 @@ def _process_derive_tablename(file_path):
         return check_path
 
 #_process_derive_tablename(' /home/lamisplus/server/temp/kEoPeO75AG2/base_organisation_unit_0_20240129190716_decrypted.json')
-
+        
 def delete_stg_table_records():
 
     try:
@@ -94,7 +107,7 @@ def delete_stg_table_records():
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
                             WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
-                            AND processed IN (2, -2) 
+                            AND processed IN (2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
                             AND decrypted_file_name NOT IN (
