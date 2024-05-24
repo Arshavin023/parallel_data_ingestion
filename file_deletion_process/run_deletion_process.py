@@ -44,9 +44,11 @@ if __name__ == '__main__':
         logger.info('Deletion of <90 days records from staging tables started')
         delete_stg_table_records()
         logger.info('Deletion of <90 days records from staging tables completed')
-
+        
+        logger.info('Deletion of decrypted json files started')
         delete_ingested_decrypted_files()
-        end_time = datetime.now()
+        logger.info('Deletion of decrypted json files completed')
+        
         q_check_count = """select count(*) from file_deletion_log 
                         where where file_name ilike '%_decrypted.json' and 
                         deletion_start_time >=  %s and deletion_end_time <=  %s
@@ -59,10 +61,12 @@ if __name__ == '__main__':
                                 where log_id =  %s
                                 """ 
         cur.execute(update_pipeline_query, (end_time, 'Job Passed', 'No Errors', records_processed, log_id))
-        logger.info('Deletion Job for ingested decrypted files was run Successfully')
         conn.commit()
-
+        logger.info('Deletion Job for encrypted files was run Successfully')
+        
+        logger.info('Deletion of encrypted json files started')
         delete_encrypted_files()
+        logger.info('Deletion of encrypted json files completed')
         end_time = datetime.now()
         q_check_count = """select count(*) from file_deletion_log 
                         where where file_name not ilike '%_decrypted.json' and 
@@ -75,8 +79,8 @@ if __name__ == '__main__':
                                 where log_id =  %s
                                 """ 
         cur.execute(update_pipeline_query, (end_time, 'Job Passed', 'No Errors', records_processed, log_id))
-        logger.info('Deletion Job for encrypted files was run Successfully')
         conn.commit()
+        logger.info('Deletion Job for encrypted files was run successfully completed')
 
     except Exception as e:
         error_msg =str(e)
