@@ -33,8 +33,8 @@ class FileLoader:
         Raises:
         - Exception: If connection to the database fails.
         '''
-        db_params = {'host': 'localhost', 'database': database, 'user': 'lamisplus',
-                     'password': '37EpE&U&H?','port': '5432',}
+        db_params = {'host': 'localhost', 'database': database, 'user': 'stg_database_user',
+                     'password': 'stg_database_password','port': '5432',}
         try:
             conn = psycopg2.connect(**db_params)
             engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')

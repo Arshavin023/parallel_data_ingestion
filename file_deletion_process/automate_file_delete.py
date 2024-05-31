@@ -16,6 +16,19 @@ def _db_connect_filedb():
         conn = psycopg2.connect(**db_params)
         return conn
 
+def _db_connect_lamisplus_staging_dwh():
+        db_params = {
+        'host': 'localhost',
+        'database': 'lamisplus_staging_dwh',
+        'user': 'lamisplus',
+        'password': '37EpE&U&H?',
+        'port': '5432',
+         }
+
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
+
 def _insert_into_log(tableName, fileName, facilityId):
         conn=_db_connect_filedb()
         cur = conn.cursor()
@@ -90,10 +103,12 @@ def delete_stg_table_records():
 
     try:
         conn = _db_connect_filedb()
+        conn2 = _db_connect_lamisplus_staging_dwh()
         cur = conn.cursor()
+        cur2 = conn2.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '15' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
@@ -106,7 +121,7 @@ def delete_stg_table_records():
                             LIMIT 30000
                             """
         delete_query = """ DELETE FROM %s 
-                           WHERE stg_load_time <= CURRENT_DATE - INTERVAL '105' DAY 
+                           WHERE stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY 
                        """
         cur.execute(retrieve_query)
 
@@ -120,7 +135,8 @@ def delete_stg_table_records():
             staging_table = '_'.join(non_digit_parts)
 
             try:
-                cur.execute(delete_query,(staging_table))
+                cur2.execute("DELETE FROM {} stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY".format(staging_table))
+                cur2.execute("DELETE FROM {} WHERE stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY".format(staging_table))
                 logger.info(f'records successfully deleted from {staging_table} table')
 
             except Exception as e:
@@ -142,7 +158,7 @@ def delete_ingested_decrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '15' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
@@ -206,7 +222,7 @@ def delete_encrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE create_date <= CURRENT_DATE - INTERVAL '90' DAY
+                            WHERE create_date <= CURRENT_DATE - INTERVAL '15' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
