@@ -20,9 +20,9 @@ def update_pipeline_log(cur, log_id, end_time, status, error_message=None, recor
 def main():
     db_params = {
         'host': 'localhost',
-        'database': 'lamisplus_staging_dwh',
-        'user': 'lamisplus',
-        'password': '37EpE&U&H?',
+        'database': 'stg_database_name',
+        'user': 'stg_database_user',
+        'password': 'stg_database_password',
         'port': '5432',
     }
 
