@@ -590,32 +590,32 @@ class FileLoader:
                     conn.commit()        
                 self.count_of_df = len(df)
             
-            elif staging_table == 'stg_patient_person':
-                df = pd.read_json(file_path, convert_dates=parse_dates)
-                if df.empty:
-                    logger.info(f"The JSON file is empty: {file_path}")
-                    self._update_log('failed', file_name, 0, 'JSON file is empty')
-                    self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
-                    return
-                else:
-                    df = df.dropna(how='all')
-                    logger.info(len(df))
-                    logger.info('Processing...')
-                    df['stg_batch_id'] = batch_id
-                    df['stg_load_time'] = load_time
-                    df['stg_file_name'] = file_name
-                    df['stg_datim_id'] = datim_id
-                    # PII columns to hide; 'first_name','surname','other_name','full_name', 'contact_point'
-                    df['first_name'] = '*****'
-                    df['surname'] = '*****'
-                    df['other_name'] = '*****'
-                    df['full_name'] = '*****'
-                    df['contact_point'] = '*****'
-                    self._replace_empty_strings_with_null(df)
-                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                                dtype=dtype_mapping)
-                    conn.commit()        
-                self.count_of_df = len(df)
+            # elif staging_table == 'stg_patient_person':
+            #     df = pd.read_json(file_path, convert_dates=parse_dates)
+            #     if df.empty:
+            #         logger.info(f"The JSON file is empty: {file_path}")
+            #         self._update_log('failed', file_name, 0, 'JSON file is empty')
+            #         self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+            #         return
+            #     else:
+            #         df = df.dropna(how='all')
+            #         logger.info(len(df))
+            #         logger.info('Processing...')
+            #         df['stg_batch_id'] = batch_id
+            #         df['stg_load_time'] = load_time
+            #         df['stg_file_name'] = file_name
+            #         df['stg_datim_id'] = datim_id
+            #         # PII columns to hide; 'first_name','surname','other_name','full_name', 'contact_point'
+            #         df['first_name'] = '*****'
+            #         df['surname'] = '*****'
+            #         df['other_name'] = '*****'
+            #         df['full_name'] = '*****'
+            #         df['contact_point'] = '*****'
+            #         self._replace_empty_strings_with_null(df)
+            #         df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
+            #                     dtype=dtype_mapping)
+            #         conn.commit()        
+            #     self.count_of_df = len(df)
             
             else:
                 df = pd.read_json(file_path, convert_dates=parse_dates)
