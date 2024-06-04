@@ -2,15 +2,32 @@ import psycopg2
 import os
 from datetime import datetime
 from src import logger
+import configparser
+
+def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+    # Create a parser
+    parser = configparser.ConfigParser()
+    # Read the configuration file
+    parser.read(filename)
+    # Get section, default to database
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        raise Exception(f'Section {section} not found in the {filename} file')
+    return db
+
+db_config = read_db_config()
 
 def _db_connect_filedb():
         db_params = {
-        'host': 'localhost',
+        'host': db_config['stg_host'],
         'database': 'filedb',
-        'user': 'lamisplus',
-        'password': '37EpE&U&H?',
-        'port': '5432',
-         }
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
          # Connect to the PostgreSQL database
         conn = psycopg2.connect(**db_params)
@@ -18,21 +35,16 @@ def _db_connect_filedb():
 
 def _db_connect_lamisplus_staging_dwh():
         db_params = {
-        'host': 'localhost',
+        'host': db_config['stg_host'],
         'database': 'lamisplus_staging_dwh',
-        'user': 'lamisplus',
-        'password': '37EpE&U&H?',
-        'port': '5432',
-         }
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
          # Connect to the PostgreSQL database
         conn = psycopg2.connect(**db_params)
         return conn
-<<<<<<< HEAD
-
-=======
         
->>>>>>> main
 def _insert_into_log(tableName, fileName, facilityId):
         conn=_db_connect_filedb()
         cur = conn.cursor()
@@ -102,64 +114,7 @@ def _process_derive_tablename(file_path):
         return check_path
 
 #_process_derive_tablename(' /home/lamisplus/server/temp/kEoPeO75AG2/base_organisation_unit_0_20240129190716_decrypted.json')
-        
-def delete_stg_table_records():
-
-    try:
-        conn = _db_connect_filedb()
-        conn2 = _db_connect_lamisplus_staging_dwh()
-        cur = conn.cursor()
-        cur2 = conn2.cursor()
-        retrieve_query = """SELECT facility_id, decrypted_file_name
-                            FROM public.sync_file 
-<<<<<<< HEAD
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '15' DAY
-                            AND processed IN (2, -2) 
-=======
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
-                            AND processed IN (2) 
->>>>>>> main
-                            AND ingest_status_check = 'success' 
-                            AND ingest_error_message = 'No errors' 
-                            AND decrypted_file_name NOT IN (
-                                SELECT REPLACE(file_name, '_decrypted.json', '.json') 
-                                FROM file_deletion_log 
-                                WHERE deletion_status_check = 'success' 
-                                OR error_message = 'file not found') 
-                            ORDER BY create_date ASC
-                            LIMIT 30000
-                            """
-        delete_query = """ DELETE FROM %s 
-                           WHERE stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY 
-                       """
-        cur.execute(retrieve_query)
-
-        # Fetch all file associated data from sync_file
-        files = cur.fetchall()
-
-        for file in files:
-            encryptedjson_file_name = file[1]
-            parts = encryptedjson_file_name.split('_')
-            non_digit_parts = [part for part in parts if not part.isdigit() and part != 'decrypted.json']
-            staging_table = '_'.join(non_digit_parts)
-
-            try:
-                cur2.execute("DELETE FROM {} stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY".format(staging_table))
-                cur2.execute("DELETE FROM {} WHERE stg_load_time <= CURRENT_DATE - INTERVAL '45' DAY".format(staging_table))
-                logger.info(f'records successfully deleted from {staging_table} table')
-
-            except Exception as e:
-                logger.exception(e)
-
-        # Commit the changes and close the connection
-        conn.commit()
-        cur.close()
-        conn.close()
-
-    except Exception as e:
-        print(f"Error: {str(e)}")
-
-
+     
 def delete_ingested_decrypted_files():
 
     try:
@@ -167,7 +122,7 @@ def delete_ingested_decrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '15' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
@@ -231,7 +186,7 @@ def delete_encrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE create_date <= CURRENT_DATE - INTERVAL '15' DAY
+                            WHERE create_date <= CURRENT_DATE - INTERVAL '30' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 

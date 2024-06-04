@@ -1,25 +1,42 @@
-from automate_file_delete import delete_encrypted_files, delete_ingested_decrypted_files, delete_stg_table_records
+from automate_file_delete import delete_encrypted_files, delete_ingested_decrypted_files
+from automate_stg_records_delete import delete_stg_table_records
 from datetime import datetime
 import psycopg2
 from src import logger
+import configparser
+
+def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+    # Create a parser
+    parser = configparser.ConfigParser()
+    # Read the configuration file
+    parser.read(filename)
+    # Get section, default to database
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        raise Exception(f'Section {section} not found in the {filename} file')
+    return db
+
+db_config = read_db_config()
 
 
 if __name__ == '__main__':
     db_params = {
-    'host': 'localhost',
+    'host': db_config['stg_host'],
     'database': 'lamisplus_staging_dwh',
-    'user': 'lamisplus',
-    'password': '37EpE&U&H?',
-    'port': '5432',
-        }
+    'user': db_config['stg_username'],
+    'password': db_config['stg_password'],
+    'port': db_config['stg_port'],}
     
     db_params2 = {
-        'host': 'localhost',
+        'host': db_config['stg_host'],
         'database': 'filedb',
-        'user': 'lamisplus',
-        'password': '37EpE&U&H?',
-        'port': '5432',
-         }
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
     
     # Connect to the PostgreSQL database
     conn = psycopg2.connect(**db_params)
@@ -39,11 +56,6 @@ if __name__ == '__main__':
     conn.commit()
 
     try:
-        logger.info('Job Started')
-
-        logger.info('Deletion of <90 days records from staging tables started')
-        delete_stg_table_records()
-        logger.info('Deletion of <90 days records from staging tables completed')
         
         logger.info('Deletion of decrypted json files started')
         delete_ingested_decrypted_files()
