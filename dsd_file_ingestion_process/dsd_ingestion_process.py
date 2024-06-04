@@ -1,6 +1,6 @@
 import psycopg2
 from datetime import datetime
-from test_file_ingestion_process.test_file_loader import FileLoader
+from dsd_loader import FileLoader
 import configparser
 
 def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
