@@ -10,6 +10,24 @@ import sqlalchemy
 from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
 from src import logger
+import configparser
+
+def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+    # Create a parser
+    parser = configparser.ConfigParser()
+    # Read the configuration file
+    parser.read(filename)
+    # Get section, default to database
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        raise Exception(f'Section {section} not found in the {filename} file')
+    return db
+
+db_config = read_db_config()
 
 pd.set_option('display.max_columns', None)
 
@@ -33,8 +51,8 @@ class FileLoader:
         Raises:
         - Exception: If connection to the database fails.
         '''
-        db_params = {'host': 'localhost', 'database': database, 'user': 'lamisplus',
-                     'password': '37EpE&U&H?','port': '5432',}
+        db_params = {'host': db_config['stg_host'], 'database': database, 'user': db_config['stg_username'],
+                     'password': db_config['stg_password'],'port': db_config['stg_port'],}
         try:
             conn = psycopg2.connect(**db_params)
             engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')
