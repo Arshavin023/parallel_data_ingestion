@@ -16,6 +16,7 @@ and ingest_end_time is null
 order by modified_date desc;
 ) select * from duplicate_check where processed = 2 and row_num > 1;
 
+
 UPDATE sync_file AS a
 SET ingest_error_message = 'No errors'
 FROM public.sync_file AS b
