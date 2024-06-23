@@ -1,0 +1,80 @@
+import psycopg2
+import os
+from datetime import datetime
+from src import logger
+import configparser
+
+def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+    # Create a parser
+    parser = configparser.ConfigParser()
+    # Read the configuration file
+    parser.read(filename)
+    # Get section, default to database
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        raise Exception(f'Section {section} not found in the {filename} file')
+    return db
+
+db_config = read_db_config()
+
+def _db_connect_filedb():
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'filedb',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
+
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
+
+def _db_connect_lamisplus_staging_dwh():
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'lamisplus_staging_dwh',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
+
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
+
+def delete_staging_table_records():
+    conn = _db_connect_lamisplus_staging_dwh()
+    cur = conn.cursor()
+
+    retrieve_query = """
+        WITH table_size_info AS (
+            SELECT table_name, 
+                   pg_total_relation_size(quote_ident(table_name))/1048576 AS total_size_megabytes
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+        )
+        SELECT table_name FROM table_size_info 
+        WHERE total_size_megabytes > 200 AND table_name ILIKE 'stg_%'
+        order by total_size_megabytes desc
+    """
+    
+    delete_query_template = "CALL proc_delete_stg_records(%s)"
+
+    cur.execute(retrieve_query)
+    staging_tables = cur.fetchall()
+
+    for stg in staging_tables:
+        try:
+            logger.info(f"Deletion of records ingested in last 30 days from {stg[0]} table started")
+            cur.execute(delete_query_template, (stg[0],))
+            conn.commit()
+            logger.info(f"Deletion of records ingested in last 30 days from {stg[0]} table completed")
+
+        except Exception as e:
+            logger.exception(e)
+
+    cur.close()
+    conn.close()
