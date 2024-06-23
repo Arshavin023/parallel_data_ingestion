@@ -122,7 +122,7 @@ def delete_ingested_decrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '30' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '1' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
@@ -141,7 +141,6 @@ def delete_ingested_decrypted_files():
         #print(files)
         demo_path = '/home/lamisplus/server/temp'
         for file in files:
-            logger.info(file)
             facility_id = file[0]
             decryptedjson_file_name = file[1].replace('.json', '_decrypted.json')
             # file_name = 
@@ -149,26 +148,22 @@ def delete_ingested_decrypted_files():
 
             filelog_id = _insert_into_log(_process_derive_tablename(local_dir), decryptedjson_file_name, facility_id)
 
-            file_count = count_rows_in_json_file(local_dir)
-            logger.info(file_count)
-
-            try:
-                # Check if the file exists before attempting to delete
-                if os.path.exists(local_dir):
+            file_count = 0 #count_rows_in_json_file(local_dir)
+            #logger.info(file_count)
+            if not os.path.exists(local_dir):
+                pass
+            
+            else:
+                try:
                     logger.info(f"{local_dir} file exists, deleting files...........\n\n")
-
                     os.remove(local_dir)
                     logger.info(f"File deleted: {local_dir}")
                     # update deletion log
                     _update_log(filelog_id, 'success', decryptedjson_file_name,file_count, 'no errors')
 
-                else:
-                    logger.info(f"File not found: {local_dir}")
-                    _update_log(filelog_id, 'failed', decryptedjson_file_name,file_count, 'file not found')
-
-            except Exception as e:
-                logger.info(f"Error deleting file {local_dir}: {str(e)}")
-                _update_log(filelog_id, 'failed', decryptedjson_file_name,file_count, str(e))
+                except Exception as e:
+                    logger.info(f"Error deleting file {local_dir}: {str(e)}")
+                    _update_log(filelog_id, 'failed', decryptedjson_file_name,file_count, str(e))
 
         # Commit the changes and close the connection
         conn.commit()
@@ -186,7 +181,7 @@ def delete_encrypted_files():
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
-                            WHERE create_date <= CURRENT_DATE - INTERVAL '30' DAY
+                            WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '1' DAY
                             AND processed IN (2, -2) 
                             AND ingest_status_check = 'success' 
                             AND ingest_error_message = 'No errors' 
@@ -205,7 +200,6 @@ def delete_encrypted_files():
         #print(files)
         demo_path = '/home/lamisplus/server/temp'
         for file in files:
-            logger.info(file)
             facility_id = file[0]
             encryptedjson_file_name = file[1]
             # file_name = 
@@ -213,26 +207,23 @@ def delete_encrypted_files():
 
             filelog_id = _insert_into_log(_process_derive_tablename(local_dir), encryptedjson_file_name, facility_id)
 
-            file_count = count_rows_in_json_file(local_dir)
-            logger.info(file_count)
+            file_count = 0 #count_rows_in_json_file(local_dir)
+            #logger.info(file_count)
 
-            try:
-                # Check if the file exists before attempting to delete
-                if os.path.exists(local_dir):
+            if not os.path.exists(local_dir):
+                pass
+            
+            else:
+                try:
                     logger.info(f"{local_dir} file exists, deleting files...........\n\n")
-
                     os.remove(local_dir)
                     logger.info(f"File deleted: {local_dir}")
                     # update deletion log
                     _update_log(filelog_id, 'success', encryptedjson_file_name,file_count, 'no errors')
 
-                else:
-                    logger.info(f"File not found: {local_dir}")
-                    _update_log(filelog_id, 'failed', encryptedjson_file_name,file_count, 'file not found')
-
-            except Exception as e:
-                logger.info(f"Error deleting file {local_dir}: {str(e)}")
-                _update_log(filelog_id, 'failed', encryptedjson_file_name,file_count, str(e))
+                except Exception as e:
+                    logger.info(f"Error deleting file {local_dir}: {str(e)}")
+                    _update_log(filelog_id, 'failed', encryptedjson_file_name,file_count, str(e))
 
         # Commit the changes and close the connection
         conn.commit()
