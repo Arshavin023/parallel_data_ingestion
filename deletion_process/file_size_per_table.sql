@@ -4,6 +4,8 @@ WITH table_size_info AS (
     FROM information_schema.tables
     WHERE table_schema = 'public'
 )
+SELECT * FROM table_size_info tsi
+WHERE total_size_megabytes > 200 AND tsi.table_name ILIKE 'stg_%'
 --UPDATE stg_records_deletion_log srdl
 --SET table_size_after_deletion = tsi.total_size_megabytes
 --FROM table_size_info tsi
@@ -13,3 +15,7 @@ srdl.table_size_before_deletion,srdl.table_size_after_deletion
 FROM table_size_info tsi LEFT JOIN stg_records_deletion_log srdl on tsi.table_name=srdl.table_name
 WHERE total_size_megabytes > 200 AND tsi.table_name ILIKE 'stg_%'
 order by total_size_megabytes desc;
+
+
+select * from stg_hiv_art_pharmacy_regimens limit 10
+

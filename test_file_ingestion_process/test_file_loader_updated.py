@@ -52,7 +52,7 @@ class FileLoader:
         - Exception: If connection to the database fails.
         '''
         db_params = {'host': db_config['stg_host'], 'database': database, 'user': db_config['stg_username'],
-                     'password': db_config['stg_password'], 'port': db_config['stg_port'],}
+                     'password': db_config['stg_password'],'port': db_config['stg_port'],}
         try:
             conn = psycopg2.connect(**db_params)
             engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')
@@ -248,8 +248,8 @@ class FileLoader:
             cur = conn.cursor()
 
             get_patient_count = """
-            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_patient_person
-            WHERE stg_datim_id = %s 
+            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_hiv_enrollment
+            WHERE stg_datim_id = %s and archived=0
             """
             cur.execute(get_patient_count, (self.facility_id,))
             p_count_per_datemid = cur.fetchone()[0]
@@ -285,8 +285,8 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' and decrypted_file_name like '%dsd_devolvement%'
-            ORDER BY create_date ASC
+            FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' 
+            ORDER BY modified_date ASC
             LIMIT 30000"""
             cur.execute(retrieve_query)
 
@@ -336,6 +336,7 @@ class FileLoader:
             logger.exception(e)
             raise e
 
+
     def _check_if_previouslyloaded(self, file_name, facility_id):
         '''
         Checks if a file has been previously loaded successfully into the database.
@@ -366,6 +367,7 @@ class FileLoader:
             logger.exception(e)
             raise e
 
+
     def _check_if_faillogged(self, file_name, facility_id):
         '''
         Checks if a file has been previously failed to load into the database.
@@ -393,7 +395,8 @@ class FileLoader:
         except Exception as e:
             logger.exception(e)
             raise e 
-        
+
+
     def _process_file_by_name(self, file_path):
         '''
         Processes a file based on its name.
@@ -460,12 +463,13 @@ class FileLoader:
                     error_msg = f'{error_msg} - {cleaned_message}'
                     logger.info(error_msg)
 
-                # self._update_log('failed', file_name, self.count_of_df, error_msg)
-                # self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg)
+                self._update_log('failed', file_name, self.count_of_df, error_msg)
+                self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg)
                 print(f'Error processing {check_param} file: {file_name} - {error_msg}')
 
             if check_param == 'patient_person':
                 self._update_centralpartnermapper()
+
                 
     def _replace_empty_strings_with_null(self, df):
         '''
@@ -479,15 +483,15 @@ class FileLoader:
         '''
         try:
         # Replace empty strings or spaces with NaN
-            df.replace('', None, inplace=True)
-            df.replace(' ', None, inplace=True)
-            df.replace('null', None, inplace=True)
+            df.replace('', np.nan, inplace=True)
+            df.replace(' ', np.nan, inplace=True)
+            df.replace('null', np.nan, inplace=True)
             logger.info('" " successfully replace with NA')
 
         except Exception as e:
             logger.exception(e)
             raise e
-    
+	
     def _date_validation(self, df):
         date_columns = [col for col in df.columns if 'date' in col.lower()]
         
@@ -507,8 +511,8 @@ class FileLoader:
             else:
                 return 'passed'
         else:
-            return 'passed'  # No date columns found, consider validation as passed
-        
+            return 'passed'  # No date columns found, consider validation as passed	
+	
     def _ingest_json_data(self, file_path, staging_table, dtype=None, parse_dates=None):
         '''
         Ingests JSON data into a specified staging table in the database.
@@ -552,110 +556,89 @@ class FileLoader:
                 }
                 return type_mapping.get(data_type, String)
             
-            def load_dsd_into_postgres(file_path, staging_table, connection):
-                with open(file_path, 'r') as f:
-                    data = json.load(f)
-
-                # Establish a cursor
-                cursor = connection.cursor()
-
-                num_records_loaded = 0 # Initialize a variable to count the number of records loaded
-
-                for record in data:
-                    # Assuming record is a dictionary where keys correspond to column names
-                    # For keys with nested structures, you may need to handle them accordingly
-                    columns = ', '.join(list(record.keys()) + ['stg_load_time', 'stg_batch_id', 'stg_datim_id', 'stg_file_name'])
-                    placeholders = ', '.join(['%s'] * (len(record) + 4))
-                    values = []
-
-                    for key, value in record.items():
-                        if value == "":
-                            values.append(None)  # Set empty string to None for date fields
-                        elif isinstance(value, dict):
-                            values.append(json.dumps(value))
-                        else:
-                            values.append(value)
-
-                    # Add values for new columns
-                    values.extend([load_time, batch_id, datim_id, file_name])
-
-                    insert_query = f"INSERT INTO {staging_table} ({columns}) VALUES ({placeholders})"
-                    cursor.execute(insert_query, values)
-
-                    num_records_loaded += cursor.rowcount  # Increment the count by the number of records inserted in this iteration
-
-                # Commit the transaction
-                connection.commit()
-
-                # Close the cursor
-                cursor.close()
-
-                return num_records_loaded
             
             # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
             dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
 
-            if staging_table == 'stg_dsd_devolvement' or 'stg_mhpss_confirmation':
-                self.count_of_df = load_dsd_into_postgres(file_path=file_path,
-                                                          staging_table=staging_table,
-                                                          connection=conn)
-                cur = conn.cursor()
-                count_of_stg = pd.read_sql(
-                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-
-                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-                cur.execute(ins_counts)
-                conn.commit()
-                cur.close()
-                self._update_log('success', file_name, self.count_of_df, 'No errors')
-                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
-
-            else:
+            if staging_table == 'stg_dsd_devolvement':
                 pass
-            #     df = pd.read_json(file_path, convert_dates=parse_dates)
+
+            elif staging_table == 'stg_biometric':
+                df = pd.read_json(file_path, convert_dates=parse_dates)
+                # Specify columns to exclude
+                columns_to_exclude = ['match_type','match_person_uuid','match_biometric_id']  
+                columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+                # Read JSON data into DataFrame, including only the specified columns
+                df = df[columns_to_include]
                 
-            #     if df.empty:
-            #         logger.info(f"The JSON file is empty: {file_path}")
-            #         # self._update_log('failed', file_name, 0, 'JSON file is empty')
-            #         # self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
-            #         return
-            #     else:
-                    
-                    # df = df.dropna(how='all')
-                    # logger.info(len(df))
-                    
-                    # print('Processing...')
-
-                    # df['stg_batch_id'] = batch_id
-                    # df['stg_load_time'] = load_time
-                    # df['stg_file_name'] = file_name
-                    # df['stg_datim_id'] = datim_id
-
-                    # self._replace_empty_strings_with_null(df)
-                    
-                    # df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                    #             dtype=dtype_mapping)
-                    # conn.commit()
-                    # cur = conn.cursor()
-
-                    # self.count_of_df = len(df)
-
-                    # count_of_stg = pd.read_sql(
-                    #     "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                    #     .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-
-                    # ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                    # ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-                    # cur.execute(ins_counts)
-                    # conn.commit()
-                    # cur.close()
-                    # self._update_log('success', file_name, self.count_of_df, 'No errors')
-                    # self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+                if df.empty:
+                    logger.info(f"The JSON file is empty: {file_path}")
+                    self._update_log('failed', file_name, 0, 'JSON file is empty')
+                    self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                    return
                 
+                # Validate dates
+                validation_result = self._date_validation(df)
+                if validation_result == 'failed':
+                    logger.info(f"The JSON file: {file_path} has invalid dates, please reupload")
+                    self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns, please reupload')
+                    self._update_flag_syncfile('failed', -2, 0, f'{file_path} has invalid dates in one of its columns, please reupload')
+                    return
+				
+                # Clean DataFrame and prepare for insertion
+                df = df.dropna(how='all')
+                df['stg_batch_id'] = batch_id
+                df['stg_load_time'] = load_time
+                df['stg_file_name'] = file_name
+                df['stg_datim_id'] = datim_id
+                self._replace_empty_strings_with_null(df)
+                df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
+                            dtype=dtype_mapping)
+                conn.commit()        
+                self.count_of_df = len(df)
+            
+            else:
+                df = pd.read_json(file_path, convert_dates=parse_dates)
+                if df.empty:
+                    logger.info(f"The JSON file is empty: {file_path}")
+                    self._update_log('failed', file_name, 0, 'JSON file is empty')
+                    self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                    return
+                
+                # Validate dates
+                validation_result = self._date_validation(df)
+                if validation_result == 'failed':
+                    logger.info(f"The JSON file: {file_path} has invalid dates, please reupload")
+                    self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns, please reupload')
+                    self._update_flag_syncfile('failed', -2, 0, f'{file_path} has invalid dates in one of its columns, please reupload')
+                    return
+                
+                df = df.dropna(how='all')
+                df['stg_batch_id'] = batch_id
+                df['stg_load_time'] = load_time
+                df['stg_file_name'] = file_name
+                df['stg_datim_id'] = datim_id
+                self._replace_empty_strings_with_null(df)
+                df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
+                            dtype=dtype_mapping)
+                conn.commit()        
+                self.count_of_df = len(df)
+
+            cur = conn.cursor()
+            count_of_stg = pd.read_sql(
+                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+            ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
+            ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
+
+            cur.execute(ins_counts)
+            conn.commit()
+            cur.close()
+            self._update_log('success', file_name, self.count_of_df, 'No errors')
+            self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+        
+            
         except Exception as e:
             logger.exception(e)
             raise e
