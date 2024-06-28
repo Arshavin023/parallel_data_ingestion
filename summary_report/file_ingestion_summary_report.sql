@@ -22,7 +22,10 @@ FROM public.sync_file
 where create_date >= '2024-03-21'
 and decrypted_file_name like '%dsd_devolvement%';
 
-
+select distinct ingest_error_message 
+from sync_file 
+where processed = -2 and ingest_status_check = 'failed'
+and ingest_error_message ilike '%has invalid dates in one of its columns, please reupload%';
 
 
 
