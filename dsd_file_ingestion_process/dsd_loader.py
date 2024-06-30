@@ -615,46 +615,7 @@ class FileLoader:
 
             else:
                 pass
-            #     df = pd.read_json(file_path, convert_dates=parse_dates)
-                
-            #     if df.empty:
-            #         logger.info(f"The JSON file is empty: {file_path}")
-            #         # self._update_log('failed', file_name, 0, 'JSON file is empty')
-            #         # self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
-            #         return
-            #     else:
-                    
-                    # df = df.dropna(how='all')
-                    # logger.info(len(df))
-                    
-                    # print('Processing...')
-
-                    # df['stg_batch_id'] = batch_id
-                    # df['stg_load_time'] = load_time
-                    # df['stg_file_name'] = file_name
-                    # df['stg_datim_id'] = datim_id
-
-                    # self._replace_empty_strings_with_null(df)
-                    
-                    # df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                    #             dtype=dtype_mapping)
-                    # conn.commit()
-                    # cur = conn.cursor()
-
-                    # self.count_of_df = len(df)
-
-                    # count_of_stg = pd.read_sql(
-                    #     "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                    #     .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-
-                    # ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                    # ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-                    # cur.execute(ins_counts)
-                    # conn.commit()
-                    # cur.close()
-                    # self._update_log('success', file_name, self.count_of_df, 'No errors')
-                    # self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+            
                 
         except Exception as e:
             logger.exception(e)
