@@ -22,10 +22,18 @@ FROM public.sync_file
 where create_date >= '2024-03-21'
 and decrypted_file_name like '%dsd_devolvement%';
 
-select distinct ingest_error_message 
-from sync_file 
+select sf.facility_id,cpm.facility_name,sf.decrypted_file_name,sf.processed,sf.ingest_error_message
+from sync_file sf
+left join central_partner_mapping cpm on sf.facility_id=cpm.datim_id
 where processed = -2 and ingest_status_check = 'failed'
-and ingest_error_message ilike '%has invalid dates in one of its columns, please reupload%';
+and ingest_end_time >= '2024-06-28'
+and ingest_error_message ilike '%has invalid dates %'
+order by decrypted_file_name;
+
+-- update sync_file
+-- set ingest_error_message=null
+-- where processed = 1 and ingest_status_check = 'failed'
+-- and ingest_error_message ilike '%has invalid dates in one of its columns, please reupload%';
 
 
 
