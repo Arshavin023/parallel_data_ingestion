@@ -22,28 +22,28 @@ def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', s
 db_config = read_db_config()
 
 def _db_connect_filedb():
-        db_params = {
-        'host': db_config['stg_host'],
-        'database': 'filedb',
-        'user': db_config['stg_username'],
-        'password': db_config['stg_password'],
-        'port': db_config['stg_port'],}
+    db_params = {
+    'host': db_config['stg_host'],
+    'database': 'filedb',
+    'user': db_config['stg_username'],
+    'password': db_config['stg_password'],
+    'port': db_config['stg_port'],}
 
-         # Connect to the PostgreSQL database
-        conn = psycopg2.connect(**db_params)
-        return conn
+     # Connect to the PostgreSQL database
+    conn = psycopg2.connect(**db_params)
+    return conn
 
 def _db_connect_lamisplus_staging_dwh():
-        db_params = {
-        'host': db_config['stg_host'],
-        'database': 'lamisplus_staging_dwh',
-        'user': db_config['stg_username'],
-        'password': db_config['stg_password'],
-        'port': db_config['stg_port'],}
+    db_params = {
+    'host': db_config['stg_host'],
+    'database': 'lamisplus_staging_dwh',
+    'user': db_config['stg_username'],
+    'password': db_config['stg_password'],
+    'port': db_config['stg_port'],}
 
-         # Connect to the PostgreSQL database
-        conn = psycopg2.connect(**db_params)
-        return conn
+     # Connect to the PostgreSQL database
+    conn = psycopg2.connect(**db_params)
+    return conn
 
 def delete_staging_table_records():
     conn = _db_connect_lamisplus_staging_dwh()

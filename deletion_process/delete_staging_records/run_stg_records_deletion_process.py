@@ -56,10 +56,10 @@ if __name__ == '__main__':
     try:
         logger.info('Job Started')
 
-        logger.info('Deletion of <= 45 days records from staging tables started')
+        logger.info('Deletion of <= 30 days records from staging tables started')
         delete_staging_table_records()
         conn.commit()
-        logger.info('Deletion of <= 45 days records from staging tables completed')
+        logger.info('Deletion of <= 30 days records from staging tables completed')
         
     except Exception as e:
         error_msg =str(e)
