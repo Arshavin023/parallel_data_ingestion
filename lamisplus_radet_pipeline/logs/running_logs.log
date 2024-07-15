@@ -1,0 +1,1495 @@
+[2024-07-15 13:39:09,559: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 13:39:09,566: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 13:39:42,913: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 13:39:42,913: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 13:46:28,097: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 13:46:28,097: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 13:56:25,343: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 13:56:25,343: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 14:17:47,112: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 14:17:47,117: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 15:07:04,829: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 15:07:04,829: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 15:12:19,163: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 15:12:19,165: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 15:14:19,132: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 15:14:19,134: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 15:23:44,565: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:23:44,624: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:23:44,665: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:23:44,698: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:23:44,698: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:23:44,701: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:23:44,733: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 15:23:44,736: ERROR: radet_file_loader: column "json_rec_count" of relation "sync_file" does not exist
+LINE 5:                                 json_rec_count = 0,
+                                        ^
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 271, in _process_file_by_name
+    self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(), parse_dates=parse_dates)
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 414, in _ingest_json_data
+    raise e
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 202, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check,
+psycopg2.errors.UndefinedColumn: column "json_rec_count" of relation "sync_file" does not exist
+LINE 5:                                 json_rec_count = 0,
+                                        ^
+
+[2024-07-15 15:26:30,933: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:30,952: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:30,980: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,021: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,021: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,021: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,055: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,075: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,105: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,139: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,139: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,139: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,179: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,185: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,360: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,402: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,402: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,402: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,438: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,454: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,506: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,545: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,546: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,546: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,583: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,599: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,644: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,682: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,682: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,682: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,724: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,746: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,784: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,830: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,830: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,830: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:31,866: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,882: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:31,931: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,961: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:31,961: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:31,961: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:32,013: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,026: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:32,072: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,114: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,114: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:32,114: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:26:32,287: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,310: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:26:32,351: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,389: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:26:32,389: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 383, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 15:26:32,390: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 15:35:06,162: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,185: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,217: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,252: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,252: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,252: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,283: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,297: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,330: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,360: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,360: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,360: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,409: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,428: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,461: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,506: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,506: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,506: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,538: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,567: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,606: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,646: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,646: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,646: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,689: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,711: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,747: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,785: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,786: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,786: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,828: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,846: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:06,883: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,925: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,927: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:06,927: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:06,964: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:06,982: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:07,030: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,067: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,068: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:07,068: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:07,113: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,137: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:07,176: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,215: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,215: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:07,215: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:07,391: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,423: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:07,465: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,503: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:07,506: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path, convert_dates=parse_dates, encoding='latin1')
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 15:35:07,506: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 15:35:53,068: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:53,098: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:53,130: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:53,161: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:56,100: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE-6_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:35:56,197: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:56,212: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:56,241: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:56,273: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:58,048: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE1_COMBINED_RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:35:58,112: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:58,127: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:35:58,159: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:35:58,332: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:00,125: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:00,345: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:00,378: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:00,411: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:00,443: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:01,242: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE3_COMBINED RADET_14_06_2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:01,290: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:01,305: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:01,336: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:01,384: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:02,342: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE4_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:02,538: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:02,549: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:02,597: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:02,627: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:08,269: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE5_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:08,440: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:08,459: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:08,502: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:08,537: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:10,237: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC1_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:10,302: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:10,316: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:10,366: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:10,534: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:11,342: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:36:11,391: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:11,406: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:36:11,438: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:11,485: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:36:13,389: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 15:36:13,514: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 15:36:13,703: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 15:38:48,123: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:48,136: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:48,167: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:48,215: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:51,166: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE-6_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:38:51,260: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:51,276: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:51,308: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:51,343: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:53,114: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE1_COMBINED_RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:38:53,177: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:53,192: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:53,224: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:53,255: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:55,109: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:38:55,201: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:55,220: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:55,394: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:55,425: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:56,197: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE3_COMBINED RADET_14_06_2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:38:56,253: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:56,260: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:56,308: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:56,339: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:57,326: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE4_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:38:57,374: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:57,389: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:38:57,421: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:38:57,468: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:03,145: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE5_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:39:03,309: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:03,324: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:39:03,356: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:03,403: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:05,053: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC1_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:39:05,116: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:05,132: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:39:05,169: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:05,195: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:06,042: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:39:06,091: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:06,106: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:39:06,152: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:06,184: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:39:08,115: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 15:39:08,115: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 15:39:08,131: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 15:40:00,216: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:00,234: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:40:00,263: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:00,426: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:03,232: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE-6_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:40:03,325: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:03,341: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:40:03,373: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:03,404: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:03,404: ERROR: radet_file_loader: [Errno 13] Permission denied: 'C:\\home\\lamisplus\\server\\processed_folder\\test']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 389, in _ingest_json_data
+    df = pd.read_csv(file_path,
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\parsers\readers.py", line 912, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\parsers\readers.py", line 577, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\parsers\readers.py", line 1407, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\parsers\readers.py", line 1661, in _make_engine
+    self.handles = get_handle(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\common.py", line 859, in get_handle
+    handle = open(
+PermissionError: [Errno 13] Permission denied: 'C:\\home\\lamisplus\\server\\processed_folder\\test'
+[2024-07-15 15:40:03,436: INFO: radet_file_loader: PermissionError - [Errno 13] Permission denied: 'C:\\home\\lamisplus\\server\\processed_folder\\test' - 13 Permission denied]
+[2024-07-15 15:40:38,913: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:38,928: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:40:38,959: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:38,991: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:40:41,817: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\ACE-6_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 15:45:13,659: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:45:13,679: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 15:45:13,722: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:45:13,872: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 15:45:13,986: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\facility_test_updated.csv has invalid dates, please reupload]
+[2024-07-15 16:00:56,758: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:00:56,774: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 16:00:56,816: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:00:56,849: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:00:56,872: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 16:00:56,890: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 16:00:56,897: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 16:24:39,000: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:24:39,014: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 16:24:39,073: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:24:39,116: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:24:39,163: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 16:24:39,173: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 16:24:39,184: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 16:25:49,558: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:25:49,593: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 16:25:49,645: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:25:49,685: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:25:49,704: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 16:25:49,726: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append'
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 16:25:49,736: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 16:27:10,027: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:10,050: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 16:27:10,092: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:10,128: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:10,170: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 16:27:10,170: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 410, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append'
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 16:27:10,185: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 16:27:45,405: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:45,436: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 16:27:45,510: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:45,575: INFO: radet_file_loader: successfully connected to lamisplus_ods_dwh database]
+[2024-07-15 16:27:45,625: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 16:27:45,625: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 19:02:49,217: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:02:49,223: INFO: radet_file_loader: Successfully updated sync_file records]
+[2024-07-15 19:08:38,576: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:08:38,580: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:08:42,936: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:08:42,949: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:08:47,334: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:08:47,337: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:08:49,185: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:08:49,189: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:08:51,896: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:08:51,896: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:09:11,245: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:09:11,250: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:09:17,101: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:09:17,107: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:09:19,709: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:09:19,716: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:09:23,341: INFO: radet_file_loader: successfully connected to filedb database]
+[2024-07-15 19:09:23,347: INFO: radet_file_loader: Successfully inserted sync_file records]
+[2024-07-15 19:11:43,468: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:11:48,087: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:11:52,586: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:11:54,480: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:11:56,877: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:12:12,171: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:12:16,537: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:12:18,458: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:12:21,201: INFO: radet_file_loader: Successfully logged into sync_file table in filedb database]
+[2024-07-15 19:36:35,689: ERROR: radet_file_loader: column "json_rec_count" of relation "sync_file" does not exist
+LINE 2: ...                                                  json_rec_c...
+                                                             ^
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 185, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.UndefinedColumn: column "json_rec_count" of relation "sync_file" does not exist
+LINE 2: ...                                                  json_rec_c...
+                                                             ^
+
+[2024-07-15 19:37:02,841: ERROR: radet_file_loader: column "ingest_error_message" of relation "sync_file" does not exist
+LINE 2: ...                           csv_rec_count = 5000,  ingest_err...
+                                                             ^
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 185, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.UndefinedColumn: column "ingest_error_message" of relation "sync_file" does not exist
+LINE 2: ...                           csv_rec_count = 5000,  ingest_err...
+                                                             ^
+
+[2024-07-15 19:37:59,826: ERROR: radet_file_loader: multiple assignments to same column "ingest_end_time"
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 185, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.SyntaxError: multiple assignments to same column "ingest_end_time"
+
+[2024-07-15 19:39:10,793: ERROR: radet_file_loader: multiple assignments to same column "ingest_end_time"
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 186, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.SyntaxError: multiple assignments to same column "ingest_end_time"
+
+[2024-07-15 19:40:30,367: ERROR: radet_file_loader: multiple assignments to same column "ingest_start_time"
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 186, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.SyntaxError: multiple assignments to same column "ingest_start_time"
+
+[2024-07-15 19:41:08,595: ERROR: radet_file_loader: multiple assignments to same column "ingest_start_time"
+]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 186, in _update_flag_syncfile
+    cur.execute(update_query, (proc_val,self.load_start_time, self.load_end_time, ingest_status_check,
+psycopg2.errors.SyntaxError: multiple assignments to same column "ingest_start_time"
+
+[2024-07-15 19:47:59,745: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 19:47:59,745: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\RISE_Combine RADET_14-06-2024_processed.csv' exists.]
+[2024-07-15 19:47:59,841: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 19:48:01,843: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 19:48:01,890: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\RISE_Combine RADET_14-06-2024_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 19:48:01,908: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 19:57:35,009: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 19:57:35,009: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv' exists.]
+[2024-07-15 19:57:35,067: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 19:57:36,227: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 19:57:36,240: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 19:59:13,377: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 19:59:13,377: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv' exists.]
+[2024-07-15 19:59:13,431: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 19:59:14,660: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 19:59:14,708: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:02:23,101: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:02:23,101: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv' exists.]
+[2024-07-15 20:02:23,148: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:02:24,106: INFO: radet_file_loader: The JSON file: C:\home\lamisplus\server\processed_folder\KPC2_COMBINED RADET_14-06-2024_processed.csv has invalid dates, please reupload]
+[2024-07-15 20:02:24,156: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:08:02,139: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' does not exist. Skipping to next file]
+[2024-07-15 20:08:02,139: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:09:40,975: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:09:40,975: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:09:41,030: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:09:41,116: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:09:41,132: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 398, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 20:09:41,149: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 20:09:41,179: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:13:16,970: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:23:27,101: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:23:27,101: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:23:27,162: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:23:27,231: ERROR: radet_file_loader: tuple indices must be integers or slices, not dict]
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 365, in _ingest_json_data
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 365, in <dictcomp>
+    dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+TypeError: tuple indices must be integers or slices, not dict
+[2024-07-15 20:23:27,231: INFO: radet_file_loader: TypeError - tuple indices must be integers or slices, not dict - tuple indices must be integers or slices, not dict]
+[2024-07-15 20:23:27,278: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:29:58,586: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:29:58,586: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:29:58,641: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:29:58,699: ERROR: radet_file_loader: read_csv() got an unexpected keyword argument 'convert_dates']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 367, in _ingest_json_data
+    df = pd.read_csv(file_path,
+TypeError: read_csv() got an unexpected keyword argument 'convert_dates'
+[2024-07-15 20:29:58,699: INFO: radet_file_loader: TypeError - read_csv() got an unexpected keyword argument 'convert_dates' - read_csv() got an unexpected keyword argument 'convert_dates']
+[2024-07-15 20:29:58,746: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:31:53,322: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:31:53,323: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:31:53,374: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:31:53,610: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:31:53,621: ERROR: radet_file_loader: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 391, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 768, in to_sql
+    with pandasSQL_builder(con, schema=schema, need_transaction=True) as pandas_sql:
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 832, in pandasSQL_builder
+    return SQLDatabase(con, schema, need_transaction)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1539, in __init__
+    con = self.exit_stack.enter_context(con.connect())
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3276, in connect
+    return self._connection_cls(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 148, in __init__
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2440, in _handle_dbapi_exception_noconnection
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 146, in __init__
+    self._dbapi_connection = engine.raw_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 3300, in raw_connection
+    return self.pool.connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 449, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 1263, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 712, in checkout
+    rec = pool._do_get()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 180, in _do_get
+    self._dec_overflow()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\impl.py", line 177, in _do_get
+    return self._create_connection()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 390, in _create_connection
+    return _ConnectionRecord(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 674, in __init__
+    self.__connect()
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 901, in __connect
+    pool.logger.debug("Error on connect(): %s", e)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\pool\base.py", line 896, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\create.py", line 643, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 620, in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\psycopg2\__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2024-07-15 20:31:53,629: INFO: radet_file_loader: OperationalError - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)
+	Is the server running locally and accepting connections on that socket?
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) - (psycopg2.OperationalError) connection to server on socket "@localhost/.s.PGSQL.5432" failed: Invalid argument (0x00002726/10022)]
+[2024-07-15 20:31:53,667: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:45:04,706: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:45:04,706: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:45:04,772: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:45:04,875: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:45:05,156: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 20:45:05,156: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:50:35,972: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:50:35,972: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:50:36,021: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:50:36,116: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:50:36,193: ERROR: radet_file_loader: (psycopg2.errors.UndefinedColumn) column "period" of relation "expanded_radet_weekly" does not exist
+LINE 1: INSERT INTO expanded_radet_weekly (period, datim_id, state, ...
+                                           ^
+
+[SQL: INSERT INTO expanded_radet_weekly (period, datim_id, state, lga, facilityname, uniquepersonuuid, hospitalnumber, gender, targetgroup, currentweight, pregnancystatus, dateofbirth, careentry, artstartdate, lastpickupdate, monthsofarvrefill, regimenlineatstart, regimenatstart, dateofstartofcurrentartregimen, currentregimenline, currentartregimen, currentclinicalstage, dateoflastcd4count, lastcd4count, dateofviralloadsamplecollection, currentviralload, dateofcurrentviralload, viralloadindication, currentstatus, dateofcurrentartstatus, clientverificationoutcome, clientverificationstatus, previousstatus, previousstatusdate, enrollmentsetting, tbscreeningtype, dateoftbscreened, tbstatus, dateoftbsamplecollection, tbdiagnostictesttype, dateoftbdiagnosticresultreceived, tbdiagnosticresult, tbtreatmentstartdate, tbtreatmenttype, tbcompletiondate, tbtreatmentoutcome, dateofiptstart, ipttype, iptcompletiondate, iptcompletionstatus, dateofcommencementofeac, numberofeacsessioncompleted, dateoflasteacsessioncompleted, dateofextendeaccompletion, dateofrepeatviralloadeacsamplecollection, repeatviralloadresult, dateofrepeatviralloadresult, currentdsdmodel, dateofcurrentdsd, datereturntosite, modeldevolvedto, dateofdevolvement, dateofcervicalcancerscreening, cervicalcancerscreeningtype, cervicalcancerscreeningmethod, resultofcervicalcancerscreening, datebiometricsenrolled, numberoffingerscaptured, causeofdeath, cervicalcancertreatmentscreened, dateofcurrentviralloadsample, dateofvleligibilitystatus, vleligibilitystatus, tbstatusoutcome, treatmentmethoddate) VALUES (%(period)s, %(datim_id)s, %(state)s, %(lga)s, %(facilityname)s, %(uniquepersonuuid)s, %(hospitalnumber)s, %(gender)s, %(targetgroup)s, %(currentweight)s, %(pregnancystatus)s, %(dateofbirth)s, %(careentry)s, %(artstartdate)s, %(lastpickupdate)s, %(monthsofarvrefill)s, %(regimenlineatstart)s, %(regimenatstart)s, %(dateofstartofcurrentartregimen)s, %(currentregimenline)s, %(currentartregimen)s, %(currentclinicalstage)s, %(dateoflastcd4count)s, %(lastcd4count)s, %(dateofviralloadsamplecollection)s, %(currentviralload)s, %(dateofcurrentviralload)s, %(viralloadindication)s, %(currentstatus)s, %(dateofcurrentartstatus)s, %(clientverificationoutcome)s, %(clientverificationstatus)s, %(previousstatus)s, %(previousstatusdate)s, %(enrollmentsetting)s, %(tbscreeningtype)s, %(dateoftbscreened)s, %(tbstatus)s, %(dateoftbsamplecollection)s, %(tbdiagnostictesttype)s, %(dateoftbdiagnosticresultreceived)s, %(tbdiagnosticresult)s, %(tbtreatmentstartdate)s, %(tbtreatmenttype)s, %(tbcompletiondate)s, %(tbtreatmentoutcome)s, %(dateofiptstart)s, %(ipttype)s, %(iptcompletiondate)s, %(iptcompletionstatus)s, %(dateofcommencementofeac)s, %(numberofeacsessioncompleted)s, %(dateoflasteacsessioncompleted)s, %(dateofextendeaccompletion)s, %(dateofrepeatviralloadeacsamplecollection)s, %(repeatviralloadresult)s, %(dateofrepeatviralloadresult)s, %(currentdsdmodel)s, %(dateofcurrentdsd)s, %(datereturntosite)s, %(modeldevolvedto)s, %(dateofdevolvement)s, %(dateofcervicalcancerscreening)s, %(cervicalcancerscreeningtype)s, %(cervicalcancerscreeningmethod)s, %(resultofcervicalcancerscreening)s, %(datebiometricsenrolled)s, %(numberoffingerscaptured)s, %(causeofdeath)s, %(cervicalcancertreatmentscreened)s, %(dateofcurrentviralloadsample)s, %(dateofvleligibilitystatus)s, %(vleligibilitystatus)s, %(tbstatusoutcome)s, %(treatmentmethoddate)s)]
+[parameters: {'period': '2024W25', 'datim_id': 'AFtz58N0L6c', 'state': 'Akwa Ibom', 'lga': 'Nsit Ibom', 'facilityname': 'Afaha Effiong OP Base Model Primary Health Centre', 'uniquepersonuuid': '00051c29-b508-4e60-a41f-ae0bfdfb4a5a', 'hospitalnumber': 'AKS/CAM1/558', 'gender': 'Female', 'targetgroup': None, 'currentweight': 60, 'pregnancystatus': 'Not Pregnant', 'dateofbirth': '11/8/2001', 'careentry': 'Outreach', 'artstartdate': '11/11/2020', 'lastpickupdate': '10/21/2022', 'monthsofarvrefill': 6, 'regimenlineatstart': 'Adult 1st Line', 'regimenatstart': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'dateofstartofcurrentartregimen': '11/11/2020', 'currentregimenline': 'Adult 1st Line', 'currentartregimen': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'currentclinicalstage': 'STAGE I', 'dateoflastcd4count': None, 'lastcd4count': None, 'dateofviralloadsamplecollection': '1/13/2023', 'currentviralload': 0, 'dateofcurrentviralload': '2/6/2023', 'viralloadindication': 'Routine (every 12 months)', 'currentstatus': 'Transferred Out', 'dateofcurrentartstatus': '2/1/2023', 'clientverificationoutcome': None, 'clientverificationstatus': None, 'previousstatus': 'Transferred Out', 'previousstatusdate': '2/1/2023', 'enrollmentsetting': 'Community', 'tbscreeningtype': None, 'dateoftbscreened': '10/21/2022', 'tbstatus': 'No signs or symptoms of TB', 'dateoftbsamplecollection': None, 'tbdiagnostictesttype': None, 'dateoftbdiagnosticresultreceived': None, 'tbdiagnosticresult': None, 'tbtreatmentstartdate': None, 'tbtreatmenttype': None, 'tbcompletiondate': None, 'tbtreatmentoutcome': None, 'dateofiptstart': '2/8/2021', 'ipttype': 'Isoniazid-(INH) 300mg', 'iptcompletiondate': '4/28/2021', 'iptcompletionstatus': None, 'dateofcommencementofeac': None, 'numberofeacsessioncompleted': None, 'dateoflasteacsessioncompleted': None, 'dateofextendeaccompletion': None, 'dateofrepeatviralloadeacsamplecollection': None, 'repeatviralloadresult': None, 'dateofrepeatviralloadresult': None, 'currentdsdmodel': None, 'dateofcurrentdsd': None, 'datereturntosite': None, 'modeldevolvedto': None, 'dateofdevolvement': None, 'dateofcervicalcancerscreening': None, 'cervicalcancerscreeningtype': None, 'cervicalcancerscreeningmethod': None, 'resultofcervicalcancerscreening': None, 'datebiometricsenrolled': '2/22/2021', 'numberoffingerscaptured': 10, 'causeofdeath': None, 'cervicalcancertreatmentscreened': None, 'dateofcurrentviralloadsample': '1/13/2023', 'dateofvleligibilitystatus': None, 'vleligibilitystatus': False, 'tbstatusoutcome': 'No signs or symptoms of TB', 'treatmentmethoddate': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)]
+Traceback (most recent call last):
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 924, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "period" of relation "expanded_radet_weekly" does not exist
+LINE 1: INSERT INTO expanded_radet_weekly (period, datim_id, state, ...
+                                           ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 390, in _ingest_json_data
+    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\core\generic.py", line 2878, in to_sql
+    return sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 769, in to_sql
+    return pandas_sql.to_sql(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1920, in to_sql
+    total_inserted = sql_engine.insert_records(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1470, in insert_records
+    raise err
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1461, in insert_records
+    return table.insert(chunksize=chunksize, method=method)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 1023, in insert
+    num_inserted = exec_insert(conn, keys, chunk_iter)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\pandas\io\sql.py", line 929, in _execute_insert
+    result = conn.execute(self.table.insert(), data)
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 2353, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\5300\AppData\Local\anaconda3\envs\lamisplus_venv\lib\site-packages\sqlalchemy\engine\default.py", line 924, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "period" of relation "expanded_radet_weekly" does not exist
+LINE 1: INSERT INTO expanded_radet_weekly (period, datim_id, state, ...
+                                           ^
+
+[SQL: INSERT INTO expanded_radet_weekly (period, datim_id, state, lga, facilityname, uniquepersonuuid, hospitalnumber, gender, targetgroup, currentweight, pregnancystatus, dateofbirth, careentry, artstartdate, lastpickupdate, monthsofarvrefill, regimenlineatstart, regimenatstart, dateofstartofcurrentartregimen, currentregimenline, currentartregimen, currentclinicalstage, dateoflastcd4count, lastcd4count, dateofviralloadsamplecollection, currentviralload, dateofcurrentviralload, viralloadindication, currentstatus, dateofcurrentartstatus, clientverificationoutcome, clientverificationstatus, previousstatus, previousstatusdate, enrollmentsetting, tbscreeningtype, dateoftbscreened, tbstatus, dateoftbsamplecollection, tbdiagnostictesttype, dateoftbdiagnosticresultreceived, tbdiagnosticresult, tbtreatmentstartdate, tbtreatmenttype, tbcompletiondate, tbtreatmentoutcome, dateofiptstart, ipttype, iptcompletiondate, iptcompletionstatus, dateofcommencementofeac, numberofeacsessioncompleted, dateoflasteacsessioncompleted, dateofextendeaccompletion, dateofrepeatviralloadeacsamplecollection, repeatviralloadresult, dateofrepeatviralloadresult, currentdsdmodel, dateofcurrentdsd, datereturntosite, modeldevolvedto, dateofdevolvement, dateofcervicalcancerscreening, cervicalcancerscreeningtype, cervicalcancerscreeningmethod, resultofcervicalcancerscreening, datebiometricsenrolled, numberoffingerscaptured, causeofdeath, cervicalcancertreatmentscreened, dateofcurrentviralloadsample, dateofvleligibilitystatus, vleligibilitystatus, tbstatusoutcome, treatmentmethoddate) VALUES (%(period)s, %(datim_id)s, %(state)s, %(lga)s, %(facilityname)s, %(uniquepersonuuid)s, %(hospitalnumber)s, %(gender)s, %(targetgroup)s, %(currentweight)s, %(pregnancystatus)s, %(dateofbirth)s, %(careentry)s, %(artstartdate)s, %(lastpickupdate)s, %(monthsofarvrefill)s, %(regimenlineatstart)s, %(regimenatstart)s, %(dateofstartofcurrentartregimen)s, %(currentregimenline)s, %(currentartregimen)s, %(currentclinicalstage)s, %(dateoflastcd4count)s, %(lastcd4count)s, %(dateofviralloadsamplecollection)s, %(currentviralload)s, %(dateofcurrentviralload)s, %(viralloadindication)s, %(currentstatus)s, %(dateofcurrentartstatus)s, %(clientverificationoutcome)s, %(clientverificationstatus)s, %(previousstatus)s, %(previousstatusdate)s, %(enrollmentsetting)s, %(tbscreeningtype)s, %(dateoftbscreened)s, %(tbstatus)s, %(dateoftbsamplecollection)s, %(tbdiagnostictesttype)s, %(dateoftbdiagnosticresultreceived)s, %(tbdiagnosticresult)s, %(tbtreatmentstartdate)s, %(tbtreatmenttype)s, %(tbcompletiondate)s, %(tbtreatmentoutcome)s, %(dateofiptstart)s, %(ipttype)s, %(iptcompletiondate)s, %(iptcompletionstatus)s, %(dateofcommencementofeac)s, %(numberofeacsessioncompleted)s, %(dateoflasteacsessioncompleted)s, %(dateofextendeaccompletion)s, %(dateofrepeatviralloadeacsamplecollection)s, %(repeatviralloadresult)s, %(dateofrepeatviralloadresult)s, %(currentdsdmodel)s, %(dateofcurrentdsd)s, %(datereturntosite)s, %(modeldevolvedto)s, %(dateofdevolvement)s, %(dateofcervicalcancerscreening)s, %(cervicalcancerscreeningtype)s, %(cervicalcancerscreeningmethod)s, %(resultofcervicalcancerscreening)s, %(datebiometricsenrolled)s, %(numberoffingerscaptured)s, %(causeofdeath)s, %(cervicalcancertreatmentscreened)s, %(dateofcurrentviralloadsample)s, %(dateofvleligibilitystatus)s, %(vleligibilitystatus)s, %(tbstatusoutcome)s, %(treatmentmethoddate)s)]
+[parameters: {'period': '2024W25', 'datim_id': 'AFtz58N0L6c', 'state': 'Akwa Ibom', 'lga': 'Nsit Ibom', 'facilityname': 'Afaha Effiong OP Base Model Primary Health Centre', 'uniquepersonuuid': '00051c29-b508-4e60-a41f-ae0bfdfb4a5a', 'hospitalnumber': 'AKS/CAM1/558', 'gender': 'Female', 'targetgroup': None, 'currentweight': 60, 'pregnancystatus': 'Not Pregnant', 'dateofbirth': '11/8/2001', 'careentry': 'Outreach', 'artstartdate': '11/11/2020', 'lastpickupdate': '10/21/2022', 'monthsofarvrefill': 6, 'regimenlineatstart': 'Adult 1st Line', 'regimenatstart': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'dateofstartofcurrentartregimen': '11/11/2020', 'currentregimenline': 'Adult 1st Line', 'currentartregimen': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'currentclinicalstage': 'STAGE I', 'dateoflastcd4count': None, 'lastcd4count': None, 'dateofviralloadsamplecollection': '1/13/2023', 'currentviralload': 0, 'dateofcurrentviralload': '2/6/2023', 'viralloadindication': 'Routine (every 12 months)', 'currentstatus': 'Transferred Out', 'dateofcurrentartstatus': '2/1/2023', 'clientverificationoutcome': None, 'clientverificationstatus': None, 'previousstatus': 'Transferred Out', 'previousstatusdate': '2/1/2023', 'enrollmentsetting': 'Community', 'tbscreeningtype': None, 'dateoftbscreened': '10/21/2022', 'tbstatus': 'No signs or symptoms of TB', 'dateoftbsamplecollection': None, 'tbdiagnostictesttype': None, 'dateoftbdiagnosticresultreceived': None, 'tbdiagnosticresult': None, 'tbtreatmentstartdate': None, 'tbtreatmenttype': None, 'tbcompletiondate': None, 'tbtreatmentoutcome': None, 'dateofiptstart': '2/8/2021', 'ipttype': 'Isoniazid-(INH) 300mg', 'iptcompletiondate': '4/28/2021', 'iptcompletionstatus': None, 'dateofcommencementofeac': None, 'numberofeacsessioncompleted': None, 'dateoflasteacsessioncompleted': None, 'dateofextendeaccompletion': None, 'dateofrepeatviralloadeacsamplecollection': None, 'repeatviralloadresult': None, 'dateofrepeatviralloadresult': None, 'currentdsdmodel': None, 'dateofcurrentdsd': None, 'datereturntosite': None, 'modeldevolvedto': None, 'dateofdevolvement': None, 'dateofcervicalcancerscreening': None, 'cervicalcancerscreeningtype': None, 'cervicalcancerscreeningmethod': None, 'resultofcervicalcancerscreening': None, 'datebiometricsenrolled': '2/22/2021', 'numberoffingerscaptured': 10, 'causeofdeath': None, 'cervicalcancertreatmentscreened': None, 'dateofcurrentviralloadsample': '1/13/2023', 'dateofvleligibilitystatus': None, 'vleligibilitystatus': False, 'tbstatusoutcome': 'No signs or symptoms of TB', 'treatmentmethoddate': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+[2024-07-15 20:50:36,217: INFO: radet_file_loader: ProgrammingError = (psycopg2.errors.UndefinedColumn) column "period" of relation "expanded_radet_weekly" does not exist
+LINE 1: INSERT INTO expanded_radet_weekly (period, datim_id, state, ...
+                                           ^
+
+[SQL: INSERT INTO expanded_radet_weekly (period, datim_id, state, lga, facilityname, uniquepersonuuid, hospitalnumber, gender, targetgroup, currentweight, pregnancystatus, dateofbirth, careentry, artstartdate, lastpickupdate, monthsofarvrefill, regimenlineatstart, regimenatstart, dateofstartofcurrentartregimen, currentregimenline, currentartregimen, currentclinicalstage, dateoflastcd4count, lastcd4count, dateofviralloadsamplecollection, currentviralload, dateofcurrentviralload, viralloadindication, currentstatus, dateofcurrentartstatus, clientverificationoutcome, clientverificationstatus, previousstatus, previousstatusdate, enrollmentsetting, tbscreeningtype, dateoftbscreened, tbstatus, dateoftbsamplecollection, tbdiagnostictesttype, dateoftbdiagnosticresultreceived, tbdiagnosticresult, tbtreatmentstartdate, tbtreatmenttype, tbcompletiondate, tbtreatmentoutcome, dateofiptstart, ipttype, iptcompletiondate, iptcompletionstatus, dateofcommencementofeac, numberofeacsessioncompleted, dateoflasteacsessioncompleted, dateofextendeaccompletion, dateofrepeatviralloadeacsamplecollection, repeatviralloadresult, dateofrepeatviralloadresult, currentdsdmodel, dateofcurrentdsd, datereturntosite, modeldevolvedto, dateofdevolvement, dateofcervicalcancerscreening, cervicalcancerscreeningtype, cervicalcancerscreeningmethod, resultofcervicalcancerscreening, datebiometricsenrolled, numberoffingerscaptured, causeofdeath, cervicalcancertreatmentscreened, dateofcurrentviralloadsample, dateofvleligibilitystatus, vleligibilitystatus, tbstatusoutcome, treatmentmethoddate) VALUES (%(period)s, %(datim_id)s, %(state)s, %(lga)s, %(facilityname)s, %(uniquepersonuuid)s, %(hospitalnumber)s, %(gender)s, %(targetgroup)s, %(currentweight)s, %(pregnancystatus)s, %(dateofbirth)s, %(careentry)s, %(artstartdate)s, %(lastpickupdate)s, %(monthsofarvrefill)s, %(regimenlineatstart)s, %(regimenatstart)s, %(dateofstartofcurrentartregimen)s, %(currentregimenline)s, %(currentartregimen)s, %(currentclinicalstage)s, %(dateoflastcd4count)s, %(lastcd4count)s, %(dateofviralloadsamplecollection)s, %(currentviralload)s, %(dateofcurrentviralload)s, %(viralloadindication)s, %(currentstatus)s, %(dateofcurrentartstatus)s, %(clientverificationoutcome)s, %(clientverificationstatus)s, %(previousstatus)s, %(previousstatusdate)s, %(enrollmentsetting)s, %(tbscreeningtype)s, %(dateoftbscreened)s, %(tbstatus)s, %(dateoftbsamplecollection)s, %(tbdiagnostictesttype)s, %(dateoftbdiagnosticresultreceived)s, %(tbdiagnosticresult)s, %(tbtreatmentstartdate)s, %(tbtreatmenttype)s, %(tbcompletiondate)s, %(tbtreatmentoutcome)s, %(dateofiptstart)s, %(ipttype)s, %(iptcompletiondate)s, %(iptcompletionstatus)s, %(dateofcommencementofeac)s, %(numberofeacsessioncompleted)s, %(dateoflasteacsessioncompleted)s, %(dateofextendeaccompletion)s, %(dateofrepeatviralloadeacsamplecollection)s, %(repeatviralloadresult)s, %(dateofrepeatviralloadresult)s, %(currentdsdmodel)s, %(dateofcurrentdsd)s, %(datereturntosite)s, %(modeldevolvedto)s, %(dateofdevolvement)s, %(dateofcervicalcancerscreening)s, %(cervicalcancerscreeningtype)s, %(cervicalcancerscreeningmethod)s, %(resultofcervicalcancerscreening)s, %(datebiometricsenrolled)s, %(numberoffingerscaptured)s, %(causeofdeath)s, %(cervicalcancertreatmentscreened)s, %(dateofcurrentviralloadsample)s, %(dateofvleligibilitystatus)s, %(vleligibilitystatus)s, %(tbstatusoutcome)s, %(treatmentmethoddate)s)]
+[parameters: {'period': '2024W25', 'datim_id': 'AFtz58N0L6c', 'state': 'Akwa Ibom', 'lga': 'Nsit Ibom', 'facilityname': 'Afaha Effiong OP Base Model Primary Health Centre', 'uniquepersonuuid': '00051c29-b508-4e60-a41f-ae0bfdfb4a5a', 'hospitalnumber': 'AKS/CAM1/558', 'gender': 'Female', 'targetgroup': None, 'currentweight': 60, 'pregnancystatus': 'Not Pregnant', 'dateofbirth': '11/8/2001', 'careentry': 'Outreach', 'artstartdate': '11/11/2020', 'lastpickupdate': '10/21/2022', 'monthsofarvrefill': 6, 'regimenlineatstart': 'Adult 1st Line', 'regimenatstart': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'dateofstartofcurrentartregimen': '11/11/2020', 'currentregimenline': 'Adult 1st Line', 'currentartregimen': 'TDF(300mg)+3TC(300mg)+DTG(50mg)', 'currentclinicalstage': 'STAGE I', 'dateoflastcd4count': None, 'lastcd4count': None, 'dateofviralloadsamplecollection': '1/13/2023', 'currentviralload': 0, 'dateofcurrentviralload': '2/6/2023', 'viralloadindication': 'Routine (every 12 months)', 'currentstatus': 'Transferred Out', 'dateofcurrentartstatus': '2/1/2023', 'clientverificationoutcome': None, 'clientverificationstatus': None, 'previousstatus': 'Transferred Out', 'previousstatusdate': '2/1/2023', 'enrollmentsetting': 'Community', 'tbscreeningtype': None, 'dateoftbscreened': '10/21/2022', 'tbstatus': 'No signs or symptoms of TB', 'dateoftbsamplecollection': None, 'tbdiagnostictesttype': None, 'dateoftbdiagnosticresultreceived': None, 'tbdiagnosticresult': None, 'tbtreatmentstartdate': None, 'tbtreatmenttype': None, 'tbcompletiondate': None, 'tbtreatmentoutcome': None, 'dateofiptstart': '2/8/2021', 'ipttype': 'Isoniazid-(INH) 300mg', 'iptcompletiondate': '4/28/2021', 'iptcompletionstatus': None, 'dateofcommencementofeac': None, 'numberofeacsessioncompleted': None, 'dateoflasteacsessioncompleted': None, 'dateofextendeaccompletion': None, 'dateofrepeatviralloadeacsamplecollection': None, 'repeatviralloadresult': None, 'dateofrepeatviralloadresult': None, 'currentdsdmodel': None, 'dateofcurrentdsd': None, 'datereturntosite': None, 'modeldevolvedto': None, 'dateofdevolvement': None, 'dateofcervicalcancerscreening': None, 'cervicalcancerscreeningtype': None, 'cervicalcancerscreeningmethod': None, 'resultofcervicalcancerscreening': None, 'datebiometricsenrolled': '2/22/2021', 'numberoffingerscaptured': 10, 'causeofdeath': None, 'cervicalcancertreatmentscreened': None, 'dateofcurrentviralloadsample': '1/13/2023', 'dateofvleligibilitystatus': None, 'vleligibilitystatus': False, 'tbstatusoutcome': 'No signs or symptoms of TB', 'treatmentmethoddate': None}]
+(Background on this error at: https://sqlalche.me/e/20/f405)]
+[2024-07-15 20:50:36,217: INFO: radet_file_loader: ProgrammingError - (UndefinedColumn) column "period" of relation "expanded_radet_weekly" does not exist]
+[2024-07-15 20:50:36,266: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:51:15,303: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:52:40,002: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:53:44,996: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:53:44,996: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:53:45,058: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:53:45,155: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:53:45,266: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 20:53:45,266: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:57:55,801: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:57:55,801: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:57:55,863: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:57:55,963: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:57:56,084: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet.expanded_radet_weekly table]
+[2024-07-15 20:57:56,085: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 20:59:30,659: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 20:59:30,662: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 20:59:30,717: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 20:59:30,812: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 20:59:31,063: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet.expanded_radet_weekly table]
+[2024-07-15 20:59:31,063: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:05:38,775: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:05:38,775: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:05:38,838: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:05:38,933: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:05:39,041: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 21:05:39,043: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:07:13,944: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:07:13,944: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:07:14,003: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:07:14,098: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:07:14,232: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 21:07:14,232: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:10:42,180: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:10:42,180: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:10:42,240: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:10:42,474: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:10:42,727: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 21:10:42,727: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:13:36,405: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:13:36,405: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:13:36,823: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:13:36,918: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:13:37,263: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 21:13:37,264: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:15:18,211: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:15:18,211: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:15:18,431: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:15:18,527: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:15:18,640: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet.expanded_radet_weekly table]
+[2024-07-15 21:15:18,642: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:20:53,467: ERROR: radet_file_loader: _db_connect() missing 1 required positional argument: 'schema']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 210, in _retrieve_localdir_from_syncfile
+    conn = self._db_connect('filedb')[0]
+TypeError: _db_connect() missing 1 required positional argument: 'schema'
+[2024-07-15 21:22:18,146: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:22:18,146: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:22:18,146: ERROR: radet_file_loader: _db_connect() missing 1 required positional argument: 'schema']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 231, in _retrieve_localdir_from_syncfile
+    self._process_file_by_name(local_dir)
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 257, in _process_file_by_name
+    conn, engine = self._db_connect('lamisplus_ods_dwh')[0], self._db_connect('lamisplus_ods_dwh')[1]
+TypeError: _db_connect() missing 1 required positional argument: 'schema'
+[2024-07-15 21:23:48,466: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:23:48,466: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:23:48,529: ERROR: radet_file_loader: _db_connect() missing 1 required positional argument: 'schema']
+Traceback (most recent call last):
+  File "C:\home\lamisplus\lamisplus_radet_pipeline\radet_file_loader.py", line 147, in _get_and_map_cols
+    conn = self._db_connect('lamisplus_ods_dwh')[0]
+TypeError: _db_connect() missing 1 required positional argument: 'schema'
+[2024-07-15 21:23:48,529: INFO: radet_file_loader: TypeError - _db_connect() missing 1 required positional argument: 'schema' - _db_connect() missing 1 required positional argument: 'schema']
+[2024-07-15 21:23:48,572: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:24:14,953: INFO: radet_file_loader: csv files successfully processed]
+[2024-07-15 21:24:43,932: INFO: radet_file_loader: -----------------------------------------------------------------------------]
+[2024-07-15 21:24:43,932: INFO: radet_file_loader: The file 'C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv' exists.]
+[2024-07-15 21:24:44,048: INFO: radet_file_loader: successfully connected to retrieved column_datatype_mapping and column_list database]
+[2024-07-15 21:24:44,173: INFO: radet_file_loader: " " successfully replace with NA]
+[2024-07-15 21:24:44,278: INFO: radet_file_loader: C:\home\lamisplus\server\processed_folder\facility_test_updated_processed.csv successfully ingested into expanded_radet_weekly table]
+[2024-07-15 21:24:44,279: INFO: radet_file_loader: csv files successfully processed]
