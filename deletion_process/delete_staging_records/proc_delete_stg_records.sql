@@ -35,4 +35,6 @@ BEGIN
 											table_size_before_deletion,table_size_after_deletion) 
     VALUES (table_name, deleted_count, start_time, end_time,table_size_before_deletion,table_size_after_deletion);
     
-END $$ LANGUAGE plpgsql;
+END 
+
+$$ LANGUAGE plpgsql;
