@@ -286,6 +286,7 @@ class FileLoader:
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' 
+            AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
             ORDER BY modified_date ASC
             LIMIT 10"""
             cur.execute(retrieve_query)

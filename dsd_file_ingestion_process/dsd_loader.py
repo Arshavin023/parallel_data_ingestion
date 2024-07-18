@@ -285,7 +285,8 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' and decrypted_file_name like '%dsd_devolvement%'
+            FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' 
+            AND (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
             ORDER BY create_date ASC
             LIMIT 30000"""
             cur.execute(retrieve_query)
@@ -595,7 +596,7 @@ class FileLoader:
             # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
             dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
 
-            if staging_table == 'stg_dsd_devolvement' or 'stg_mhpss_confirmation':
+            if staging_table == 'stg_dsd_devolvement' or staging_table =='stg_hiv_art_clinical':
                 self.count_of_df = load_dsd_into_postgres(file_path=file_path,
                                                           staging_table=staging_table,
                                                           connection=conn)

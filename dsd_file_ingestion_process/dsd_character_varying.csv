@@ -1,0 +1,40 @@
+column_name,person_uuid,
+created_by,
+last_modified_by,
+viral_load_test_result,
+dsd_eligible,
+dsd_accept,
+dsd_model,
+dsd_type,
+comment,
+completed_by,
+designation,
+uuid,
+dsd_eligibility_assessment,
+client_return_to_site,
+service_provider,
+service_provided,
+stg_batch_id,
+stg_file_name,
+stg_datim_id,
+
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN created_by TYPE character varying(1000)
+USING created_by::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN last_modified_by TYPE character varying(1000)
+USING last_modified_by::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN viral_load_test_result TYPE character varying(1000)
+USING viral_load_test_result::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN dsd_eligible TYPE character varying(1000)
+USING dsd_eligible::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN dsd_accept TYPE character varying(1000)
+USING dsd_accept::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN dsd_model TYPE character varying(1000)
+USING dsd_model::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN comment TYPE character varying(1000)
+USING comment::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN designation TYPE character varying(1000)
+USING designation::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN client_return_to_site TYPE character varying(1000)
+USING client_return_to_site::character varying(1000);
+ALTER TABLE public.stg_dsd_devolvement ALTER COLUMN service_provided TYPE character varying(1000)
+USING service_provided::character varying(1000);
