@@ -21,67 +21,73 @@ def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', s
 
 db_config = read_db_config()
 
-def _db_connect_filedb():
-    db_params = {
-    'host': db_config['stg_host'],
-    'database': 'filedb',
-    'user': db_config['stg_username'],
-    'password': db_config['stg_password'],
-    'port': db_config['stg_port'],}
+class StgRecordDelete:
+    def __init__(self):
+        self.facility_id = None
+        self.syncfile_entryID = None
+        self.demo_path = '/home/lamisplus/server/temp'
+        self.count_of_df = 0
+        self.delete_end_time = None
+        self.delete_start_time = None
 
-     # Connect to the PostgreSQL database
-    conn = psycopg2.connect(**db_params)
-    return conn
+    def _db_connect_filedb(self):
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'filedb',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
-def _db_connect_lamisplus_staging_dwh():
-    db_params = {
-    'host': db_config['stg_host'],
-    'database': 'lamisplus_staging_dwh',
-    'user': db_config['stg_username'],
-    'password': db_config['stg_password'],
-    'port': db_config['stg_port'],}
+        # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
 
-     # Connect to the PostgreSQL database
-    conn = psycopg2.connect(**db_params)
-    return conn
+    def _db_connect_lamisplus_staging_dwh(self):
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'lamisplus_staging_dwh',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
-def delete_staging_table_records():
-    try:
-        conn = _db_connect_lamisplus_staging_dwh()
-        cur = conn.cursor()
-        
-        retrieve_query = """
-                SELECT table_name
-                FROM information_schema.tables
-                WHERE table_schema = 'public'
-                  AND table_name ILIKE 'stg_%'
-                ORDER BY pg_total_relation_size(quote_ident(table_name)) DESC
-            """
+        # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
+
+    def delete_staging_table_records(self):
+        try:
+            conn = self._db_connect_lamisplus_staging_dwh()
+            cur = conn.cursor()
             
-        delete_query_template = "CALL proc_delete_stg_records(%s)"
-        
-        cur.execute(retrieve_query)
-        staging_tables = cur.fetchall()
+            retrieve_query = """
+                    SELECT table_name
+                    FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                    AND table_name ILIKE 'stg_%'
+                    ORDER BY pg_total_relation_size(quote_ident(table_name)) limit 20
+                """
+                
+            delete_query_template = "CALL proc_delete_stg_records(%s)"
             
-        for stg in staging_tables:
-            try:
-                logger.info(f"Deletion of records ingested in last 15 days from {stg[0]} table started")
-                cur.execute(delete_query_template, (stg[0],))
-                conn.commit()
-                logger.info(f"Deletion of records ingested in last 15 days from {stg[0]} table completed")
+            cur.execute(retrieve_query)
+            staging_tables = cur.fetchall()
+                
+            for stg in staging_tables:
+                try:
+                    logger.info(f"Deletion of records in last 15 days from {stg[0]} table started")
+                    cur.execute(delete_query_template, (stg[0],))
+                    conn.commit()
+                    logger.info(f"Deletion of recordsin last 15 days from {stg[0]} table completed")
 
-            except Exception as e:
-                conn.rollback()
-                logger.exception(f"Error processing {stg[0]}: {str(e)}")
+                except Exception as e:
+                    conn.rollback()
+                    logger.exception(f"Error processing {stg[0]}: {str(e)}")
 
-        cur.close()
-    
-    except psycopg2.Error as e:
-        logger.error(f"Database error: {str(e)}")
-    
-    finally:
-        if conn:
-            conn.close()
-
-if __name__ == "__main__":
-    delete_staging_table_records()
+            cur.close()
+        
+        except psycopg2.Error as e:
+            logger.error(f"Database error: {str(e)}")
+        
+        finally:
+            if conn:
+                conn.close()
