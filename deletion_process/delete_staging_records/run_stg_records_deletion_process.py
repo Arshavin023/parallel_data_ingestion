@@ -1,4 +1,4 @@
-from automate_stg_records_delete import delete_staging_table_records
+from automate_stg_records_delete import StgRecordDelete
 from datetime import datetime
 import psycopg2
 from src import logger
@@ -21,8 +21,7 @@ def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', s
 
 db_config = read_db_config()
 
-
-if __name__ == '__main__':
+def main():
     db_params = {
     'host': db_config['stg_host'],
     'database': 'lamisplus_staging_dwh',
@@ -48,25 +47,23 @@ if __name__ == '__main__':
     log_id = f'DPID_{start_time.strftime("%Y%m%d_%H_%M")}' #deletion process ID
     logger.info(log_id)
 
-    insert_pipeline_query = """insert into file_ingestion_pipeline_log (log_id, start_time, status, process_type) 
-    VALUES ('{}','{}','{}', '{}')""".format(log_id, start_time, 'Job Started', 'staging records deletion')
-    cur.execute(insert_pipeline_query)
-    conn.commit()
-
     try:
         logger.info('Job Started')
-
-        logger.info('Deletion of <= 30 days records from staging tables started')
-        delete_staging_table_records()
+        logger.info('Deletion <= 15 days records from staging tables started')
+        deleting_records = StgRecordDelete()
+        deleting_records.delete_staging_table_records()
         conn.commit()
-        logger.info('Deletion of <= 30 days records from staging tables completed')
+        logger.info('Deletion <= 15 days records from staging tables completed')
         
     except Exception as e:
         error_msg =str(e)
-        end_time = datetime.now()
+        print(error_msg)
         conn.commit()
         
     
     conn.commit()
     cur.close()
     conn2.commit()
+
+if __name__ == '__main__':
+    main()

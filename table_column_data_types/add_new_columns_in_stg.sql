@@ -26,6 +26,6 @@ ALTER TABLE stg_prep_eligibility ADD COLUMN assessment_for_acute_hiv_infection J
 ALTER TABLE stg_prep_clinic ADD COLUMN liver_function_test_result CHARACTER VARYING;
 ALTER TABLE stg_prep_eligibility ADD COLUMN population_type CHARACTER VARYING;
 ALTER TABLE stg_prep_clinic ADD COLUMN months_of_refill INTEGER;
-
-
 ALTER TABLE stg_pmtct_anc ADD COLUMN syphilis_info CHARACTER VARYING;
+
+

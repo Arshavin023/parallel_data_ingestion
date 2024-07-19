@@ -1,5 +1,4 @@
-from automate_file_delete import delete_encrypted_files, delete_ingested_decrypted_files
-from automate_stg_records_delete import delete_stg_table_records
+from automate_file_delete import FileDelete
 from datetime import datetime
 import psycopg2
 from src import logger
@@ -22,21 +21,12 @@ def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', s
 
 db_config = read_db_config()
 
-
-if __name__ == '__main__':
-    db_params = {
-    'host': db_config['stg_host'],
-    'database': 'lamisplus_staging_dwh',
-    'user': db_config['stg_username'],
-    'password': db_config['stg_password'],
-    'port': db_config['stg_port'],}
+def main():
+    db_params = {'host': db_config['stg_host'],'database': 'lamisplus_staging_dwh','user': db_config['stg_username'],
+                 'password': db_config['stg_password'],'port': db_config['stg_port'],}
     
-    db_params2 = {
-        'host': db_config['stg_host'],
-        'database': 'filedb',
-        'user': db_config['stg_username'],
-        'password': db_config['stg_password'],
-        'port': db_config['stg_port'],}
+    db_params2 = {'host': db_config['stg_host'],'database': 'filedb','user': db_config['stg_username'],
+                  'password': db_config['stg_password'],'port': db_config['stg_port'],}
     
     # Connect to the PostgreSQL database
     conn = psycopg2.connect(**db_params)
@@ -56,28 +46,27 @@ if __name__ == '__main__':
     conn.commit()
 
     try:
-        
         logger.info('Deletion of decrypted json files started')
-        delete_ingested_decrypted_files()
+        deletion = FileDelete()
+        deletion.delete_ingested_decrypted_files()
         logger.info('Deletion of decrypted json files completed')
-        
         q_check_count = """select count(*) from file_deletion_log 
                         where where file_name ilike '%_decrypted.json' and 
                         deletion_start_time >=  %s and deletion_end_time <=  %s
                         """
         cur2.execute(q_check_count, (start_time, end_time))
         records_processed = cur2.fetchall()[0]
-
         update_pipeline_query = """update file_ingestion_pipeline_log set end_time=  %s
                                 , status =  %s, error_message=  %s, records_processed=  %s
                                 where log_id =  %s
                                 """ 
         cur.execute(update_pipeline_query, (end_time, 'Job Passed', 'No Errors', records_processed, log_id))
         conn.commit()
-        logger.info('Deletion Job for encrypted files was run Successfully')
+        logger.info('Deletion Job for decrypted files was run Successfully')
         
         logger.info('Deletion of encrypted json files started')
-        delete_encrypted_files()
+        deletion = FileDelete()
+        deletion.delete_encrypted_files()
         logger.info('Deletion of encrypted json files completed')
         end_time = datetime.now()
         q_check_count = """select count(*) from file_deletion_log 
@@ -108,3 +97,6 @@ if __name__ == '__main__':
     conn.commit()
     cur.close()
     conn2.commit()
+
+if __name__ == '__main__':
+    main()
