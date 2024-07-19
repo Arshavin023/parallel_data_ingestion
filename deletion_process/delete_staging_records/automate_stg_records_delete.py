@@ -46,35 +46,42 @@ def _db_connect_lamisplus_staging_dwh():
     return conn
 
 def delete_staging_table_records():
-    conn = _db_connect_lamisplus_staging_dwh()
-    cur = conn.cursor()
+    try:
+        conn = _db_connect_lamisplus_staging_dwh()
+        cur = conn.cursor()
+        
+        retrieve_query = """
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = 'public'
+                  AND table_name ILIKE 'stg_%'
+                ORDER BY pg_total_relation_size(quote_ident(table_name)) DESC
+            """
+            
+        delete_query_template = "CALL proc_delete_stg_records(%s)"
+        
+        cur.execute(retrieve_query)
+        staging_tables = cur.fetchall()
+            
+        for stg in staging_tables:
+            try:
+                logger.info(f"Deletion of records ingested in last 15 days from {stg[0]} table started")
+                cur.execute(delete_query_template, (stg[0],))
+                conn.commit()
+                logger.info(f"Deletion of records ingested in last 15 days from {stg[0]} table completed")
 
-    retrieve_query = """
-        WITH table_size_info AS (
-            SELECT table_name, 
-                   pg_total_relation_size(quote_ident(table_name))/1048576 AS total_size_megabytes
-            FROM information_schema.tables
-            WHERE table_schema = 'public'
-        )
-        SELECT table_name FROM table_size_info 
-        WHERE total_size_megabytes > 200 AND table_name ILIKE 'stg_%'
-        order by total_size_megabytes desc
-    """
+            except Exception as e:
+                conn.rollback()
+                logger.exception(f"Error processing {stg[0]}: {str(e)}")
+
+        cur.close()
     
-    delete_query_template = "CALL proc_delete_stg_records(%s)"
+    except psycopg2.Error as e:
+        logger.error(f"Database error: {str(e)}")
+    
+    finally:
+        if conn:
+            conn.close()
 
-    cur.execute(retrieve_query)
-    staging_tables = cur.fetchall()
-
-    for stg in staging_tables:
-        try:
-            logger.info(f"Deletion of records ingested in last 30 days from {stg[0]} table started")
-            cur.execute(delete_query_template, (stg[0],))
-            conn.commit()
-            logger.info(f"Deletion of records ingested in last 30 days from {stg[0]} table completed")
-
-        except Exception as e:
-            logger.exception(e)
-
-    cur.close()
-    conn.close()
+if __name__ == "__main__":
+    delete_staging_table_records()

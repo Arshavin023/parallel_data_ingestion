@@ -56,7 +56,7 @@ class FileLoader:
         try:
             conn = psycopg2.connect(**db_params)
             engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')
-            logger.info(f'successfully connected to {database} database')
+            
             return [conn, engine]
         
         except Exception as e:
@@ -91,7 +91,7 @@ class FileLoader:
             column_list = [i[0] for i in columns]
             conn.commit()
             cur.close()
-            logger.info(f'successfully connected to retrieved column_datatype_mapping and column_list database')
+            
             return column_datatype_mapping, column_list
         
         except Exception as e:
@@ -436,7 +436,6 @@ class FileLoader:
                 staging_table = f'stg_{check_param}'
                 logger.info(f'{file_name} attempting to load')
                 self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
-                logger.info(f'{file_name} successfully ingested into {staging_table} table')
 
             except Exception as e:
                 # logger.exception(e)
@@ -488,27 +487,36 @@ class FileLoader:
         except Exception as e:
             logger.exception(e)
             raise e
-    
-    def _date_validation(self, df):
-        date_columns = [col for col in df.columns if 'date' in col.lower()]
-        
+    def _date_validation(self,df):
+        date_columns = [col for col in df.columns if col.startswith('date_') or col.endswith('_date')]
+        problematic_dates = {} 
         if date_columns:
             df_dates = df[date_columns].fillna('2024-01-01')
             validity_results = {}
-            
             for col in date_columns:
                 try:
                     pd.to_datetime(df_dates[col])
                     validity_results[col] = True  # Date is valid
                 except ValueError:
                     validity_results[col] = False  # Date is invalid or column contains non-date data
-            
-            if False in validity_results.values():
-                return 'failed'
+            failed_columns = [key for key, value in validity_results.items() if value is False]
+            if failed_columns != []:
+                df_with_bad_date_columns=df[failed_columns]
+                for column in failed_columns:
+                    for idx, value in enumerate(df_with_bad_date_columns[column]):
+                        try:
+                            pd.to_datetime(value, errors='raise')
+                        except (TypeError, ValueError):
+                            if column not in problematic_dates:
+                                column = 'column_name: ' + column
+                                problematic_dates[column] = []
+                            problematic_dates[column].append((f' record {idx+1}, value => {value}'))
+            if problematic_dates != {}:
+                return problematic_dates
             else:
-                return 'passed'
+                return {}
         else:
-            return 'passed'  # No date columns found, consider validation as passed
+            return {}
         
     def _ingest_json_data(self, file_path, staging_table, dtype=None, parse_dates=None):
         '''
@@ -596,28 +604,35 @@ class FileLoader:
             # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
             dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
 
-            if staging_table == 'stg_dsd_devolvement' or staging_table =='stg_hiv_art_clinical':
-                self.count_of_df = load_dsd_into_postgres(file_path=file_path,
-                                                          staging_table=staging_table,
-                                                          connection=conn)
-                cur = conn.cursor()
-                count_of_stg = pd.read_sql(
-                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+            if staging_table=='stg_dsd_devolvement' or staging_table=='stg_hiv_art_clinical':
+                df = pd.read_json(file_path, convert_dates=parse_dates)
+                validation_result = self._date_validation(df)
+                if validation_result != {}:
+                    logger.info(f"The JSON file: {file_path} has invalid dates, please reupload")
+                    self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns')
+                    self._update_flag_syncfile('failed', -2, 0, f'{file_name} has invalid dates: {validation_result}. Kindly fix & reupload')
+                    return
+                else:
+                    self.count_of_df = load_dsd_into_postgres(file_path=file_path,
+                                                            staging_table=staging_table,
+                                                            connection=conn)
+                    logger.info(f'{file_name} successfully ingested into {staging_table} table')
+                    cur = conn.cursor()
+                    count_of_stg = pd.read_sql(
+                            "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                            .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
-                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
+                    ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
+                    ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
 
-                cur.execute(ins_counts)
-                conn.commit()
-                cur.close()
-                self._update_log('success', file_name, self.count_of_df, 'No errors')
-                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
+                    cur.execute(ins_counts)
+                    conn.commit()
+                    cur.close()
+                    self._update_log('success', file_name, self.count_of_df, 'No errors')
+                    self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
 
             else:
                 pass
-            
-                
         except Exception as e:
             logger.exception(e)
             raise e
