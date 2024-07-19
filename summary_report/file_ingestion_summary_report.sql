@@ -8,7 +8,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 EN
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
 where create_date >= '2024-03-21'
-and decrypted_file_name not like '%dsd_devolvement%'
+and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%')
 union all
 SELECT count(id) Total_Files,
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
@@ -20,64 +20,48 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 EN
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
 where create_date >= '2024-03-21'
-and decrypted_file_name like '%dsd_devolvement%';
+and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%');
 
---check newly added columns;
-select *
---decrypted_file_name,ingest_start_time,ingest_end_time, 
+--Check for dict data type error in hiv_art_clinical and dsd_devolvement
+select decrypted_file_name,processed,ingest_start_time,ingest_end_time,ingest_error_message
+from public.sync_file
+--update public.sync_file set processed = 1
+where processed=-2
+and ingest_error_message ilike '%adapt type ''dict''%'
+and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%')
+order by ingest_end_time desc
+limit 20;
+
+--Check for bad dates in stg_hiv_art_clinical and stg_dsd_devolvement
+select 
+--distinct ingest_table_name,ingest_error_message
+decrypted_file_name,ingest_error_message,ingest_start_time,ingest_end_time
 from public.sync_file
 --update public.sync_file
 --set processed = 1
-where processed=-2 and ingest_start_time >= '2024-06-28'
-and ingest_error_message not ilike '%please review, fix and reupload%'
---order by ingest_end_time desc
-limit 10
-;
+where processed=-2 and
+--and ingest_start_time >= '2024-06-28'
+ingest_error_message ilike '%invalid dates:%' 
+and ingest_table_name in ('stg_hiv_art_clinical','stg_dsd_devolvement')
 
-
---check ProgrammingError - (psycopg2.ProgrammingError) can't adapt type 'dict' error;
-select 
---distinct ingest_table_name,ingest_error_message
-decrypted_file_name,processed,ingest_start_time,ingest_end_time,ingest_error_message
+--Check for bad dates in other tables aside stg_hiv_art_clinical and stg_dsd_devolvement
+select decrypted_file_name,ingest_error_message,ingest_start_time,ingest_end_time
 from public.sync_file
 --update public.sync_file
 --set processed = 1
 where processed=-2 
---and ingest_start_time >= '2024-06-28'
-and ingest_error_message ilike '%ProgrammingError - (psycopg2.ProgrammingError)%'
-and ingest_table_name in ('stg_hiv_art_clinical','stg_dsd_devolvement')
-order by ingest_end_time desc
-limit 20;
+and ingest_error_message ilike '%invalid dates%' 
+and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%')
+order by create_date desc
+limit 5
 
-select sf.facility_id,cpm.facility_name,sf.decrypted_file_name,sf.processed,
-sf.ingest_error_message,sf.ingest_end_time
+-- check for bad dates in IPs, facilities, etc
+select cpm.ip_name,cpm.facility_name,sf.decrypted_file_name,sf.ingest_error_message
 from sync_file sf
 left join central_partner_mapping cpm on sf.facility_id=cpm.datim_id
-where processed = -2
+where processed = -2 
+--and cpm.ip_name in ('ACE-6')
 --and ingest_status_check = 'failed'
-and 
-ingest_end_time >= '2024-06-28' 
-and ingest_error_message ilike '%please review, fix and reupload%'
---and file_name ilike '%dsd_devolvement%'
---and ingest_error_message ilike '%has invalid dates %'
+and create_date >= '2024-06-28' 
+and ingest_error_message ilike '%invalid dates%'
 order by ingest_end_time desc,decrypted_file_name;
-
---check for errors in hiv_art_clinical and dsd_devolvement;
-select distinct decrypted_file_name,ingest_table_name,processed,ingest_error_message,ingest_end_time
---decrypted_file_name,ingest_start_time,ingest_end_time, 
-from public.sync_file 
---update public.sync_file
---set processed = 1
-where 
---create_date >= '2024-06-30' and
---ingest_table_name ilike '%prep_clinic%' and
-processed = -2
-and ingest_error_message not ilike '%please review, fix and reupload%'
-and ingest_error_message 
-not ilike '%ProgrammingError - (UndefinedColumn) column "facilty_id" of relation "mhpss_screening" does not exist%'
-and ingest_error_message 
-not ilike '%Given final block not properly padded. Such issues can arise if a bad key is used during decryption.%'
-and ingest_error_message 
-not ilike '%UnicodeDecodeError - File is corrupted and unreadable, kindly regenerate and re-upload%'
-and NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
-and ingest_error_message not ilike '%localhost%'

@@ -22,48 +22,48 @@ def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', s
 db_config = read_db_config()
 
 def _db_connect_filedb():
-    db_params = {
-    'host': db_config['stg_host'],
-    'database': 'filedb',
-    'user': db_config['stg_username'],
-    'password': db_config['stg_password'],
-    'port': db_config['stg_port'],}
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'filedb',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
-     # Connect to the PostgreSQL database
-    conn = psycopg2.connect(**db_params)
-    return conn
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
 
 def _db_connect_lamisplus_staging_dwh():
-    db_params = {
-    'host': db_config['stg_host'],
-    'database': 'lamisplus_staging_dwh',
-    'user': db_config['stg_username'],
-    'password': db_config['stg_password'],
-    'port': db_config['stg_port'],}
+        db_params = {
+        'host': db_config['stg_host'],
+        'database': 'lamisplus_staging_dwh',
+        'user': db_config['stg_username'],
+        'password': db_config['stg_password'],
+        'port': db_config['stg_port'],}
 
-     # Connect to the PostgreSQL database
-    conn = psycopg2.connect(**db_params)
-    return conn
+         # Connect to the PostgreSQL database
+        conn = psycopg2.connect(**db_params)
+        return conn
         
 def _insert_into_log(tableName, fileName, facilityId):
-    conn=_db_connect_filedb()
-    cur = conn.cursor()
-    deletion_start_time = datetime.now()
-    deletion_status_check = 'processing'
-    table_name = tableName
-    file_name = fileName
-    facility_id = facilityId
+        conn=_db_connect_filedb()
+        cur = conn.cursor()
+        deletion_start_time = datetime.now()
+        deletion_status_check = 'processing'
+        table_name = tableName
+        file_name = fileName
+        facility_id = facilityId
 
-    insert_query = """insert into file_deletion_log 
-    (deletion_start_time, deletion_status_check, table_name, file_name, facility_id) 
-    values ('{}','{}','{}','{}', '{}') RETURNING id""".format(deletion_start_time, deletion_status_check, table_name, file_name, facility_id)
+        insert_query = """insert into file_deletion_log 
+        (deletion_start_time, deletion_status_check, table_name, file_name, facility_id) 
+        values ('{}','{}','{}','{}', '{}') RETURNING id""".format(deletion_start_time, deletion_status_check, table_name, file_name, facility_id)
 
-    cur.execute(insert_query)
-    logger.info("inserted successfully")
-    log_id =  cur.fetchall()[0][0]
-    conn.commit()
-    cur.close()
-    return log_id
+        cur.execute(insert_query)
+        #logger.info("inserted successfully")
+        log_id =  cur.fetchall()[0][0]
+        conn.commit()
+        cur.close()
+        return log_id
 
 def count_rows_in_json_file(file_path):
     try:
@@ -74,64 +74,65 @@ def count_rows_in_json_file(file_path):
                 return num_rows
 
             except json.JSONDecodeError as e:
-                logger.info(f"Error decoding JSON file {os.path.basename(file_path)}: {str(e)}")
+                #logger.info(f"Error decoding JSON file {os.path.basename(file_path)}: {str(e)}")
                 logger.exception(e)
                 return 0
 
     except Exception as e:
         logger.exception(e)
-        logger.info(f"No such file or directory {os.path.basename(file_path)}: {str(e)}")
+        #logger.info(f"No such file or directory {os.path.basename(file_path)}: {str(e)}")
         return 0
 
 def _update_log(id, proc_status, file_name, tab_count, error_msg):
-    conn=_db_connect_filedb()
-    cur = conn.cursor()
+        conn=_db_connect_filedb()
+        cur = conn.cursor()
 
-    deletion_end_time = datetime.now()
-    deletion_status_check = proc_status
+        deletion_end_time = datetime.now()
+        deletion_status_check = proc_status
 
-    update_query = """UPDATE file_deletion_log 
-                    SET deletion_end_time =  %s,
-                    deletion_status_check =  %s, json_rec_count =  %s, error_message = %s
-                    WHERE id =  %s
-                    """
+        update_query = """UPDATE file_deletion_log 
+                        SET deletion_end_time =  %s,
+                        deletion_status_check =  %s, json_rec_count =  %s, error_message = %s
+                        WHERE id =  %s
+                        """
 
-    cur.execute(update_query,(deletion_end_time, deletion_status_check, 
-                              tab_count, error_msg, id))
-    conn.commit()
-    cur.close()
-    logger.info(f'{file_name} log updated successfully')
+        cur.execute(update_query,(deletion_end_time, deletion_status_check, 
+                                  tab_count, error_msg, id))
+        conn.commit()
+        cur.close()
+        logger.info(f'{file_name} log updated successfully')
 
 def _process_derive_tablename(file_path):
-    print("processing file")
-    filename = os.path.basename(file_path)
-    parts = filename.split('_')
-    non_digit_parts = [part for part in parts if not part.isdigit() and part != 'decrypted.json']
-    result=[]
-    result.append('_'.join(non_digit_parts))
-    check_path = result[0]
-    logger.info(check_path)
-    return check_path
+        
+        filename = os.path.basename(file_path)
+        parts = filename.split('_')
+        non_digit_parts = [part for part in parts if not part.isdigit() and part != 'decrypted.json']
+        result=[]
+        result.append('_'.join(non_digit_parts))
+        check_path = result[0]
+        #logger.info(check_path)
+        return check_path
 
 #_process_derive_tablename(' /home/lamisplus/server/temp/kEoPeO75AG2/base_organisation_unit_0_20240129190716_decrypted.json')
      
 def delete_ingested_decrypted_files():
+
     try:
         conn = _db_connect_filedb()
         cur = conn.cursor()
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
                             WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '1' DAY
-                            AND processed IN (2, -2) 
-                            AND ingest_status_check = 'success' 
-                            AND ingest_error_message = 'No errors' 
+                            AND processed IN (2) 
+                            --AND ingest_status_check = 'success' 
+                            --AND ingest_error_message = 'No errors' 
                             AND decrypted_file_name NOT IN (
                                 SELECT REPLACE(file_name, '_decrypted.json', '.json') 
                                 FROM file_deletion_log 
-                                WHERE deletion_status_check = 'success' 
-                                OR error_message = 'file not found') 
+                                WHERE deletion_status_check = 'success' OR deletion_status_check = 'failed')
+                                --OR error_message = 'file not found') 
                             ORDER BY ingest_end_time ASC
-                            LIMIT 30000
+                            LIMIT 100000
                             """
         cur.execute(retrieve_query)
 
@@ -154,7 +155,7 @@ def delete_ingested_decrypted_files():
             
             else:
                 try:
-                    logger.info(f"{local_dir} file exists, deleting files...........\n\n")
+                    logger.info(f"{local_dir} file exists, deleting files")
                     os.remove(local_dir)
                     logger.info(f"File deleted: {local_dir}")
                     # update deletion log
@@ -181,16 +182,16 @@ def delete_encrypted_files():
         retrieve_query = """SELECT facility_id, decrypted_file_name
                             FROM public.sync_file 
                             WHERE ingest_end_time <= CURRENT_DATE - INTERVAL '1' DAY
-                            AND processed IN (2, -2) 
-                            AND ingest_status_check = 'success' 
-                            AND ingest_error_message = 'No errors' 
+                            AND processed IN (2) 
+                            --AND ingest_status_check = 'success' 
+                            --AND ingest_error_message = 'No errors' 
                             AND decrypted_file_name NOT IN (
                                 SELECT REPLACE(file_name, '_decrypted.json', '.json') 
                                 FROM file_deletion_log 
-                                WHERE deletion_status_check = 'success' 
-                                OR error_message = 'file not found') 
+                                WHERE deletion_status_check = 'success' OR deletion_status_check = 'failed')
+                                --OR error_message = 'file not found') 
                             ORDER BY create_date ASC
-                            LIMIT 30000
+                            LIMIT 100000
                             """
         cur.execute(retrieve_query)
 
@@ -214,7 +215,7 @@ def delete_encrypted_files():
             
             else:
                 try:
-                    logger.info(f"{local_dir} file exists, deleting files...........\n\n")
+                    logger.info(f"{local_dir} file exists, deleting files")
                     os.remove(local_dir)
                     logger.info(f"File deleted: {local_dir}")
                     # update deletion log

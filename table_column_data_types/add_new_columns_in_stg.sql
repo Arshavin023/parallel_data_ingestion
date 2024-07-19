@@ -27,10 +27,5 @@ ALTER TABLE stg_prep_clinic ADD COLUMN liver_function_test_result CHARACTER VARY
 ALTER TABLE stg_prep_eligibility ADD COLUMN population_type CHARACTER VARYING;
 ALTER TABLE stg_prep_clinic ADD COLUMN months_of_refill INTEGER;
 
---custom
-ALTER TABLE stg_pmtct_mother_visitation ALTER COLUMN date_of_delivery TYPE CHARACTER VARYING USING date_of_delivery::CHARACTER VARYING;
---original dtype: ALTER TABLE stg_pmtct_mother_visitation ALTER COLUMN date_of_delivery TYPE DATE USING date_of_delivery::DATE;
-ALTER TABLE stg_prep_clinic ALTER COLUMN hiv_test_result_date TYPE CHARACTER VARYING USING hiv_test_result_date::CHARACTER VARYING;
---original dtype: ALTER TABLE stg_prep_clinic ALTER COLUMN hiv_test_result_date TYPE DATE USING hiv_test_result_date::DATE;
-ALTER TABLE stg_prep_clinic ALTER COLUMN months_of_refill TYPE CHARACTER VARYING USING months_of_refill::CHARACTER VARYING;
---original dtype: ALTER TABLE stg_prep_clinic ALTER COLUMN months_of_refill TYPE INTEGER USING months_of_refill::INTEGER;
+
+ALTER TABLE stg_pmtct_anc ADD COLUMN syphilis_info CHARACTER VARYING;
