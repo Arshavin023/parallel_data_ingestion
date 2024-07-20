@@ -46,5 +46,5 @@ where processed = -2
 --and cpm.ip_name in ('ACE-6')
 --and ingest_status_check = 'failed'
 and create_date >= '2024-06-28' 
---and ingest_error_message ilike '%invalid dates%'
+and ingest_error_message ilike '%invalid dates%'
 order by ingest_end_time desc,decrypted_file_name;

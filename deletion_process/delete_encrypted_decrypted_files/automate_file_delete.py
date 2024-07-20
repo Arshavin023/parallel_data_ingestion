@@ -130,14 +130,14 @@ class FileDelete:
             cur = conn.cursor()
             retrieve_query = """SELECT facility_id, decrypted_file_name
                                 FROM public.sync_file 
-                                WHERE create_date >= CURRENT_DATE - INTERVAL '2' DAY
+                                WHERE create_date <= CURRENT_DATE - INTERVAL '1' DAY
                                 AND processed IN (2,-2) 
-                                AND decrypted_file_name NOT IN (
+                                AND decrypted_file_name IN (
                                     SELECT REPLACE(file_name, '_decrypted.json', '.json') 
                                     FROM file_deletion_log 
                                     WHERE deletion_status_check in ('success','failed'))
                                 ORDER BY ingest_end_time ASC
-                                LIMIT 50000
+                                LIMIT 50
                                 """
             cur.execute(retrieve_query)
 
@@ -147,24 +147,23 @@ class FileDelete:
                 self.delete_start_time = datetime.now()
                 self.facility_id = file[0]
                 decryptedjson_file_name = file[1].replace('.json', '_decrypted.json')
-                # file_name = 
                 local_dir = os.path.join(self.demo_path,self.facility_id,decryptedjson_file_name)
                 filelog_id = self._insert_into_log(self._process_derive_tablename(local_dir), decryptedjson_file_name, self.facility_id)
-                file_count = 0 #count_rows_in_json_file(local_dir)
                 try:
                     if os.path.exists(local_dir):
-                        logger.info(f"{local_dir} file exists, deleting files")
+                        logger.info(f"File: {local_dir} exists")
                         os.remove(local_dir)
                         logger.info(f"File deleted: {local_dir}")
-                        self.delete_end_time=datetime.now()
-                        self._update_log(filelog_id, 'success', decryptedjson_file_name,file_count, 'no errors')
-                except FileNotFoundError as e:
-                    logger.error(f"File {local_dir}: {str(e)}")
-                    pass 
+                        self.delete_end_time = datetime.now()
+                        self._update_log(filelog_id,'success',decryptedjson_file_name,self.count_of_df, 'no errors')
+                    else:
+                        logger.error(f"File {local_dir} not found")
+                        self.delete_end_time = datetime.now()
+                        self._update_log(filelog_id,'failed',decryptedjson_file_name,self.count_of_df,'file not found')
                 except PermissionError as e:
                     logger.error(f"Permission error deleting {local_dir}: {str(e)}")
                     self.delete_end_time=datetime.now()
-                    self._update_log(filelog_id, 'failed', decryptedjson_file_name, file_count, f"Permission error: {str(e)}")
+                    self._update_log(filelog_id,'failed',decryptedjson_file_name,self.count_of_df,f"Permission error: {str(e)}")
                 logger.info('----------------------------------------------------------------------------------------------')
                 
 
@@ -184,14 +183,14 @@ class FileDelete:
             cur = conn.cursor()
             retrieve_query = """SELECT facility_id, decrypted_file_name
                                 FROM public.sync_file 
-                                WHERE create_date >= CURRENT_DATE - INTERVAL '2' DAY
+                                WHERE create_date <= CURRENT_DATE - INTERVAL '1' DAY
                                 AND processed IN (2,-2) 
-                                AND decrypted_file_name NOT IN (
+                                AND decrypted_file_name IN (
                                     SELECT REPLACE(file_name, '_decrypted.json', '.json') 
                                     FROM file_deletion_log 
                                     WHERE deletion_status_check in ('success','failed'))
                                 ORDER BY ingest_end_time ASC
-                                LIMIT 50000
+                                LIMIT 50
                                 """
             cur.execute(retrieve_query)
 
@@ -201,24 +200,25 @@ class FileDelete:
                 self.delete_start_time = datetime.now()
                 self.facility_id = file[0]
                 encryptedjson_file_name = file[1]
-                # file_name = 
                 local_dir = os.path.join(self.demo_path,self.facility_id,encryptedjson_file_name)
                 filelog_id = self._insert_into_log(self._process_derive_tablename(local_dir), encryptedjson_file_name, self.facility_id)
-                file_count = 0 #count_rows_in_json_file(local_dir)
                 try:
                     if os.path.exists(local_dir):
-                        logger.info(f"{local_dir} file exists, deleting files")
+                        logger.info(f"File: {local_dir} exists")
                         os.remove(local_dir)
                         logger.info(f"File deleted: {local_dir}")
-                        self.delete_end_time=datetime.now()
-                        self._update_log(filelog_id, 'success', encryptedjson_file_name,file_count, 'no errors')
-                except FileNotFoundError as e:
-                    logger.error(f"File {local_dir}: {str(e)}")
-                    pass 
+                        self.delete_end_time = datetime.now()
+                        self._update_log(filelog_id,'success',encryptedjson_file_name,self.count_of_df, 'no errors')
+                    else:
+                        logger.error(f"File {local_dir} not found")
+                        self.delete_end_time = datetime.now()
+                        self._update_log(filelog_id,'failed',encryptedjson_file_name,self.count_of_df,'file not found')
                 except PermissionError as e:
                     logger.error(f"Permission error deleting {local_dir}: {str(e)}")
                     self.delete_end_time=datetime.now()
-                    self._update_log(filelog_id, 'failed', encryptedjson_file_name, file_count, f"Permission error: {str(e)}")
+                    self._update_log(filelog_id,'failed',encryptedjson_file_name,self.count_of_df,f"Permission error: {str(e)}")
+                logger.info('----------------------------------------------------------------------------------------------')
+
             # Commit the changes and close the connection
             conn.commit()
             cur.close()
