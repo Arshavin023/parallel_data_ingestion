@@ -181,7 +181,6 @@ class FileLoader:
         try:
             conn = self._db_connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
-            self.load_end_time = datetime.now()
             load_status_check = proc_status
             update_query = """UPDATE file_ingestion_log 
                             SET load_end_time = %s,
@@ -285,11 +284,11 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and create_date >= '2024-03-21' 
+            FROM sync_file WHERE processed = 1 and create_date >= '2024-06-30' 
             AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
             ilike 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
-            ORDER BY modified_date ASC
-            LIMIT 10"""
+            ORDER BY modified_date DESC
+            LIMIT 5"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -420,7 +419,7 @@ class FileLoader:
         self.count_of_df = 0
 
         if is_loaded_success:
-            self.load_end_time = None
+            self.load_end_time = datetime.now()
             logger.info(f"The file {file_name} has been previously loaded successfully")
             self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
             logger.info('Sync log has been updated successfully')
@@ -463,13 +462,13 @@ class FileLoader:
                     cleaned_message = lines[0]
                     error_msg = f'{error_msg} - {cleaned_message}'
                     logger.info(error_msg)
-
+                self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, self.count_of_df, error_msg)
                 self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg)
-                print(f'Error processing {check_param} file: {file_name} - {error_msg}')
+                logger.info(f'Error processing {check_param} file: {file_name} - {error_msg}')
 
-            if check_param == 'patient_person':
-                self._update_centralpartnermapper()
+        if check_param == 'patient_person':
+            self._update_centralpartnermapper()
 
                 
     def _replace_empty_strings_with_null(self, df):
@@ -495,34 +494,26 @@ class FileLoader:
 	
     def _date_validation(self,df):
         date_columns = [col for col in df.columns if col.startswith('date_') or col.endswith('_date')]
-        problematic_dates = {} 
-        if date_columns:
-            df_dates = df[date_columns].fillna('2024-01-01')
-            validity_results = {}
-            for col in date_columns:
-                try:
-                    pd.to_datetime(df_dates[col])
-                    validity_results[col] = True  # Date is valid
-                except ValueError:
-                    validity_results[col] = False  # Date is invalid or column contains non-date data
-            failed_columns = [key for key, value in validity_results.items() if value is False]
-            if failed_columns != []:
-                df_with_bad_date_columns=df[failed_columns]
-                for column in failed_columns:
-                    for idx, value in enumerate(df_with_bad_date_columns[column]):
-                        try:
-                            pd.to_datetime(value, errors='raise')
-                        except (TypeError, ValueError):
-                            if column not in problematic_dates:
-                                column = 'column_name: ' + column
-                                problematic_dates[column] = []
-                            problematic_dates[column].append((f' record {idx+1}, value => {value}'))
-            if problematic_dates != {}:
-                return problematic_dates
-            else:
-                return {}
-        else:
-            return {}
+        
+        if not date_columns:
+            return {}, []  # No date columns to validate
+        
+        problematic_dates = {}
+        indexes_for_bad_dates = []
+        for col in date_columns:
+            try:
+                pd.to_datetime(df[col], errors='raise')
+            except (TypeError, ValueError) as e:
+                problematic_dates[col] = []
+                for idx, value in df[col].items():
+                    try:
+                        pd.to_datetime(value, errors='raise')
+                    except (TypeError, ValueError):
+                        indexes_for_bad_dates.append(idx)
+                        problematic_dates[col].append(f'record {idx+1}, value => {value}')
+        
+        return problematic_dates,indexes_for_bad_dates
+        
 	
     def _ingest_json_data(self, file_path, staging_table, dtype=None, parse_dates=None):
         '''
@@ -584,17 +575,35 @@ class FileLoader:
                 
                 if df.empty:
                     logger.info(f"The JSON file is empty: {file_path}")
+                    self.load_end_time=datetime.now()
                     self._update_log('failed', file_name, 0, 'JSON file is empty')
                     self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
                     return
                 
                 # Validate dates
-                validation_result = self._date_validation(df)
-                if validation_result != {}:
-                    logger.info(f"The JSON file: {file_path} has invalid dates, please reupload")
-                    self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns')
-                    self._update_flag_syncfile('failed', -2, 0, f'{file_name} has invalid dates: {validation_result}. Kindly fix & reupload')
-                    return
+                validation = self._date_validation(df)
+                validation_result, bad_indexes = validation
+                if validation_result:
+                    logger.info(f"The JSON file: {file_path} has invalid dates that will be filtered out")
+                    df = df.dropna(how='all')
+                    df['stg_batch_id'] = batch_id
+                    df['stg_load_time'] = load_time
+                    df['stg_file_name'] = file_name
+                    df['stg_datim_id'] = datim_id
+                    self._replace_empty_strings_with_null(df)
+                    invalid_dates_df = df.loc[bad_indexes,:]
+                    invalid_dates_df['error_message'] = f'{file_name} has invalid dates: {validation_result}'
+                    valid_dates_df = df.drop(bad_indexes)
+                    staging_table_bad_dates = f'{staging_table}_bad_dates' 
+                    valid_dates_df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                    logger.info(f'{file_name} successfully ingested into {staging_table} table')
+                    invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                    logger.info(f'{file_name} with bad dates successfully ingested into {staging_table_bad_dates} table')
+                    conn.commit()
+                    self.count_of_df = len(valid_dates_df)
+                    self.load_end_time=datetime.now()
+                    self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
+                    self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records were filtered and successfully ingested')
                 else:
                     # Clean DataFrame and prepare for insertion
                     df = df.dropna(how='all')
@@ -603,10 +612,10 @@ class FileLoader:
                     df['stg_file_name'] = file_name
                     df['stg_datim_id'] = datim_id
                     self._replace_empty_strings_with_null(df)
-                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                                dtype=dtype_mapping)
+                    df.to_sql(staging_table, con=engine, index=False, if_exists='append',dtype=dtype_mapping)
                     conn.commit()        
                     self.count_of_df = len(df)
+                    self.load_end_time=datetime.now()
                     self._update_log('success', file_name, self.count_of_df, 'No errors')
                     self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
                     logger.info(f'{file_name} successfully ingested into {staging_table} table')
@@ -615,17 +624,35 @@ class FileLoader:
                 df = pd.read_json(file_path, convert_dates=parse_dates)
                 if df.empty:
                     logger.info(f"The JSON file is empty: {file_path}")
+                    self.load_end_time = datetime.now()
                     self._update_log('failed', file_name, 0, 'JSON file is empty')
                     self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
                     return
                 
                 # Validate dates
-                validation_result = self._date_validation(df)
-                if validation_result != {}:
-                    logger.info(f"The JSON file: {file_path} has invalid dates, please reupload")
-                    self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns')
-                    self._update_flag_syncfile('failed', -2, 0, f'{file_name} has invalid dates in {validation_result}. Kindly fix & reupload')
-                    return
+                validation = self._date_validation(df)
+                validation_result, bad_indexes = validation
+                if validation_result:
+                    logger.info(f"The JSON file: {file_path} has invalid dates that will be filtered out")
+                    df = df.dropna(how='all')
+                    df['stg_batch_id'] = batch_id
+                    df['stg_load_time'] = load_time
+                    df['stg_file_name'] = file_name
+                    df['stg_datim_id'] = datim_id
+                    self._replace_empty_strings_with_null(df)
+                    invalid_dates_df = df.loc[bad_indexes,:]
+                    invalid_dates_df['error_message'] = f'{file_name} has invalid dates: {validation_result}'
+                    valid_dates_df = df.drop(bad_indexes)
+                    staging_table_bad_dates = f'{staging_table}_bad_dates' 
+                    valid_dates_df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                    logger.info(f'{file_name} successfully ingested into {staging_table} table')
+                    invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                    conn.commit() 
+                    self.count_of_df = len(valid_dates_df)
+                    self.load_end_time=datetime.now()
+                    self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
+                    self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records were filtered and successfully ingested')
+                 
                 else:
                     df = df.dropna(how='all')
                     df['stg_batch_id'] = batch_id
@@ -633,9 +660,9 @@ class FileLoader:
                     df['stg_file_name'] = file_name
                     df['stg_datim_id'] = datim_id
                     self._replace_empty_strings_with_null(df)
-                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', 
-                                dtype=dtype_mapping)
+                    df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
                     conn.commit()        
+                    self.load_end_time = datetime.now()
                     self.count_of_df = len(df)
                     self._update_log('success', file_name, self.count_of_df, 'No errors')
                     self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')

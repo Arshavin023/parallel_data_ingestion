@@ -30,18 +30,6 @@ class StgRecordDelete:
         self.delete_end_time = None
         self.delete_start_time = None
 
-    def _db_connect_filedb(self):
-        db_params = {
-        'host': db_config['stg_host'],
-        'database': 'filedb',
-        'user': db_config['stg_username'],
-        'password': db_config['stg_password'],
-        'port': db_config['stg_port'],}
-
-        # Connect to the PostgreSQL database
-        conn = psycopg2.connect(**db_params)
-        return conn
-
     def _db_connect_lamisplus_staging_dwh(self):
         db_params = {
         'host': db_config['stg_host'],

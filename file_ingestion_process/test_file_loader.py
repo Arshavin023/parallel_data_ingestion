@@ -286,10 +286,10 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-06-30' 
+            FROM sync_file WHERE processed = 1 and create_date >= '2024-06-30' 
             AND (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
-            ORDER BY modified_date DESC
-            LIMIT 1"""
+            ORDER BY create_date ASC
+            LIMIT 30000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -550,60 +550,6 @@ class FileLoader:
             }
             return type_mapping.get(data_type, String)
         
-        def load_dsd_into_postgres_bad_dates(file_path, staging_table, connection):
-            staging_table_bad_dates = f'{staging_table}_bad_dates'
-            with open(file_path, 'r') as f:
-                data = json.load(f)
-
-            # Establish a cursor
-            cursor = connection.cursor()
-            num_records_loaded = 0 # Initialize a variable to count the number of records loaded
-
-            for record in data:
-                # Assuming record is a dictionary where keys correspond to column names
-                # For keys with nested structures, you may need to handle them accordingly
-                columns = ', '.join(list(record.keys()) + ['stg_load_time', 'stg_batch_id', 'stg_datim_id', 'stg_file_name'])
-                placeholders = ', '.join(['%s'] * (len(record) + 4))
-                values = []
-                bad_dates = []
-
-                for key, value in record.items():
-                    if (key.startswith('date_') or key.endswith('_date')):
-                        if value == "":
-                            values.append(None)
-                        else:
-                            try:
-                                pd.to_datetime(value, errors='raise')
-                                values.append(value)
-                            except (TypeError, ValueError):
-                                bad_dates.append('1900-01-01')
-                                values.append(value)
-                    else:                    
-                        if value == "":
-                            values.append(None)  # Set empty string to None for date fields
-                        elif isinstance(value, dict):
-                            values.append(json.dumps(value))
-                        else:
-                            values.append(value)
-
-                # Add values for new columns
-                values.extend([load_time, batch_id, datim_id, file_name])
-
-                if '1900-01-01' in bad_dates:
-                    insert_query_bad_dates = f"INSERT INTO {staging_table_bad_dates} ({columns}) VALUES ({placeholders})"
-                    cursor.execute(insert_query_bad_dates, values)
-                    num_records_loaded += cursor.rowcount  # Increment the count by the number of records inserted in this iteration
-                else:
-                    pass
-                
-            # Commit the transaction
-            connection.commit()
-            # Close the cursor
-            cursor.close()
-            logger.info(f"Number of records loaded: {num_records_loaded}")
-            return num_records_loaded
-        
-
         def load_dsd_into_postgres(file_path, staging_table, connection):
             with open(file_path, 'r') as f:
                 data = json.load(f)
@@ -619,43 +565,29 @@ class FileLoader:
                 columns = ', '.join(list(record.keys()) + ['stg_load_time', 'stg_batch_id', 'stg_datim_id', 'stg_file_name'])
                 placeholders = ', '.join(['%s'] * (len(record) + 4))
                 values = []
-                bad_dates = []
 
                 for key, value in record.items():
-                    if (key.startswith('date_') or key.endswith('_date')):
-                        if value == "":
-                            values.append(None)
-                        else:
-                            try:
-                                pd.to_datetime(value, errors='raise')
-                                values.append(value)
-                            except (TypeError, ValueError):
-                                bad_dates.append('1900-01-01')
-                                values.append(value)
-                    else:                    
-                        if value == "":
-                            values.append(None)  # Set empty string to None for date fields
-                        elif isinstance(value, dict):
-                            values.append(json.dumps(value))
-                        else:
-                            values.append(value)
+                    if value == "":
+                        values.append(None)  # Set empty string to None for date fields
+                    elif isinstance(value, dict):
+                        values.append(json.dumps(value))
+                    else:
+                        values.append(value)
 
                 # Add values for new columns
                 values.extend([load_time, batch_id, datim_id, file_name])
 
-                if '1900-01-01' in bad_dates:
-                    pass
+                insert_query = f"INSERT INTO {staging_table} ({columns}) VALUES ({placeholders})"
+                cursor.execute(insert_query, values)
 
-                else:
-                    insert_query = f"INSERT INTO {staging_table} ({columns}) VALUES ({placeholders})"
-                    cursor.execute(insert_query, values)
-                    num_records_loaded += cursor.rowcount  # Increment the count by the number of records inserted in this iteration
+                num_records_loaded += cursor.rowcount  # Increment the count by the number of records inserted in this iteration
 
             # Commit the transaction
             connection.commit()
+
             # Close the cursor
             cursor.close()
-            logger.info(f"Number of records loaded: {num_records_loaded}")
+
             return num_records_loaded
         
         # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
@@ -666,54 +598,50 @@ class FileLoader:
             validation = self._date_validation(df)
             validation_result, bad_indexes = validation
             if validation_result:
-                logger.info(f'{file_name} has invalid dates in some columns')
-                self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
-                bad_rec_count = load_dsd_into_postgres_bad_dates(file_path=file_path,staging_table=staging_table,connection=conn)
-                logger.info(f'{file_name} successfully ingested into {staging_table} table')
-                logger.info(f'{bad_rec_count} bad records inserted into {staging_table}_bad_dates table')
-                self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
-                self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records filtered out and successfully ingested')
-                cur = conn.cursor()
-                count_of_stg = pd.read_sql(
-                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-                cur.execute(ins_counts)
-                conn.commit()
-                # Close database connection
-                conn.close()
+                logger.info(f"The JSON file: {file_name} has invalid dates, please reupload")
+                # self._update_log('failed', file_name, 0, 'JSON file has invalid dates in one of its columns')
+                # self._update_flag_syncfile('failed', -2, 0, f'{file_name} has invalid dates: {validation_result}. Kindly fix & reupload')
                 return
 
             try:
                 self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
                 logger.info(f'{file_name} successfully ingested into {staging_table} table')
-                self._update_log('success', file_name, self.count_of_df, 'No errors')
-                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors') 
                 cur = conn.cursor()
-
                 count_of_stg = pd.read_sql(
-                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
                 ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
                 ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
 
                 cur.execute(ins_counts)
                 conn.commit()
-                # Close database connection
-                conn.close()
-
-            except ValueError as ve:
-                self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
-                self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {file_name} file is empty')
-                logger.info('Sync File Log updated successfully')
-                logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
-
+                cur.close()
+                self._update_log('success', file_name, self.count_of_df, 'No errors')
+                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors') 
+                
             except Exception as e:
-                logger.error(f"An unexpected error occurred: {str(e)}")
+                # Extracting and logging the specific error message
+                tb = traceback.format_exc()
+                error_lines = tb.strip().split('\n')
+                
+                # Find the line with psycopg2.errors.UndefinedColumn
+                for line in error_lines:
+                    if "psycopg2.errors.UndefinedColumn" in line:
+                        error_message = line.strip()
+                        break
+                
+                # Extracting column name and relation name from the error message
+                if "does not exist" in error_message:
+                    column_name = error_message.split('column "')[1].split('" of relation')[0]
+                    relation_name = error_message.split('relation "')[1].split('" does not exist')[0]
+                    specific_message = f'psycopg2.errors.UndefinedColumn: column "{column_name}" of relation "{relation_name}" does not exist'
+                logger.error(specific_message)
+                self._update_flag_syncfile('failed', -2, self.count_of_df, specific_message)
 
         else:
             pass
                 
-        logger.info('-------------------------------------------')
+        
+        logger.info('----------------------------------------------------------------------------------------------')
+        

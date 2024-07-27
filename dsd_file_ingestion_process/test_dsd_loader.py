@@ -286,9 +286,9 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-06-30' 
+            FROM sync_file WHERE processed = 1 and create_date >= '2024-06-30' 
             AND (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
-            ORDER BY modified_date DESC
+            ORDER BY create_date ASC
             LIMIT 1"""
             cur.execute(retrieve_query)
 
@@ -673,16 +673,6 @@ class FileLoader:
                 logger.info(f'{bad_rec_count} bad records inserted into {staging_table}_bad_dates table')
                 self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
                 self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records filtered out and successfully ingested')
-                cur = conn.cursor()
-                count_of_stg = pd.read_sql(
-                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-                cur.execute(ins_counts)
-                conn.commit()
-                # Close database connection
-                conn.close()
                 return
 
             try:
@@ -691,19 +681,18 @@ class FileLoader:
                 self._update_log('success', file_name, self.count_of_df, 'No errors')
                 self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors') 
                 cur = conn.cursor()
-
                 count_of_stg = pd.read_sql(
-                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
-                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-                cur.execute(ins_counts)
+                ins_counts = """
+                            INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                            """
+                cur.execute(ins_counts, (datim_id, batch_id, file_name, staging_table, load_time, self.count_of_df, count_of_stg))
                 conn.commit()
-                # Close database connection
-                conn.close()
-
+                cur.close()
+                
             except ValueError as ve:
                 self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
                 self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {file_name} file is empty')
