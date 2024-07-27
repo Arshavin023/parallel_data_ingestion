@@ -28,4 +28,15 @@ ALTER TABLE stg_prep_eligibility ADD COLUMN population_type CHARACTER VARYING;
 ALTER TABLE stg_prep_clinic ADD COLUMN months_of_refill INTEGER;
 ALTER TABLE stg_pmtct_anc ADD COLUMN syphilis_info CHARACTER VARYING;
 
+ALTER TABLE stg_case_manager_patients ADD COLUMN archived UNKNOWN_DATATYPE;
+
+ALTER TABLE stg_pmtct_infant_rapid_antibody ADD COLUMN result UNKNOWN_DATATYPE;
+
+ProgrammingError - (UndefinedColumn) column "result" of relation "pmtct_infant_rapid_antibody" does not exist
+
+(psycopg2.errors.UndefinedColumn) column "uuid" of relation "stg_hiv_regimen"
+
+ALTER TABLE stg_hiv_regimen ADD COLUMN uuid CHARACTER VARYING;
+
+
 
