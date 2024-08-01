@@ -1,0 +1,42 @@
+ALTER TABLE stg_prep_clinic ADD COLUMN date_of_liver_function_test_results CHARACTER VARYING;
+ALTER TABLE stg_hts_client ADD COLUMN accepted_pns CHARACTER VARYING;
+ALTER TABLE stg_laboratory_test ADD COLUMN clinical_note CHARACTER VARYING;
+ALTER TABLE stg_mhpss_screening ADD COLUMN facility_id BIGINT;
+ALTER TABLE stg_patient_person ADD COLUMN latitude CHARACTER VARYING;
+ALTER TABLE stg_case_manager ADD COLUMN password CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN visit_type CHARACTER VARYING;
+ALTER TABLE stg_hiv_art_clinical ADD COLUMN who CHARACTER VARYING;
+ALTER TABLE stg_dsd_devolvement ADD COLUMN outlet_name CHARACTER VARYING;
+ALTER TABLE stg_prep_clinic ADD COLUMN history_of_drug_allergies CHARACTER VARYING;
+ALTER TABLE stg_hts_client ADD COLUMN referred_for_sti CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN services_received_by_client JSONB;
+ALTER TABLE stg_patient_person ADD COLUMN longitude CHARACTER VARYING;
+ALTER TABLE stg_case_manager ADD COLUMN user_id CHARACTER VARYING;
+ALTER TABLE stg_prep_clinic ADD COLUMN prep_type CHARACTER VARYING;
+ALTER TABLE stg_hts_client ADD COLUMN offered_pns CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN assessment_for_pep_indication JSONB;
+ALTER TABLE stg_case_manager ADD COLUMN username CHARACTER VARYING;
+ALTER TABLE stg_prep_clinic ADD COLUMN hiv_test_result_date DATE;
+ALTER TABLE stg_hts_client ADD COLUMN comment CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN assessment_for_prep_eligibility JSONB;
+ALTER TABLE stg_prep_clinic ADD COLUMN population_type CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN pregnancy_status CHARACTER VARYING;
+ALTER TABLE stg_prep_clinic ADD COLUMN history_of_drug_to_drug_interaction character varying;
+ALTER TABLE stg_prep_eligibility ADD COLUMN assessment_for_acute_hiv_infection JSONB;
+ALTER TABLE stg_prep_clinic ADD COLUMN liver_function_test_result CHARACTER VARYING;
+ALTER TABLE stg_prep_eligibility ADD COLUMN population_type CHARACTER VARYING;
+ALTER TABLE stg_prep_clinic ADD COLUMN months_of_refill INTEGER;
+ALTER TABLE stg_pmtct_anc ADD COLUMN syphilis_info CHARACTER VARYING;
+
+ALTER TABLE stg_case_manager_patients ADD COLUMN archived UNKNOWN_DATATYPE;
+
+ALTER TABLE stg_pmtct_infant_rapid_antibody ADD COLUMN result UNKNOWN_DATATYPE;
+
+ProgrammingError - (UndefinedColumn) column "result" of relation "pmtct_infant_rapid_antibody" does not exist
+
+(psycopg2.errors.UndefinedColumn) column "uuid" of relation "stg_hiv_regimen"
+
+ALTER TABLE stg_hiv_regimen ADD COLUMN uuid CHARACTER VARYING;
+
+
+

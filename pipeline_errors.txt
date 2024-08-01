@@ -1,0 +1,13 @@
+column "service_provider" of relation "dsd_devolvement" does not exist
+
+column "ordered_date" of relation "stg_laboratory_order" does not exist
+
+column "lab_order_indication" of relation "laboratory_order" does not exist
+
+column "source" of relation "stg_hts_index_elicitation" does not exist
+
+column "source" of relation "stg_hts_client" does not exist
+
+column "stg_batch_id" of relation "stg_dsd_devolvement" does not exist
+
+tail -20 /home/lamisplus/server/temp/bxBIxJ7LJ4Q/dsd_devolvement_0_20240322125114_decrypted.json
