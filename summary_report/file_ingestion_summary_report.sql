@@ -71,16 +71,31 @@ ilike 'dsd_devolvement%')
 ORDER BY modified_date DESC
 
 
-SELECT *
-FROM sync_file WHERE processed = 2 and ingest_start_time >= '2024-06-27' 
---and ingest_error_message ilike '%The type of opportunistic_infections is not a SQLAlchemy type%'
-AND (decrypted_file_name ilike 'hiv_art_clinical%')
+--SELECT decrypted_file_name, ingest_error_message,
+update sync_file
+set ingest_error_message=REPLACE(ingest_error_message,' successfully ingested',
+       CONCAT(' ',json_rec_count, ' records successfully ingested')),
+		processed=-2
+--SELECT decrypted_file_name, ingest_error_message from sync_file
+WHERE processed = 2 and ingest_start_time >= '2024-07-31'  
+and ingest_error_message ilike '% ingested'
+and decrypted_file_name in ('hiv_art_pharmacy_15_20240731125137.json')
+
+select processed,json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
+from sync_file
+WHERE processed = -2 --and ingest_start_time >= '2024-08-01' 
+and ingest_error_message ilike '% ingested'
+--and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
 --and ingest_end_time is null 
 ORDER BY ingest_end_time DESC
 LIMIT 100
-			
-			
-delete from sync_file
-where processed = 2 and ingest_start_time >= '2024-06-20' and ingest_end_time is null
-and ingest_file_name in ('hiv_art_clinical_66_20240726145132_decrypted.json',
-						 'hiv_art_clinical_0_20240717144557_decrypted.json')
+
+
+select * from stg_pmtct_infant_pcr
+where uuid is null
+
+select * from stg_pmtct_infant_arv
+where uuid is null
+
+/home/lamisplus/server/temp/Nx613mKHzsk/pmtct_infant_arv_0_20240731162942_decrypted.json
+/home/lamisplus/server/temp/Nx613mKHzsk/pmtct_infant_pcr_0_20240731162942_decrypted.json
