@@ -83,7 +83,7 @@ and decrypted_file_name in ('hiv_art_pharmacy_15_20240731125137.json')
 
 select processed,json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
 from sync_file
-WHERE processed = -2 --and ingest_start_time >= '2024-08-01' 
+WHERE processed = -2 and ingest_start_time >= '2024-07-26' 
 and ingest_error_message ilike '% ingested'
 --and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
 --and ingest_end_time is null 
