@@ -81,21 +81,24 @@ WHERE processed = 2 and ingest_start_time >= '2024-07-31'
 and ingest_error_message ilike '% ingested'
 and decrypted_file_name in ('hiv_art_pharmacy_15_20240731125137.json')
 
-select processed,json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
+select processed,replace(file_name,'.json','_decrypted.json')
+						 json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
 from sync_file
-WHERE processed = -2 and ingest_start_time >= '2024-07-26' 
-and ingest_error_message ilike '% ingested'
+WHERE processed = 2 and ingest_start_time >= '2024-06-01' 
+--and ingest_error_message ilike '% ingested' 
+AND facility_id in ('f0J277xHATh')
 --and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
 --and ingest_end_time is null 
 ORDER BY ingest_end_time DESC
 LIMIT 100
 
 
-select * from stg_pmtct_infant_pcr
-where uuid is null
-
-select * from stg_pmtct_infant_arv
-where uuid is null
-
-/home/lamisplus/server/temp/Nx613mKHzsk/pmtct_infant_arv_0_20240731162942_decrypted.json
-/home/lamisplus/server/temp/Nx613mKHzsk/pmtct_infant_pcr_0_20240731162942_decrypted.json
+select * --facility_id,file_name,
+						 --json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
+from sync_file
+WHERE processed in (2,-2) and ingest_start_time >= '2024-06-01' 
+and ingest_error_message ilike '%ingested' 
+--AND facility_id in ('f0J277xHATh')
+--and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
+--and ingest_end_time is null 
+ORDER BY ingest_end_time DESC
