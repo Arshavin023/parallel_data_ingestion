@@ -7,7 +7,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where create_date >= '2024-06-30'
+where modified_date >= '2024-06-30'
 and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%' or
 decrypted_file_name ilike 'mhpss_confirmation%')
 union all
@@ -20,7 +20,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where create_date >= '2024-06-30'
+where modified_date >= '2024-06-30'
 and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%'
 	or decrypted_file_name ilike 'mhpss_confirmation%');
 
@@ -93,12 +93,11 @@ ORDER BY ingest_end_time DESC
 LIMIT 100
 
 
-select * --facility_id,file_name,
-						 --json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
+select * 
 from sync_file
-WHERE processed in (2,-2) and ingest_start_time >= '2024-06-01' 
+WHERE processed =-2 and ingest_start_time = '2024-08-' 
 and ingest_error_message ilike '%ingested' 
 --AND facility_id in ('f0J277xHATh')
---and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
+and decrypted_file_name ilike 'hiv_art_clinical%'
 --and ingest_end_time is null 
 ORDER BY ingest_end_time DESC

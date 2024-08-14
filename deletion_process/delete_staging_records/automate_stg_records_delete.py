@@ -51,8 +51,9 @@ class StgRecordDelete:
                     SELECT table_name
                     FROM information_schema.tables
                     WHERE table_schema = 'public'
-                    AND table_name ILIKE 'stg_%'
-                    ORDER BY pg_total_relation_size(quote_ident(table_name)) limit 20
+                    AND table_name ILIKE 'stg_%' and table_name NOT ILIKE '%_bad_dates'
+                    ORDER BY pg_total_relation_size(quote_ident(table_name)) desc
+                    LIMIT 100
                 """
                 
             delete_query_template = "CALL proc_delete_stg_records(%s)"
