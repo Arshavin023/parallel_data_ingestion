@@ -95,9 +95,6 @@ LIMIT 100
 
 select * 
 from sync_file
-WHERE processed =-2 and ingest_start_time = '2024-08-' 
-and ingest_error_message ilike '%ingested' 
---AND facility_id in ('f0J277xHATh')
-and decrypted_file_name ilike 'hiv_art_clinical%'
---and ingest_end_time is null 
+WHERE ingest_error_message = 'No errors'
+and ingest_end_time >= '2024-08-17'
 ORDER BY ingest_end_time DESC

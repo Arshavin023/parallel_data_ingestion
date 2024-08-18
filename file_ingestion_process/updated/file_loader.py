@@ -284,10 +284,10 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-07-23' 
+            FROM sync_file WHERE processed = 1 and modified_date >= '2024-06-30'
             AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
-            ilike 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
-            ORDER BY modified_date DESC
+            ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
+            ORDER BY modified_date ASC
             LIMIT 50000"""
             cur.execute(retrieve_query)
 
@@ -527,12 +527,14 @@ class FileLoader:
         Raises:
             Exception: If an error occurs during the ingestion process.
         '''
+
         conn, engine = self._db_connect('lamisplus_staging_dwh')[0], self._db_connect('lamisplus_staging_dwh')[1]
         load_time = datetime.now()
         batch_id = file_path.split('_')[-2]
         datim_id = self.facility_id
         file_name = file_path.split('/')[-1]
         
+
         # Define the type mapping function
         def convert_postgresql_to_sqlalchemy(data_type):
             type_mapping = {
@@ -554,12 +556,20 @@ class FileLoader:
             }
             return type_mapping.get(data_type, String)
         
+        
         # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
         dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
         
         try:
             # Attempt to read JSON file into DataFrame
             df = pd.read_json(file_path, convert_dates=parse_dates)
+            
+            # Check if DataFrame is empty after reading JSON
+            if df.empty:
+                self._update_log('failed', file_name, 0, 'JSON file is empty')
+                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                logger.info('Sync File Log updated successfully')
+                return
             
             # Process based on staging_table
             if staging_table == 'stg_mhpss_confirmation':
@@ -574,7 +584,7 @@ class FileLoader:
             validation_result, bad_indexes = validation
             
             if validation_result:
-                logger.info(f"The JSON file: {file_name} has invalid dates that will be filtered out")
+                logger.info(f"The JSON file: {file_path} has invalid dates that will be filtered out")
                 df = df.dropna(how='all')
                 df['stg_batch_id'] = batch_id
                 df['stg_load_time'] = load_time
@@ -591,7 +601,19 @@ class FileLoader:
                 self.count_of_df = len(valid_dates_df)
                 self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
-                self._update_flag_syncfile('failed', -2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records were filtered and successfully ingested')
+                self._update_flag_syncfile('failed', -2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested')
+                cur = conn.cursor()
+                count_of_stg = pd.read_sql(
+                    "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                    .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count,processed) VALUES \
+                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}','N')"
+
+                cur.execute(ins_counts)
+                conn.commit()
+                
+            
             else:
                 df = df.dropna(how='all')
                 df['stg_batch_id'] = batch_id
@@ -605,6 +627,15 @@ class FileLoader:
                 self.load_end_time = datetime.now()
                 self._update_log('success', file_name, self.count_of_df, 'No errors')
                 self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+                count_of_stg = pd.read_sql(
+                    "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                    .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count,processed) VALUES \
+                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}','N')"
+
+                cur.execute(ins_counts)
+                conn.commit()
                 
             logger.info(f'{file_name} successfully ingested into {staging_table} table')
             
@@ -617,17 +648,3 @@ class FileLoader:
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
             # Handle other unexpected exceptions
-        
-        finally:
-            cur = conn.cursor()
-            count_of_stg = pd.read_sql(
-                "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
-
-            ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count) VALUES \
-            ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}')"
-
-            cur.execute(ins_counts)
-            conn.commit()
-            # Close database connection
-            conn.close()
