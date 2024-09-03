@@ -284,10 +284,17 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
+<<<<<<< HEAD
             FROM sync_file WHERE processed = 1 and modified_date >= '2024-07-23' 
             AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
             ilike 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
             ORDER BY modified_date DESC
+=======
+            FROM sync_file WHERE processed = 1 and modified_date >= '2024-06-30'
+            AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
+            ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
+            ORDER BY modified_date ASC
+>>>>>>> test
             LIMIT 50000"""
             cur.execute(retrieve_query)
 
@@ -508,8 +515,14 @@ class FileLoader:
                     try:
                         pd.to_datetime(value, errors='raise')
                     except (TypeError, ValueError):
+<<<<<<< HEAD
                         indexes_for_bad_dates.append(idx)
                         problematic_dates[col].append(f'record {idx+1}, value => {value}')
+=======
+                        record_id = df.at[idx, 'id']
+                        indexes_for_bad_dates.append(idx)
+                        problematic_dates[col].append(f'record id: {record_id}, invalid_date => {value}')
+>>>>>>> test
         
         return problematic_dates,indexes_for_bad_dates
         
@@ -527,12 +540,23 @@ class FileLoader:
         Raises:
             Exception: If an error occurs during the ingestion process.
         '''
+<<<<<<< HEAD
+=======
+
+>>>>>>> test
         conn, engine = self._db_connect('lamisplus_staging_dwh')[0], self._db_connect('lamisplus_staging_dwh')[1]
         load_time = datetime.now()
         batch_id = file_path.split('_')[-2]
         datim_id = self.facility_id
         file_name = file_path.split('/')[-1]
+<<<<<<< HEAD
         
+=======
+        encrypted_file_name=file_name.replace('_decrypted','')
+
+        
+
+>>>>>>> test
         # Define the type mapping function
         def convert_postgresql_to_sqlalchemy(data_type):
             type_mapping = {
@@ -554,6 +578,10 @@ class FileLoader:
             }
             return type_mapping.get(data_type, String)
         
+<<<<<<< HEAD
+=======
+        
+>>>>>>> test
         # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
         dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
         
@@ -561,6 +589,16 @@ class FileLoader:
             # Attempt to read JSON file into DataFrame
             df = pd.read_json(file_path, convert_dates=parse_dates)
             
+<<<<<<< HEAD
+=======
+            # Check if DataFrame is empty after reading JSON
+            if df.empty:
+                self._update_log('failed', file_name, 0, 'JSON file is empty')
+                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                logger.info('Sync File Log updated successfully')
+                return
+            
+>>>>>>> test
             # Process based on staging_table
             if staging_table == 'stg_mhpss_confirmation':
                 pass
@@ -574,7 +612,11 @@ class FileLoader:
             validation_result, bad_indexes = validation
             
             if validation_result:
+<<<<<<< HEAD
                 logger.info(f"The JSON file: {file_name} has invalid dates that will be filtered out")
+=======
+                logger.info(f"The JSON file: {file_path} has invalid dates that will be filtered out")
+>>>>>>> test
                 df = df.dropna(how='all')
                 df['stg_batch_id'] = batch_id
                 df['stg_load_time'] = load_time
@@ -590,8 +632,25 @@ class FileLoader:
                 conn.commit()
                 self.count_of_df = len(valid_dates_df)
                 self.load_end_time = datetime.now()
+<<<<<<< HEAD
                 self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
                 self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records were filtered and successfully ingested')
+=======
+                self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
+                self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested')
+                cur = conn.cursor()
+                count_of_stg = pd.read_sql(
+                    "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                    .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count,processed) VALUES \
+                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}','N')"
+
+                cur.execute(ins_counts)
+                conn.commit()
+                
+            
+>>>>>>> test
             else:
                 df = df.dropna(how='all')
                 df['stg_batch_id'] = batch_id
@@ -605,17 +664,35 @@ class FileLoader:
                 self.load_end_time = datetime.now()
                 self._update_log('success', file_name, self.count_of_df, 'No errors')
                 self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+<<<<<<< HEAD
+=======
+                cur = conn.cursor()
+                count_of_stg = pd.read_sql(
+                    "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+                    .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+
+                ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count,processed) VALUES \
+                ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', '{count_of_stg}','N')"
+
+                cur.execute(ins_counts)
+                conn.commit()
+>>>>>>> test
                 
             logger.info(f'{file_name} successfully ingested into {staging_table} table')
             
         except ValueError as ve:
             self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
+<<<<<<< HEAD
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {file_name} file is empty')
+=======
+            self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
+>>>>>>> test
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
             
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
+<<<<<<< HEAD
             # Handle other unexpected exceptions
         
         finally:
@@ -631,3 +708,6 @@ class FileLoader:
             conn.commit()
             # Close database connection
             conn.close()
+=======
+            # Handle other unexpected exceptions
+>>>>>>> test
