@@ -7,7 +7,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-06-30'
+where modified_date >= '2024-07-15'
 and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%' or
 decrypted_file_name ilike 'mhpss_confirmation%')
 union all
@@ -20,7 +20,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-06-30'
+where modified_date >= '2024-07-15'
 and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%'
 	or decrypted_file_name ilike 'mhpss_confirmation%');
 
@@ -97,4 +97,23 @@ select *
 from sync_file
 WHERE ingest_error_message = 'No errors'
 and ingest_end_time >= '2024-08-17'
+ORDER BY ingest_end_time DESC
+
+--check failed ingestion
+SELECT * FROM sync_file
+WHERE ingest_end_time is not null and ingest_end_time >= '2024-08-20'
+-- AND NOT (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
+-- -- AND ingest_error_message not ilike '%Bad date records%'
+-- AND ingest_error_message not ilike '%reupload%'
+AND file_name ilike '%laboratory_sample_0_20240830180844.json%'
+AND processed=-2
+ORDER BY ingest_end_time DESC
+
+-- check successful ingestion
+SELECT * FROM sync_file
+WHERE ingest_end_time is not null and ingest_end_time >= '2024-08-20'
+AND (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
+AND ingest_error_message not ilike '%Bad date records%'
+AND ingest_error_message not ilike '%reupload%'
+AND processed=2
 ORDER BY ingest_end_time DESC
