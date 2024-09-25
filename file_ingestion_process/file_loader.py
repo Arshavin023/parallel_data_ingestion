@@ -56,8 +56,8 @@ class FileLoader:
         try:
             conn = psycopg2.connect(**db_params)
             engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')
-            
             return [conn, engine]
+            print('successfully connected to database')
         
         except Exception as e:
             logger.exception(e)
@@ -284,18 +284,11 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-<<<<<<< HEAD
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-07-23' 
-            AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
-            ilike 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
-            ORDER BY modified_date DESC
-=======
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-06-30'
+            FROM sync_file WHERE processed = 1 and modified_date >= '2024-07-15'
             AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
             ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
             ORDER BY modified_date ASC
->>>>>>> test
-            LIMIT 50000"""
+            LIMIT 50"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
