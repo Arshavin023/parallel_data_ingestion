@@ -18,9 +18,9 @@ def mask_pii(json_str):
 
 # Example DataFrame
 df = pd.DataFrame({
-    'risk_assessment': [{'type': 'jsonb', 'value': '{"diagnosedWithTb": true, "age": 30}'},
-                        {'type': 'jsonb', 'value': '{"diagnosedWithTb": false, "age": 25}'}]
-        })
+    'extra': [{'type': 'jsonb', 'value': '{"age": 30, "first_name":"Uche"}'},
+                        {'type': 'jsonb', 'value': '{"age": 25, "first_name":"Joseph"}'}]
+})
 
 # Extract 'value', apply the mask function, and update the DataFrame
 df['extra'] = df['extra'].apply(lambda x: {'type': x['type'], 'value': mask_pii(x['value'])})
@@ -28,4 +28,6 @@ df['extra'] = df['extra'].apply(lambda x: {'type': x['type'], 'value': mask_pii(
 # print(df)
 
 # check if successful
-df['extra'].apply(lambda x: x['value'])
+print(df['extra'].apply(lambda x: x['value']))
+
+# print(df[['extra']])

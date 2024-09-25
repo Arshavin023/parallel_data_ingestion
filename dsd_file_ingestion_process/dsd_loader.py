@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import os
 import json
 import uuid
@@ -718,7 +717,7 @@ class FileLoader:
             pass
                 
         logger.info('-------------------------------------------')
-=======
+
 import os
 import json
 import uuid
