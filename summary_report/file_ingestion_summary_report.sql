@@ -1,3 +1,5 @@
+SELECT * FROM public.batch_facility_id_logs;
+
 SELECT count(id) Total_Files,
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
 SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
@@ -7,7 +9,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-09-15'
+where modified_date >= '2024-10-29'
 and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%' or
 decrypted_file_name ilike 'mhpss_confirmation%')
 union all
@@ -20,7 +22,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-09-15'
+where modified_date >= '2024-10-29'
 and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%'
 	or decrypted_file_name ilike 'mhpss_confirmation%');
 
