@@ -130,7 +130,7 @@ def batch_facility_job(instance):
             batch_end_time = datetime.now()
             # print(type(batch_id),' ',type(facility_id),' ',type(facility_id_count),' ', type(status),' ',type(batch_start_time),' ',type(batch_end_time))
             update_batch_ingestion_log(batch_id,facility_id,facility_id_count,'PROCESSED','PROCESSING', batch_start_time,batch_end_time,'No errors')
-            logger.info(f"""batch ingestion for {facility_id} started aT{batch_start_time} completed at {batch_end_time}""")
+            logger.info(f"""batch ingestion for {facility_id} started at {batch_start_time} completed at {batch_end_time}""")
 
         except Exception as e:
             error_msg = str(e)
