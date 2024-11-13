@@ -67,7 +67,8 @@ def insert_batch_ingestion_log():
         INSERT INTO batch_facility_id_logs(facility_id,status,facility_id_count)
         SELECT facility_id, 'UNPROCESSED', COUNT(file_name)
         FROM sync_file
-        WHERE processed=1 AND modified_date >= '2024-10-01'
+        WHERE processed=1 AND modified_date >= '2024-11-01'
+        AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
         GROUP BY 1,2
         ORDER BY modified_date ASC
     """
@@ -152,12 +153,6 @@ def main():
                     FROM batch_facility_id_logs
                     WHERE status = '{}'
                     """.format(unprocessed), con=filedb_engine).values[0][0]
-
-    # if batch_count > 0:
-    #     while batch_count > 0:
-    #         batch_cbo_job(loader)
-    #         batch_count -= 1
-    #         time.sleep(5)
 
     # Function to run the job in a thread
     def run_job():

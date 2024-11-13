@@ -1,4 +1,13 @@
-SELECT * FROM public.batch_facility_id_logs;
+SELECT * 
+FROM public.batch_facility_id_logs 
+WHERE end_time >= '2024-11-13 07:00:00' 
+AND status='PROCESSED'
+ORDER BY end_time DESC;
+
+SELECT SUM(facility_id_count)
+FROM public.batch_facility_id_logs 
+WHERE end_time >= '2024-11-12 20:00:00' 
+AND status='PROCESSED';
 
 SELECT count(id) Total_Files,
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
@@ -9,7 +18,7 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-11-05'
+where modified_date >= '2024-11-12'
 and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%' or
 decrypted_file_name ilike 'mhpss_confirmation%')
 union all
@@ -22,15 +31,14 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-11-01'
+where modified_date >= '2024-11-12'
 and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%'
 	or decrypted_file_name ilike 'mhpss_confirmation%');
 
 --Check for dict data type error in hiv_art_clinical and dsd_devolvement
 select *
 from public.sync_file 
-where 
-processed=2 and create_date >= '2024-06-30' 
+where processed=2 and create_date >= '2024-06-30' 
 order by ingest_end_time desc limit 50
 --,processed,
 --update public.sync_file set processed = 1
@@ -112,27 +120,28 @@ ORDER BY ingest_end_time DESC
 
 --check failed ingestion
 SELECT * FROM sync_file
-WHERE ingest_end_time is not null and ingest_end_time >= '2024-09-15'
+WHERE ingest_end_time is not null and ingest_end_time >= '2024-11-12 00:00:00'
 -- AND NOT (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
 -- -- AND ingest_error_message not ilike '%Bad date records%'
 -- AND ingest_error_message not ilike '%reupload%'
 -- AND file_name ilike '%laboratory_sample_0_20240830180844.json%'
-AND processed=-2
-ORDER BY ingest_end_time DESC
-
-
--- check successful ingestion
-SELECT * FROM sync_file
-WHERE ingest_end_time is not null and ingest_end_time >= '2024-09-14'
-AND NOT (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
-AND ingest_error_message not ilike '%Bad date records%'
-AND ingest_error_message not ilike '%reupload%'
 AND processed=2
-ORDER BY ingest_end_time DESC
+ORDER BY ingest_end_time DESC;
+
 
 -- check successful ingestion
 SELECT * FROM sync_file
-WHERE create_date > '2024-09-15' 
+WHERE ingest_end_time >= '2024-11-12 20:00:00'
+and modified_date < '2024-11-12 20:30:00'
+-- AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
+--             ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%'
+--             or decrypted_file_name ilike 'pmtct_anc%')
+AND processed IN (2,-2,1)
+ORDER BY ingest_end_time DESC;
+
+-- check unprocessed
+SELECT * FROM sync_file
+WHERE create_date > '2024-11-12' 
 -- ingest_end_time is not null and ingest_end_time >= '2024-09-14'
 -- AND NOT (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
 -- AND ingest_error_message not ilike '%Bad date records%'
@@ -140,3 +149,11 @@ WHERE create_date > '2024-09-15'
 AND 
 processed=1
 ORDER BY create_date DESC
+
+SELECT facility_id, 'UNPROCESSED', COUNT(file_name)
+FROM sync_file
+WHERE processed=1 AND modified_date >= '2024-11-12'
+AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' 
+		 or decrypted_file_name ILIKE 'dsd_devolvement%' 
+		 or decrypted_file_name ilike 'mhpss_confirmation%')
+GROUP BY 1,2;
