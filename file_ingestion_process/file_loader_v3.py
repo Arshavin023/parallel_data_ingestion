@@ -286,7 +286,8 @@ class FileLoader:
             SELECT id, facility_id, decrypted_file_name
             FROM sync_file WHERE processed = 1 and modified_date >= '2024-09-29'
             AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
-            ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%')
+            ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%'
+            or decrypted_file_name ilike 'pmtct_anc%')
             AND facility_id='{}'
             ORDER BY modified_date ASC
             LIMIT 5000""".format(facility_id)
