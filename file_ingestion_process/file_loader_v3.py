@@ -34,7 +34,7 @@ pd.set_option('display.max_columns', None)
 class FileLoader:
     def __init__(self):
         self.facility_id = None
-        self.syncfile_entryID = None
+        self.syncfile_entryid = None
         self.demo_path = '/home/lamisplus/server/temp'
         self.count_of_df = 0
         self.load_end_time = None
@@ -153,9 +153,9 @@ class FileLoader:
                                     ingest_file_name = %s, 
                                     ingest_table_name = %s, 
                                     ingest_status_check = %s
-                                WHERE id = %s"""
+                                WHERE id = %s AND file_name=%s"""
             cur.execute(fakeupsert_query, (self.load_start_time, file_name, table_name, 
-                                        ingest_status_check, self.syncfile_entryID))
+                                        ingest_status_check, self.syncfile_entryid, file_name))
             conn.commit()
             cur.close()
             logger.info('successfully updated sync_file records')
@@ -199,7 +199,7 @@ class FileLoader:
             raise e
 
 
-    def _update_flag_syncfile(self, proc_status, proc_val, tab_count, error_msg):  
+    def _update_flag_syncfile(self, proc_status, proc_val, tab_count, error_msg, file_name):  
         '''
         Updates the synchronization file log with processing status and details.
         This method updates the sync_file table with the processing status, end time of ingestion, 
@@ -222,12 +222,14 @@ class FileLoader:
                                 ingest_status_check = %s,
                                 json_rec_count = %s,
                                 ingest_error_message = %s
-                            WHERE id = %s"""
+                            WHERE id = %s 
+                            AND file_name = %s
+                            """
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
-                                    tab_count, error_msg, self.syncfile_entryID))
+                                    tab_count, error_msg[0:900000], self.syncfile_entryid, file_name))
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.syncfile_entryid} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -284,21 +286,25 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-09-29'
-            AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
-            ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%'
-            or decrypted_file_name ilike 'pmtct_anc%')
+            FROM sync_file WHERE processed = 1 and modified_date >= '2024-11-01'
+            AND NOT (decrypted_file_name ilike 'mhpss_confirmation_%' 
+            or decrypted_file_name ilike 'prep_eligibility_%' 
+            or decrypted_file_name ILIKE 'prep_clinic_%' 
+            or decrypted_file_name ilike 'pmtct_anc_%' 
+            or decrypted_file_name ilike 'dsd_devolvement_%' 
+            or decrypted_file_name ilike 'hiv_art_clinical_%')
             AND facility_id='{}'
             ORDER BY modified_date ASC
-            LIMIT 5000""".format(facility_id)
+            LIMIT 1""".format(facility_id)
             
             cur.execute(retrieve_query)
             
             files = cur.fetchall()
 
             for file in files:
-                self.syncfile_entryID = file[0]
+                self.syncfile_entryid = file[0]
                 self.facility_id = file[1]
+                file_name = file[2]
                 decryptedjson_file_name = file[2].replace('.json', '_decrypted.json')
                 local_dir = os.path.join(self.demo_path, self.facility_id, decryptedjson_file_name)
 
@@ -308,8 +314,7 @@ class FileLoader:
                     self._process_file_by_name(local_dir)
                 else:
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
-                    self._update_flag_syncfile('processed in the past', 3, 0, 'No errors')
-                    pass
+                    self._update_flag_syncfile('processed in the past', 3, 0, 'No errors', file_name)
                     
             cur.close()
             logger.info('json files successfully processed')
@@ -436,52 +441,49 @@ class FileLoader:
         check_param = self._process_derive_tablename(file_path)
         file_name = os.path.basename(file_path)
         is_loaded_success = self._check_if_previouslyloaded(file_name, self.facility_id)
+        is_loaded_failed = self._check_if_faillogged(file_name, self.facility_id)
 
         if is_loaded_success:
             self.load_end_time = datetime.now()
             logger.info(f"The file {file_name} has been previously loaded successfully")
-            self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
+            self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors', file_name)  
             logger.info('Sync log has been updated successfully')
+        elif is_loaded_failed:
+            logger.info(f'{file_name} previously failed to load')
+
         else:
-            is_loaded_failed = self._check_if_faillogged(file_name, self.facility_id)
-            if is_loaded_failed:
-                logger.info(f'{file_name} previously failed to load')
-            else:
-                logger.info(f'{file_name} yet to be loaded')
-                self._insert_into_log(file_path, check_param)
-                logger.info(f'{file_name} logs inserted into file_ingestion_log')
-                self._fakeupsert_synclog(file_path, check_param)
-                logger.info(f'{file_name} logs updated into sync_file')
+            logger.info(f'{file_name} yet to be loaded')
+            self._insert_into_log(file_path, check_param)
+            logger.info(f'{file_name} logs inserted into file_ingestion_log')
 
-        try:
-            # Your code to execute SQL or other operations
-            parse_dates = ['date_of_birth']
-            staging_table = f'stg_{check_param}'
-            logger.info(f'{file_name} attempting to load')
-            self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
+            try:
+                # Your code to execute SQL or other operations
+                parse_dates = ['date_of_birth']
+                staging_table = f'stg_{check_param}'
+                logger.info(f'{file_name} attempting to load')
+                self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
 
-        except Exception as e:
-            error_type = type(e).__name__
-            error_msg = str(e)
-            
-            if error_type == 'ProgrammingError':
-                error_msg = self.format_programming_error(e)
-                logger.error(f'ProgrammingError encountered: {error_msg}')
-            else:
-                # Handle other exceptions
-                args_str = ' '.join(map(str, e.args))
-                cleaned_message = args_str.split('\n')[0]
-                error_msg = f'{error_type} - {error_msg} - {cleaned_message}'
-                logger.error(f'Unexpected error encountered: {error_msg}')
-            
-            self.load_end_time = datetime.now()
-            self._update_log('failed', file_name, self.count_of_df, error_msg)
-            self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg)
-            logger.error(f'Error processing {check_param} file: {file_name} - {error_msg}')
+            except Exception as e:
+                error_type = type(e).__name__
+                error_msg = str(e)
+                
+                if error_type == 'ProgrammingError':
+                    error_msg = self.format_programming_error(e)
+                    logger.error(f'ProgrammingError encountered: {error_msg}')
+                else:
+                    # Handle other exceptions
+                    args_str = ' '.join(map(str, e.args))
+                    cleaned_message = args_str.split('\n')[0]
+                    error_msg = f'{error_type} - {error_msg} - {cleaned_message}'
+                    logger.error(f'Unexpected error encountered: {error_msg}')
+                
+                self.load_end_time = datetime.now()
+                self._update_log('failed', file_name, self.count_of_df, error_msg)
+                self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg,file_name)
+                logger.error(f'Error processing {check_param} file: {file_name} - {error_msg}')
 
         if check_param == 'patient_person':
             self._update_centralpartnermapper()
-
 
                 
     def _replace_empty_strings_with_null(self, df):
@@ -600,7 +602,7 @@ class FileLoader:
             # Check if DataFrame is empty after reading JSON
             if df.empty:
                 self._update_log('failed', file_name, 0, 'JSON file is empty')
-                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty', file_name)
                 logger.info('Sync File Log updated successfully')
                 return
             
@@ -645,18 +647,15 @@ class FileLoader:
                 #invalid_dates_df = df.loc[bad_indexes, :]
                 #invalid_dates_df['error_message'] = f'{file_name} has invalid dates: {validation_result}'
                 valid_dates_df = df.drop(bad_indexes)
-                staging_table_bad_dates = f'{staging_table}_bad_dates'
+                # staging_table_bad_dates = f'{staging_table}_bad_dates'
                 valid_dates_df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
                 # invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
                 conn.commit()
                 self.count_of_df = len(valid_dates_df)
                 self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
-                self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested')
+                self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested', encrypted_file_name)
                 cur = conn.cursor()
-                #count_of_stg = pd.read_sql(
-                 #   "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                  #  .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
                 ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count,processed) VALUES \
                 ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}','N')"
@@ -677,11 +676,8 @@ class FileLoader:
                 self.count_of_df = len(df)
                 self.load_end_time = datetime.now()
                 self._update_log('success', file_name, self.count_of_df, 'No errors')
-                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')
+                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors', encrypted_file_name)
                 cur = conn.cursor()
-                #count_of_stg = pd.read_sql(
-                 #   "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                  #  .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
                 ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count,processed) VALUES \
                 ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}','N')"
@@ -689,11 +685,11 @@ class FileLoader:
                 cur.execute(ins_counts)
                 conn.commit()
                 
-            logger.info(f'{file_name} successfully ingested into {staging_table} table')
+                logger.info(f'{file_name} successfully ingested into {staging_table} table')
             
         except ValueError as ve:
             self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
-            self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
+            self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty', encrypted_file_name)
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
             

@@ -5,7 +5,9 @@ from dsd_loader import FileLoader
 from src import logger
 import configparser
 
-def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
+# '/home/lamisplus/database_credentials/config.ini'
+def read_db_config(filename=db_credentials_path, section='database'):
     # Create a parser
     parser = configparser.ConfigParser()
     # Read the configuration file
