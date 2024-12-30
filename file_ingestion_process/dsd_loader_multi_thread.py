@@ -13,7 +13,14 @@ from sqlalchemy.dialects.postgresql import JSONB
 from src import logger
 import configparser
 
-def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
+# r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
+# db_credentials_path = '/home/lamisplus/database_credentials/config.ini'
+server_temp=r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
+# r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
+# server_temp = '/home/lamisplus/server/temp'
+
+def read_db_config(filename=db_credentials_path, section='database'):
     # Create a parser
     parser = configparser.ConfigParser()
     # Read the configuration file
@@ -35,8 +42,8 @@ pd.set_option('display.max_columns', None)
 class FileLoader:
     def __init__(self):
         self.facility_id = None
-        self.syncfile_entryID = None
-        self.demo_path = '/home/lamisplus/server/temp'
+        self.syncfile_entryid = None
+        self.demo_path = server_temp
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
@@ -136,7 +143,7 @@ class FileLoader:
         '''
         Performs a fake upsert operation on the sync_file table.
         This method updates an existing record in the sync_file table if it exists, or inserts a new one if it doesn't. 
-        The record is identified by the syncfile_entryID attribute.
+        The record is identified by the syncfile_entryid attribute.
         Parameters:
         - file_path (str): The path of the file being ingested.
         - tablename (str): The name of the table being ingested.
@@ -156,7 +163,7 @@ class FileLoader:
                                     ingest_status_check = %s
                                 WHERE id = %s"""
             cur.execute(fakeupsert_query, (self.load_start_time, file_name, table_name, 
-                                        ingest_status_check, self.syncfile_entryID))
+                                        ingest_status_check, self.syncfile_entryid))
             conn.commit()
             cur.close()
             logger.info('successfully updated sync_file records')
@@ -223,13 +230,15 @@ class FileLoader:
                                 ingest_end_time = %s,
                                 ingest_status_check = %s,
                                 json_rec_count = %s,
-                                ingest_error_message = %s
-                            WHERE id = %s"""
+                                ingest_error_message = %s, ingest_start_time = %s
+                            WHERE id = %s
+                            """
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
-                                    tab_count, error_msg, self.syncfile_entryID))
+                                    tab_count, error_msg[0:10000], self.load_start_time, 
+                                    self.syncfile_entryid))
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.syncfile_entryid} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -272,7 +281,7 @@ class FileLoader:
             raise e
         
 
-    def _retrieve_localdir_from_syncfile(self):
+    def _retrieve_localdir_from_syncfile(self, table_name):
         '''
         Retrieves local directories from the sync_file table.
         This method connects to the filedb database to retrieve information about files from the sync_file table 
@@ -285,17 +294,24 @@ class FileLoader:
             conn = self._db_connect('filedb')[0]
             cur = conn.cursor()
             retrieve_query = """
-            SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and create_date >= '2024-06-30' 
-            AND (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name ilike 'dsd_devolvement%')
-            ORDER BY create_date ASC
-            LIMIT 1"""
-            cur.execute(retrieve_query)
+            SELECT id, facility_id, decrypted_file_name
+            FROM sync_file 
+            WHERE processed = 1 
+            AND modified_date >= %s
+            AND file_name ILIKE %s
+            ORDER BY modified_date ASC
+            """
+
+            # Parameters to pass to the query
+            params = ('2024-12-01', f'{table_name}_%')
+
+            # Execute the query with parameters
+            cur.execute(retrieve_query, params)
 
             files = cur.fetchall()
 
             for file in files:
-                self.syncfile_entryID = file[0]
+                self.syncfile_entryid = file[0]
                 self.facility_id = file[1]
                 decryptedjson_file_name = file[2].replace('.json', '_decrypted.json')
                 local_dir = os.path.join(self.demo_path, self.facility_id, decryptedjson_file_name)
@@ -306,6 +322,7 @@ class FileLoader:
                     self._process_file_by_name(local_dir)
                 else:
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
+                    self._update_flag_syncfile('processed in the past', 3, 0, 'No errors') 
                     pass
             cur.close()
             logger.info('json files successfully processed')
@@ -414,6 +431,7 @@ class FileLoader:
         check_param = self._process_derive_tablename(file_path)
         file_name = os.path.basename(file_path)
         is_loaded_success = self._check_if_previouslyloaded(file_name, self.facility_id)
+        is_loaded_failed = self._check_if_faillogged(file_name, self.facility_id)
         self.count_of_df = 0
 
         if is_loaded_success:
@@ -421,46 +439,75 @@ class FileLoader:
             logger.info(f"The file {file_name} has been previously loaded successfully")
             self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors')  
             logger.info('Sync log has been updated successfully')
-        else:
-            is_loaded_failed = self._check_if_faillogged(file_name, self.facility_id)
-            if is_loaded_failed:
-                logger.info(f'{file_name} previously failed to load')
-            else:
-                logger.info(f'{file_name} yet to be loaded')
-                self._insert_into_log(file_path, check_param)
-                logger.info(f'{file_name} logs inserted into file_ingestion_log')
-                self._fakeupsert_synclog(file_path, check_param)
-                logger.info(f'{file_name} logs updated into sync_file')
-            
-                try:
-                    parse_dates = ['date_of_birth']
-                    staging_table = f'stg_{check_param}'
-                    logger.info(f'{file_name} attempting to load')
-                    self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
 
-                except Exception as e:
-                    # logger.exception(e)
-                    error_msg = str(e)
-                    error_type = type(e).__name__
-                    if error_type == 'UnicodeDecodeError':
-                        error_msg = 'UnicodeDecodeError - File is corrupted and unreadable, kindly regenerate and re-upload'
-                    elif error_type == 'ProgrammingError':
-                        logger.info(f'{error_type} = {e}')
-                        args_str = ' '.join(map(str, e.args))
-                        lines = args_str.replace("psycopg2.errors.", "")
-                        lines = lines.replace("stg_", "")
-                        lines = lines.split('\n')
-                        cleaned_message = lines[0]
-                        error_msg = f'{error_type} - {cleaned_message}'
-                        logger.info(error_msg)
-                    else:
-                        args_str = ' '.join(map(str, e.args))
-                        error_msg = f'{error_type} - {error_msg}'
-                        lines = args_str.split('\n')
-                        cleaned_message = lines[0]
-                        error_msg = f'{error_msg} - {cleaned_message}'
-                        logger.info(error_msg)
-                    logger.info(f'Error processing {check_param} file: {file_name} - {error_msg}')
+        elif is_loaded_failed:
+            logger.info(f'{file_name} previously failed to load')
+            try:
+                parse_dates = ['date_of_birth']
+                staging_table = f'stg_{check_param}'
+                logger.info(f'{file_name} re-attempting to load')
+                self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
+
+            except Exception as e:
+                # logger.exception(e)
+                error_msg = str(e)
+                error_type = type(e).__name__
+                if error_type == 'UnicodeDecodeError':
+                    error_msg = 'UnicodeDecodeError - File is corrupted and unreadable, kindly regenerate and re-upload'
+                elif error_type == 'ProgrammingError':
+                    logger.info(f'{error_type} = {e}')
+                    args_str = ' '.join(map(str, e.args))
+                    lines = args_str.replace("psycopg2.errors.", "")
+                    lines = lines.replace("stg_", "")
+                    lines = lines.split('\n')
+                    cleaned_message = lines[0]
+                    error_msg = f'{error_type} - {cleaned_message}'
+                    logger.info(error_msg)
+                else:
+                    args_str = ' '.join(map(str, e.args))
+                    error_msg = f'{error_type} - {error_msg}'
+                    lines = args_str.split('\n')
+                    cleaned_message = lines[0]
+                    error_msg = f'{error_msg} - {cleaned_message}'
+                    logger.info(error_msg)
+                logger.info(f'Error processing {check_param} file: {file_name} - {error_msg}')
+            
+        else:
+            logger.info(f'{file_name} yet to be loaded')
+            self._insert_into_log(file_path, check_param)
+            logger.info(f'{file_name} logs inserted into file_ingestion_log')
+            self._fakeupsert_synclog(file_path, check_param)
+            logger.info(f'{file_name} logs updated into sync_file')
+        
+            try:
+                parse_dates = ['date_of_birth']
+                staging_table = f'stg_{check_param}'
+                logger.info(f'{file_name} attempting to load')
+                self._ingest_json_data(file_path, staging_table, dtype=self._get_and_map_cols(check_param)[0], parse_dates=parse_dates)
+
+            except Exception as e:
+                # logger.exception(e)
+                error_msg = str(e)
+                error_type = type(e).__name__
+                if error_type == 'UnicodeDecodeError':
+                    error_msg = 'UnicodeDecodeError - File is corrupted and unreadable, kindly regenerate and re-upload'
+                elif error_type == 'ProgrammingError':
+                    logger.info(f'{error_type} = {e}')
+                    args_str = ' '.join(map(str, e.args))
+                    lines = args_str.replace("psycopg2.errors.", "")
+                    lines = lines.replace("stg_", "")
+                    lines = lines.split('\n')
+                    cleaned_message = lines[0]
+                    error_msg = f'{error_type} - {cleaned_message}'
+                    logger.info(error_msg)
+                else:
+                    args_str = ' '.join(map(str, e.args))
+                    error_msg = f'{error_type} - {error_msg}'
+                    lines = args_str.split('\n')
+                    cleaned_message = lines[0]
+                    error_msg = f'{error_msg} - {cleaned_message}'
+                    logger.info(error_msg)
+                logger.info(f'Error processing {check_param} file: {file_name} - {error_msg}')
 
             if check_param == 'patient_person':
                 self._update_centralpartnermapper()
@@ -527,6 +574,7 @@ class FileLoader:
         batch_id = file_path.split('_')[-2]
         datim_id = self.facility_id
         file_name = file_path.split('/')[-1]
+        encrypted_file_name=file_name.replace('_decrypted','')
         
         # Define the type mapping function
         def convert_postgresql_to_sqlalchemy(data_type):
@@ -643,10 +691,7 @@ class FileLoader:
                 # Add values for new columns
                 values.extend([load_time, batch_id, datim_id, file_name])
 
-                if '1900-01-01' in bad_dates:
-                    pass
-
-                else:
+                if '1900-01-01' not in bad_dates:
                     insert_query = f"INSERT INTO {staging_table} ({columns}) VALUES ({placeholders})"
                     cursor.execute(insert_query, values)
                     num_records_loaded += cursor.rowcount  # Increment the count by the number of records inserted in this iteration
@@ -659,50 +704,55 @@ class FileLoader:
             return num_records_loaded
         
         # Convert PostgreSQL types to SQLAlchemy types for dif dtype is not None and isinstance(dtype, dict):
-        dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
+        # dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
 
-        if staging_table=='stg_dsd_devolvement' or staging_table=='stg_hiv_art_clinical':
-            df = pd.read_json(file_path, convert_dates=parse_dates)
-            validation = self._date_validation(df)
-            validation_result, bad_indexes = validation
-            if validation_result:
-                logger.info(f'{file_name} has invalid dates in some columns')
-                self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
-                bad_rec_count = load_dsd_into_postgres_bad_dates(file_path=file_path,staging_table=staging_table,connection=conn)
-                logger.info(f'{file_name} successfully ingested into {staging_table} table')
-                logger.info(f'{bad_rec_count} bad records inserted into {staging_table}_bad_dates table')
-                self._update_log('success', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
-                self._update_flag_syncfile('success', 2, self.count_of_df, f'{file_name} has invalid dates: {validation_result}. Bad date records filtered out and successfully ingested')
-                return
+        # if staging_table=='stg_dsd_devolvement' or staging_table=='stg_hiv_art_clinical' or staging_table=='stg_pmtct_anc':
+        df = pd.read_json(file_path, convert_dates=parse_dates)
+        validation = self._date_validation(df)
+        validation_result, bad_indexes = validation
+        if validation_result:
+            logger.info(f'{file_name} has invalid dates in some columns')
+            self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
+            # bad_rec_count = load_dsd_into_postgres_bad_dates(file_path=file_path,staging_table=staging_table,connection=conn)
+            logger.info(f'{file_name} successfully ingested into {staging_table} table')
+            # logger.info(f'{bad_rec_count} bad records inserted into {staging_table}_bad_dates table')
+            self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
+            self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records filtered out and {self.count_of_df} records successfully ingested')
+            cur = conn.cursor()
+            # count_of_stg = pd.read_sql(
+            # "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+            # .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+            ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, processed) VALUES \
+            ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', 'N')"
+            cur.execute(ins_counts)
+            conn.commit()
+            return
 
-            try:
-                self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
-                logger.info(f'{file_name} successfully ingested into {staging_table} table')
-                self._update_log('success', file_name, self.count_of_df, 'No errors')
-                self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors') 
-                cur = conn.cursor()
-                count_of_stg = pd.read_sql(
-                        "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
-                        .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
+        try:
+            self.count_of_df = load_dsd_into_postgres(file_path=file_path,staging_table=staging_table,connection=conn)
+            logger.info(f'{file_name} successfully ingested into {staging_table} table')
+            self._update_log('success', file_name, self.count_of_df, 'No errors')
+            self._update_flag_syncfile('success', 2, self.count_of_df, 'No errors') 
+            cur = conn.cursor()
+            # count_of_stg = pd.read_sql(
+            # "SELECT COUNT(*) FROM {} WHERE stg_datim_id = '{}' AND stg_file_name = '{}' AND stg_batch_id = '{}'"
+            # .format(staging_table, datim_id, file_name, batch_id), con=engine).values[0][0]
 
-                ins_counts = """
-                            INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, stg_rec_count)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s)
-                            """
-                cur.execute(ins_counts, (datim_id, batch_id, file_name, staging_table, load_time, self.count_of_df, count_of_stg))
-                conn.commit()
-                cur.close()
-                
-            except ValueError as ve:
-                self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
-                self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {file_name} file is empty')
-                logger.info('Sync File Log updated successfully')
-                logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
+            ins_counts = f"INSERT INTO stg_monitoring (datim_id, batch_id, file_name, table_name, load_time, json_rec_count, processed) VALUES \
+            ('{datim_id}', '{batch_id}', '{file_name}', '{staging_table}', '{load_time}', '{self.count_of_df}', 'N')"
 
-            except Exception as e:
-                logger.error(f"An unexpected error occurred: {str(e)}")
+            cur.execute(ins_counts)
+            conn.commit()
+            # Close database connection
+            conn.close()
 
-        else:
-            pass
-                
+        except ValueError as ve:
+            self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
+            self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
+            logger.info('Sync File Log updated successfully')
+            logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
+
+        except Exception as e:
+            logger.error(f"An unexpected error occurred: {str(e)}")
+            
         logger.info('-------------------------------------------')

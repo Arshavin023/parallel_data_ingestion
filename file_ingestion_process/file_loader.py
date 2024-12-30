@@ -11,19 +11,27 @@ from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Bo
 from sqlalchemy.dialects.postgresql import JSONB
 from src import logger
 import configparser
+pd.set_option('future.no_silent_downcasting', True)
 
-def read_db_config(filename='/home/lamisplus/database_credentials/config.ini', section='database'):
+db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
+# db_credentials_path = '/home/lamisplus/database_credentials/config.ini'
+server_temp = r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
+# server_temp = '/home/lamisplus/server/temp'
+
+def read_db_config(filename=db_credentials_path, section='database'):
     # Create a parser
     parser = configparser.ConfigParser()
     # Read the configuration file
     parser.read(filename)
     # Get section, default to database
     db = {}
+    print(filename)
     if parser.has_section(section):
         params = parser.items(section)
         for param in params:
             db[param[0]] = param[1]
     else:
+        print(db)
         raise Exception(f'Section {section} not found in the {filename} file')
     return db
 
@@ -34,8 +42,8 @@ pd.set_option('display.max_columns', None)
 class FileLoader:
     def __init__(self):
         self.facility_id = None
-        self.syncfile_entryID = None
-        self.demo_path = '/home/lamisplus/server/temp'
+        self.syncfile_entryid = None
+        self.demo_path = server_temp
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
@@ -135,7 +143,7 @@ class FileLoader:
         '''
         Performs a fake upsert operation on the sync_file table.
         This method updates an existing record in the sync_file table if it exists, or inserts a new one if it doesn't. 
-        The record is identified by the syncfile_entryID attribute.
+        The record is identified by the syncfile_entryid attribute.
         Parameters:
         - file_path (str): The path of the file being ingested.
         - tablename (str): The name of the table being ingested.
@@ -155,7 +163,7 @@ class FileLoader:
                                     ingest_status_check = %s
                                 WHERE id = %s"""
             cur.execute(fakeupsert_query, (self.load_start_time, file_name, table_name, 
-                                        ingest_status_check, self.syncfile_entryID))
+                                        ingest_status_check, self.syncfile_entryid))
             conn.commit()
             cur.close()
             logger.info('successfully updated sync_file records')
@@ -221,14 +229,14 @@ class FileLoader:
                                 ingest_end_time = %s,
                                 ingest_status_check = %s,
                                 json_rec_count = %s,
-                                ingest_error_message = %s
+                                ingest_error_message = %s, ingest_start_time = %s
                             WHERE id = %s
                             """
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
-                                    tab_count, error_msg[0:10000], self.syncfile_entryID))
+                                    tab_count, error_msg[0:10000], self.load_start_time, self.syncfile_entryid))
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.syncfile_entryid} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -286,19 +294,21 @@ class FileLoader:
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file WHERE processed = 1 and modified_date >= '2024-11-20'
+            AND file_name ILIKE 'patient_person_%'
             AND NOT (decrypted_file_name ilike 'mhpss_confirmation_%' 
             or decrypted_file_name ilike 'prep_eligibility_%' 
             or decrypted_file_name ILIKE 'prep_clinic_%' 
-            or decrypted_file_name ilike 'pmtct_anc_%' or decrypted_file_name ilike 'dsd_devolvement_%' 
+            or decrypted_file_name ilike 'pmtct_anc_%' 
+            or decrypted_file_name ilike 'dsd_devolvement_%' 
             or decrypted_file_name ilike 'hiv_art_clinical_%')
             ORDER BY modified_date asc
-            LIMIT 50000"""
+            LIMIT 1"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
 
             for file in files:
-                self.syncfile_entryID = file[0]
+                self.syncfile_entryid = file[0]
                 self.facility_id = file[1]
                 decryptedjson_file_name = file[2].replace('.json', '_decrypted.json')
                 local_dir = os.path.join(self.demo_path, self.facility_id, decryptedjson_file_name)
@@ -585,11 +595,12 @@ class FileLoader:
         Raises:
             Exception: If an error occurs during the ingestion process.
         '''
-        conn, engine = self._db_connect('lamisplus_staging_dwh')[0], self._db_connect('lamisplus_staging_dwh')[1]
+        conn, engine = self._db_connect('lamisplus_staging_dwh')
         load_time = datetime.now()
         batch_id = file_path.split('_')[-2]
         datim_id = self.facility_id
-        file_name = file_path.split('/')[-1]
+        # file_name = file_path.split('/')[-1]
+        file_name = file_path.split('\\')[-1]
         encrypted_file_name=file_name.replace('_decrypted','')
         
         # Define the type mapping function
@@ -618,11 +629,13 @@ class FileLoader:
         dtype_mapping = {col: convert_postgresql_to_sqlalchemy(dtype[col]) for col in dtype}
         
         try:
+            self.load_start_time = datetime.now()
             # Attempt to read JSON file into DataFrame
             df = pd.read_json(file_path, convert_dates=parse_dates)
             
             # Check if DataFrame is empty after reading JSON
             if df.empty:
+                self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, 0, 'JSON file is empty')
                 self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty', file_name)
                 logger.info('Sync File Log updated successfully')
@@ -666,12 +679,8 @@ class FileLoader:
                 df['stg_file_name'] = file_name
                 df['stg_datim_id'] = datim_id
                 self._replace_empty_strings_with_null(df)
-                #invalid_dates_df = df.loc[bad_indexes, :]
-                #invalid_dates_df['error_message'] = f'{file_name} has invalid dates: {validation_result}'
                 valid_dates_df = df.drop(bad_indexes)
-                # staging_table_bad_dates = f'{staging_table}_bad_dates'
                 valid_dates_df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
-                # invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
                 conn.commit()
                 self.count_of_df = len(valid_dates_df)
                 self.load_end_time = datetime.now()
@@ -710,7 +719,8 @@ class FileLoader:
                 conn.commit()
             
         except ValueError as ve:
-            self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
+            self.load_end_time = datetime.now()
+            self._update_log('failed', encrypted_file_name, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
