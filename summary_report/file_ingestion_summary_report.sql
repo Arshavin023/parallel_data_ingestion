@@ -1,4 +1,5 @@
-SELECT count(id) Total_Files,
+SELECT 'file_ingest_process',
+--count(id) Total_Files,
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
 SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
@@ -7,11 +8,15 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-10-01'
-and not (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%' or
-decrypted_file_name ilike 'mhpss_confirmation%')
+WHERE modified_date >= '2024-10-01'
+AND NOT (decrypted_file_name ILIKE ANY (
+ARRAY['prep_eligibility_%','prep_clinic_%','mhpss_confirmation_%'
+	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
+)
+-- )
+GROUP BY 1
 union all
-SELECT count(id) Total_Files,
+SELECT 'dsd_ingest_process',
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
 SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
@@ -20,16 +25,23 @@ SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) r
 SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
 SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
 FROM public.sync_file
-where modified_date >= '2024-12-01'
-and (decrypted_file_name ilike '%dsd_devolvement%' 
-	 or decrypted_file_name ilike '%hiv_art_clinical%'
-	--or decrypted_file_name ilike 'mhpss_confirmation%'
-	);
+WHERE modified_date >= '2024-10-01'
+AND (decrypted_file_name ILIKE ANY (
+ARRAY['prep_eligibility_%','prep_clinic_%',
+	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
+)
+GROUP BY 1;
+
+
 
 --Check for dict data type error in hiv_art_clinical and dsd_devolvement
 select *
 from public.sync_file 
-where processed=2 and create_date >= '2024-12-15' 
+where file_name='patient_visit_41_20241220035445.json'
+
+processed=1 
+
+and create_date >= '2024-12-01' 
 order by ingest_end_time desc limit 50
 --,processed,
 --update public.sync_file set processed = 1
@@ -59,13 +71,22 @@ where processed = -2 and modified_date >= '2024-07-20'
 order by ingest_end_time desc,decrypted_file_name
 limit 20;
 
-SELECT * --count(file_name)
+SELECT COUNT(id)
 FROM sync_file 
 --update sync_file set processed=1
 --delete from sync_file
-WHERE processed = 1 
-and
-modified_date >= '2024-10-01' 
+WHERE processed = 2 
+and file_name ILIKE 'patient_person_%'
+and 
+modified_date >= '2024-12-20' 
+ORDER BY modified_date DESC
+LIMIT 100;
+
+UPDATE sync_file
+SET processed=1
+WHERE processed = 2 
+and file_name ILIKE 'patient_person_%'
+and modified_date >= '2024-12-20';
 
 SELECT * FROM sync_file WHERE file_name ILIKE 'prep_clinic_%' AND processed=2
 AND ingest_end_time >= '2024-12-19' LIMIT 100
@@ -133,11 +154,18 @@ WHERE ingest_end_time >= '2024-11-28 00:00:00'
 AND processed IN (2) AND file_name ILIKE 'prep_eligibility_%'
 ORDER BY ingest_end_time DESC;
 
+
+-- cp patient_person_*_2024122010*_decrypted.json /home/uche/patient_person/
 -- check unprocessed
 SELECT * FROM sync_file
-WHERE file_name='hiv_art_pharmacy_regimens_13_20241129104352.json'
-ingest_end_time >= '2024-12-04' 
-AND processed=2
+WHERE facility_id='th3IMCg3lQ1' AND modified_date>='2024-12-20 10:00:00'
+AND file_name ILIKE 'patient_person_%'
+file_name IN ('patient_person_0_20241220102618.json',  'patient_person_4_20241220102618.json',
+'patient_person_0_20241220103544.json',  'patient_person_5_20241220102618.json',
+'patient_person_1_20241220102618.json',  'patient_person_6_20241220102618.json',
+'patient_person_2_20241220102618.json',  'patient_person_7_20241220102618.json',
+'patient_person_3_20241220102618.json')
+AND processed=1 LIMIT 100
 -- AND 
 id='a4b318af-bc34-438d-9eb8-197e3d0695e5'
 ORDER BY create_date;

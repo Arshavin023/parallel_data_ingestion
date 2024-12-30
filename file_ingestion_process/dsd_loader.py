@@ -14,9 +14,11 @@ from src import logger
 import configparser
 
 db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
-# '/home/lamisplus/database_credentials/config.ini'
-server_temp = r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
-# '/home/lamisplus/server/temp'
+# r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
+# db_credentials_path = '/home/lamisplus/database_credentials/config.ini'
+server_temp=r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
+# r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
+# server_temp = '/home/lamisplus/server/temp'
 
 def read_db_config(filename=db_credentials_path, section='database'):
     # Create a parser
@@ -291,17 +293,19 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2024-10-01'
+            FROM sync_file WHERE processed = 1 
+            and modified_date >= '2024-12-20 10:00:00'
+            --AND facility_id='th3IMCg3lQ1'
             AND (decrypted_file_name ilike 'patient_person_%' 
-            -- 	 or decrypted_file_name ilike 'mhpss_confirmation_%' 
-            -- 	 or decrypted_file_name ilike 'prep_eligibility_%' 
-            -- 	 or decrypted_file_name ILIKE 'prep_clinic_%' 
-            -- 	 or decrypted_file_name ilike 'pmtct_anc_%' 
-            -- 	 or decrypted_file_name ilike 'dsd_devolvement%' 
-            -- 	 or decrypted_file_name ilike 'hiv_art_clinical%'
+            --or decrypted_file_name ilike 'mhpss_confirmation_%' 
+            or decrypted_file_name ilike 'prep_eligibility_%' 
+            or decrypted_file_name ILIKE 'prep_clinic_%' 
+            or decrypted_file_name ilike 'pmtct_anc_%' 
+            or decrypted_file_name ilike 'dsd_devolvement%' 
+            or decrypted_file_name ilike 'hiv_art_clinical%'
                 )
-            ORDER BY modified_date ASC
-            LIMIT 20"""
+            ORDER BY facility_id, modified_date ASC
+            LIMIT 1"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()

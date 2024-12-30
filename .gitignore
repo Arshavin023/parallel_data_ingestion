@@ -18,4 +18,4 @@ __pycache__/
 .cache/
 .local/
 .vscode-server/
-.lamisplus/
+.lamisplus_venv/

@@ -1,15 +1,11 @@
 import psycopg2
 from datetime import datetime
 import logging
-from dsd_loader import FileLoader
+from file_loader import FileLoader
 from src import logger
 import configparser
 
 db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
-# '/mnt/c/Users/5300/Documents/Palladium/database_credentials/config.ini'
-
-# r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
-
 # '/home/lamisplus/database_credentials/config.ini'
 def read_db_config(filename=db_credentials_path, section='database'):
     # Create a parser
