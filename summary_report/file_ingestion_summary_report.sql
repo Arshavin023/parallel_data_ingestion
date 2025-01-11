@@ -1,14 +1,10 @@
 SELECT 'file_ingest_process',
---count(id) Total_Files,
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
 SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
-SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete,
-SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) real_decryption_fails,
-SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
-SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
+SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete
 FROM public.sync_file
-WHERE modified_date >= '2024-10-01'
+WHERE modified_date >= '2024-12-01'
 AND NOT (decrypted_file_name ILIKE ANY (
 ARRAY['prep_eligibility_%','prep_clinic_%','mhpss_confirmation_%'
 	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
@@ -20,12 +16,9 @@ SELECT 'dsd_ingest_process',
 SUM(CASE WHEN processed =2 THEN 1 ELSE 0 END) processed_count,
 SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
-SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete,
-SUM(CASE WHEN processed =-2 AND ingest_status_check is null THEN 1 ELSE 0 END) real_decryption_fails,
-SUM(CASE WHEN processed =-2 AND ingest_status_check is not null THEN 1 ELSE 0 END) ingestion_fails,
-SUM(CASE WHEN processed =-2 THEN 1 ELSE 0 END) fails, CURRENT_TIMESTAMP check_data
+SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete
 FROM public.sync_file
-WHERE modified_date >= '2024-10-01'
+WHERE modified_date >= '2024-12-01'
 AND (decrypted_file_name ILIKE ANY (
 ARRAY['prep_eligibility_%','prep_clinic_%',
 	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
@@ -33,157 +26,53 @@ ARRAY['prep_eligibility_%','prep_clinic_%',
 GROUP BY 1;
 
 
+SELECT REGEXP_REPLACE(file_name, '_[0-9]+.*|\\.json', '') table_name, 'UNPROCESSED', COUNT(file_name)
+FROM sync_file
+WHERE processed=1 AND modified_date >= '2024-12-01'
+AND NOT (decrypted_file_name ILIKE ANY(ARRAY[
+'mhpss_confirmation_%', 'prep_eligibility_%', 'prep_clinic_%',
+'pmtct_anc_%', 'dsd_devolvement_%', 'hiv_art_clinical_%'
+]))
+GROUP BY 1, 2;
 
---Check for dict data type error in hiv_art_clinical and dsd_devolvement
-select *
-from public.sync_file 
-where file_name='patient_visit_41_20241220035445.json'
+SELECT *, (end_time-start_time) time_taken
+FROM public.batch_stg_table_logs
+WHERE status='PROCESSED'
+ORDER BY table_name_count DESC;
 
-processed=1 
+SELECT *
+FROM public.batch_stg_table_logs
+WHERE status != 'PROCESSED'
+ORDER BY table_name_count DESC;
 
-and create_date >= '2024-12-01' 
-order by ingest_end_time desc limit 50
---,processed,
---update public.sync_file set processed = 1
-where processed=2 and ingest_end_time is not null and
---and ingest_error_message ilike '%adapt type ''dict''%'
-decrypted_file_name ilike '%biometric%'
---and 
---and (decrypted_file_name ilike '%dsd_devolvement%' or decrypted_file_name ilike '%hiv_art_clinical%')
-order by ingest_end_time desc
-limit 20;
-e_name ilike '%hiv_art_clinical%')
-order by create_date desc
-limit 5
+SELECT MIN(start_time) min_start, MAX(end_time) max_end
+FROM public.batch_stg_table_logs
+-- WHERE status != 'PROCESSED'
+ORDER BY table_name_count DESC;
 
--- check for bad dates in IPs, facilities, etc
-select cpm.ip_name,cpm.facility_name,sf.create_date,sf.modified_date,sf.decrypted_file_name,ingest_table_name,processed,
-sf.ingest_start_time,sf.ingest_end_time,sf.facility_id,sf.json_rec_count, sf.ingest_error_message
-from sync_file sf left join central_partner_mapping cpm on sf.facility_id=cpm.datim_id
---delete from sync_file
-where processed = -2 and modified_date >= '2024-07-20'
---and cpm.ip_name in ('ACE-1')
---and
---update sync_file set processed=1 where processed=-2 --and modified_date >= '2024-07-23'
---and file_name ilike '%laboratory_order_0_20240723170117.json%'
---and ingest_error_message ilike '%ValueError%' 
---and ingest_error_message ilike '%Bad date records were filtered%'
-order by ingest_end_time desc,decrypted_file_name
-limit 20;
-
-SELECT COUNT(id)
-FROM sync_file 
---update sync_file set processed=1
---delete from sync_file
-WHERE processed = 2 
-and file_name ILIKE 'patient_person_%'
-and 
-modified_date >= '2024-12-20' 
-ORDER BY modified_date DESC
+SELECT DISTINCT facility_id
+FROM sync_file
+WHERE ingest_end_time BETWEEN '2025-01-03 19:10:00' AND '2025-01-03 19:22:00'
+AND file_name ILIKE 'patient_person_%'
+-- AND processed=-2
 LIMIT 100;
 
+SELECT * FROM sync_file
+WHERE file_name='patient_person_0_20250103141949.json'
+
 UPDATE sync_file
-SET processed=1
-WHERE processed = 2 
-and file_name ILIKE 'patient_person_%'
-and modified_date >= '2024-12-20';
-
-SELECT * FROM sync_file WHERE file_name ILIKE 'prep_clinic_%' AND processed=2
-AND ingest_end_time >= '2024-12-19' LIMIT 100
---and file_name ilike '%hiv_art_clinical_11_20240723010334.json%'
-and ingest_start_time is null AND ingest_error_message is null
-AND (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
-ilike 'dsd_devolvement%')
-ORDER BY modified_date DESC
+SET processed=1, ingest_error_message=null,
+ingest_file_name=null,ingest_start_time=null,
+ingest_status_check=null,json_rec_count=null
+WHERE ingest_start_time >= '2025-01-03 19:10:00'
+AND ingest_end_time <= '2025-01-03 19:23:00';
 
 
---SELECT decrypted_file_name, ingest_error_message,
-update sync_file
-set ingest_error_message=REPLACE(ingest_error_message,' successfully ingested',
-       CONCAT(' ',json_rec_count, ' records successfully ingested')),
-		processed=-2
---SELECT decrypted_file_name, ingest_error_message from sync_file
-WHERE processed = 2 and ingest_start_time >= '2024-07-31'  
-and ingest_error_message ilike '% ingested'
-and decrypted_file_name in ('hiv_art_pharmacy_15_20240731125137.json')
-
-select processed,json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
-from sync_file
-WHERE processed = -2 --and ingest_start_time >= '2024-08-01' 
-and ingest_error_message ilike '% ingested'
-select processed,replace(file_name,'.json','_decrypted.json')
-						 json_rec_count,ingest_error_message,ingest_start_time,ingest_end_time
-from sync_file
-WHERE processed = 2 and ingest_start_time >= '2024-06-01' 
---and ingest_error_message ilike '% ingested' 
-AND facility_id in ('f0J277xHATh')
---and decrypted_file_name in ('hiv_enrollment_0_20240729165118.json')
---and ingest_end_time is null 
-ORDER BY ingest_end_time DESC
-LIMIT 100
-
-select * from stg_pmtct_infant_pcr
-where uuid is null
-
-select * from stg_pmtct_infant_arv
-where uuid is null
-
-select * 
-from sync_file
-WHERE ingest_error_message = 'No errors'
-and ingest_end_time >= '2024-08-17'
-ORDER BY ingest_end_time DESC
-
---check failed ingestion
-SELECT * FROM sync_file
-WHERE ingest_end_time is not null and ingest_end_time >= '2024-11-12 00:00:00'
--- AND NOT (file_name ilike 'hiv_art_clinical%' OR file_name ilike 'dsd_devolvement%')
--- -- AND ingest_error_message not ilike '%Bad date records%'
--- AND ingest_error_message not ilike '%reupload%'
--- AND file_name ilike '%laboratory_sample_0_20240830180844.json%'
-AND processed=2
-ORDER BY ingest_end_time DESC;
-
---2438
--- check successful ingestion
-SELECT * FROM sync_file
-WHERE ingest_end_time >= '2024-11-28 00:00:00'
--- AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' or decrypted_file_name 
---             ILIKE 'dsd_devolvement%' or decrypted_file_name ilike 'mhpss_confirmation%'
---             or decrypted_file_name ilike 'pmtct_anc%')
-AND processed IN (2) AND file_name ILIKE 'prep_eligibility_%'
-ORDER BY ingest_end_time DESC;
-
-
--- cp patient_person_*_2024122010*_decrypted.json /home/uche/patient_person/
--- check unprocessed
-SELECT * FROM sync_file
-WHERE facility_id='th3IMCg3lQ1' AND modified_date>='2024-12-20 10:00:00'
-AND file_name ILIKE 'patient_person_%'
-file_name IN ('patient_person_0_20241220102618.json',  'patient_person_4_20241220102618.json',
-'patient_person_0_20241220103544.json',  'patient_person_5_20241220102618.json',
-'patient_person_1_20241220102618.json',  'patient_person_6_20241220102618.json',
-'patient_person_2_20241220102618.json',  'patient_person_7_20241220102618.json',
-'patient_person_3_20241220102618.json')
-AND processed=1 LIMIT 100
--- AND 
-id='a4b318af-bc34-438d-9eb8-197e3d0695e5'
-ORDER BY create_date;
-
-SELECT facility_id, 'UNPROCESSED', COUNT(file_name)
-FROM sync_file
-WHERE processed=-2 AND modified_date >= '2024-12-12'
-AND NOT (decrypted_file_name ilike 'hiv_art_clinical%' 
-		 or decrypted_file_name ILIKE 'dsd_devolvement%' 
-		 or decrypted_file_name ilike 'mhpss_confirmation%')
-GROUP BY 1,2;
-
-SELECT * FROM sync_file WHERE id='a9afe448-c545-437d-bacc-9564d117d04d'
-
-SELECT COUNT(*)
--- file_name,
--- 'stg_' || LEFT(file_name, POSITION('_' || SUBSTRING(file_name, '[0-9]') IN file_name) - 1) AS table_name,
--- ingest_file_name, ingest_table_name 
-FROM sync_file 
-WHERE file_name != REPLACE(ingest_file_name,'_decrypted.json','.json')
-LIMIT 100
+SELECT *
+FROM public.sync_file
+WHERE modified_date >= '2024-12-01'
+AND NOT (decrypted_file_name ILIKE ANY (
+ARRAY['prep_eligibility_%','prep_clinic_%','mhpss_confirmation_%'
+	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
+)
+AND processed=1
