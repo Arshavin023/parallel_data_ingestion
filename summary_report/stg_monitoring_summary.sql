@@ -13,17 +13,13 @@ SELECT * FROM stg_hiv_art_pharmacy_regimens LIMIT 100
 
 SELECT DISTINCT error_message
 FROM stg_monitoring
-WHERE table_name='stg_pmtct_infant_arv' 
+WHERE table_name='stg_hts_pns_index_client_partner' 
 AND load_time >= '2024-10-01'
 -- AND datim_id NOT IN (SELECT datim_id FROM central_partner_mapping WHERE is_run)
 AND processed='F';
 
 UPDATE stg_monitoring SET processed='N'
-WHERE table_name IN ('stg_pmtct_infant_arv' 
--- 	'stg_hiv_eac_out_come','stg_patient_visit',
--- 				  'stg_case_manager_patients','stg_hiv_art_pharmacy_regimens'
-) 
-AND (error_message ILIKE '%date_of_arv%' OR error_message ILIKE '%infant_id%')
+WHERE table_name NOT IN ('stg_pmtct_infant_arv','stg_pmtct_infant_pcr')
 AND processed='F';
 
 SELECT REPLACE(table_name,'stg_','') table_name, COUNT(file_name) unprocessed_files
@@ -101,3 +97,5 @@ where stg_load_time >= '2024-11-26'
 and liver_function_test_results is not null
 and liver_function_test_results!=null
 limit 10;
+
+UPDA
