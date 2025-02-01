@@ -4,7 +4,7 @@ SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
 SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete
 FROM public.sync_file
-WHERE modified_date >= '2024-12-01'
+WHERE modified_date >= '2025-01-01'
 AND NOT (decrypted_file_name ILIKE ANY (
 ARRAY['prep_eligibility_%','prep_clinic_%','mhpss_confirmation_%'
 	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
@@ -18,7 +18,7 @@ SUM(CASE WHEN processed =0 THEN 1 ELSE 0 END) just_uploaded,
 SUM(CASE WHEN processed =-1 THEN 1 ELSE 0 END) decryption_queue,
 SUM(CASE WHEN processed =1 THEN 1 ELSE 0 END) decrypted_complete
 FROM public.sync_file
-WHERE modified_date >= '2024-12-01'
+WHERE modified_date >= '2025-01-01'
 AND (decrypted_file_name ILIKE ANY (
 ARRAY['prep_eligibility_%','prep_clinic_%',
 	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
@@ -28,7 +28,7 @@ GROUP BY 1;
 
 SELECT REGEXP_REPLACE(file_name, '_[0-9]+.*|\\.json', '') table_name, 'UNPROCESSED', COUNT(file_name)
 FROM sync_file
-WHERE processed=1 AND modified_date >= '2024-12-01'
+WHERE processed=1 AND modified_date >= '2025-01-01'
 AND NOT (decrypted_file_name ILIKE ANY(ARRAY[
 'mhpss_confirmation_%', 'prep_eligibility_%', 'prep_clinic_%',
 'pmtct_anc_%', 'dsd_devolvement_%', 'hiv_art_clinical_%'
@@ -61,16 +61,24 @@ SELECT * FROM sync_file
 WHERE file_name='patient_person_0_20250103141949.json'
 
 UPDATE sync_file
-SET processed=1, ingest_error_message=null,
+SET processed=0
+WHERE file_name ILIKE 'hts_risk_stratification%'
+AND modified_date >= '2025-01-01'
+AND processed != 0;
+
+, ingest_error_message=null,
 ingest_file_name=null,ingest_start_time=null,
 ingest_status_check=null,json_rec_count=null
 WHERE ingest_start_time >= '2025-01-03 19:10:00'
 AND ingest_end_time <= '2025-01-03 19:23:00';
 
-
+SELECT * FROM sync_file 
+WHERE file_name ILIKE 'hts_risk_stratification%' 
+ORDER BY modified_date DESC
+LIMIT 100;
 SELECT *
 FROM public.sync_file
-WHERE modified_date >= '2024-12-01'
+WHERE modified_date >= '2025-01-01'
 AND NOT (decrypted_file_name ILIKE ANY (
 ARRAY['prep_eligibility_%','prep_clinic_%','mhpss_confirmation_%'
 	'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%'])
