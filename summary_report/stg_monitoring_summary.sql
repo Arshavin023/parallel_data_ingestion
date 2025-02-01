@@ -4,7 +4,7 @@ WHERE table_name NOT IN
 ('stg_laboratory_sample_type','stg_laboratory_labtestgroup',
  'stg_hiv_patient_tracker','stg_biometric','stg_laboratory_number'
 'stg_hiv_regimen_drug','stg_prep_regimen','stg_mhpss_screening') 
-AND load_time >= '2024-10-01' AND load_time <= '2024-12-22 12:00:00'
+AND load_time >= '2024-10-01' --AND load_time <= '2024-12-22 12:00:00'
 AND processed='N' 
 GROUP BY 1
 ORDER BY COUNT(file_name) DESC;
