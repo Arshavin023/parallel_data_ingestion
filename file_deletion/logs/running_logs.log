@@ -22,3 +22,8 @@
 [2025-04-02 19:35:26,554: INFO: file_deletion_process: Deletion of json files started]
 [2025-04-02 19:35:27,292: INFO: file_deletion_process: Deletion of json files completed]
 [2025-04-02 19:35:27,305: INFO: file_deletion_process: Deletion Job for decrypted files was run successfully completed]
+[2025-04-03 15:43:37,558: INFO: file_deletion_process: DPID_20250403_15_43]
+[2025-04-03 15:43:37,563: INFO: file_deletion_process: Deletion of json files started]
+[2025-04-03 15:44:08,296: INFO: automate_file_delete: Error: join() argument must be str, bytes, or os.PathLike object, not 'NoneType']
+[2025-04-03 15:44:08,298: INFO: file_deletion_process: Deletion of json files completed]
+[2025-04-03 15:44:14,540: INFO: file_deletion_process: Deletion Job for decrypted files was run successfully completed]
