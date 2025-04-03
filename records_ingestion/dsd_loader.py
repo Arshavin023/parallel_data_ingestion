@@ -12,30 +12,11 @@ from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Bo
 from sqlalchemy.dialects.postgresql import JSONB
 from src import logger
 import configparser
+from database_connection.db_connect import connect_to_db
 
-db_credentials_path=r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
-# r'C:\Users\5300\Documents\Palladium\database_credentials\config.ini'
-# db_credentials_path = '/home/lamisplus/database_credentials/config.ini'
-server_temp=r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
-# r'C:\Users\5300\Documents\Palladium\lamisplus_file_server\server\temp'
-# server_temp = '/home/lamisplus/server/temp'
 
-def read_db_config(filename=db_credentials_path, section='database'):
-    # Create a parser
-    parser = configparser.ConfigParser()
-    # Read the configuration file
-    parser.read(filename)
-    # Get section, default to database
-    db = {}
-    if parser.has_section(section):
-        params = parser.items(section)
-        for param in params:
-            db[param[0]] = param[1]
-    else:
-        raise Exception(f'Section {section} not found in the {filename} file')
-    return db
-
-db_config = read_db_config()
+NO_ERRORS = 'No errors'
+server_temp = '/home/lamisplus/server/temp'
 
 pd.set_option('display.max_columns', None)
 
@@ -47,30 +28,6 @@ class FileLoader:
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
-
-    def _db_connect(self, database:str):
-        '''
-        Establishes a connection to the specified PostgreSQL database.
-        Parameters:
-        - database (str): The name of the database to connect to.
-        Returns:
-        - conn (psycopg2.connection): The connection object.
-        - engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine object.
-        Raises:
-        - Exception: If connection to the database fails.
-        '''
-        db_params = {'host': db_config['stg_host'], 'database': database, 'user': db_config['stg_username'],
-                     'password': db_config['stg_password'], 'port': db_config['stg_port'],}
-        try:
-            conn = psycopg2.connect(**db_params)
-            engine = create_engine(f'postgresql://{db_params["user"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}')
-            
-            return [conn, engine]
-        
-        except Exception as e:
-            logger.exception(e)
-            raise e
-
 
     def _get_and_map_cols(self, table_name):
         '''
@@ -84,7 +41,7 @@ class FileLoader:
         - Exception: If an error occurs while retrieving column information.
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
 
             retrieve_query = f"""SELECT column_name, data_type
@@ -117,7 +74,7 @@ class FileLoader:
         - Exception: If an error occurs while inserting the record into the file_ingestion_log table.
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
             self.load_start_time = datetime.now()
             load_status_check = 'processing'
@@ -138,12 +95,11 @@ class FileLoader:
             logger.exception(e)
             raise e 
 
-
-    def _fakeupsert_synclog(self, file_path, tablename):
+    def _fakeupsert_synclog(self, decrypted_file_name, staging_table):
         '''
         Performs a fake upsert operation on the sync_file table.
         This method updates an existing record in the sync_file table if it exists, or inserts a new one if it doesn't. 
-        The record is identified by the syncfile_entryid attribute.
+        The record is identified by the syncfile_entryID attribute.
         Parameters:
         - file_path (str): The path of the file being ingested.
         - tablename (str): The name of the table being ingested.
@@ -151,22 +107,20 @@ class FileLoader:
         - Exception: If an error occurs while performing the fake upsert operation on the sync_file table.
         '''
         try:
-            conn = self._db_connect('filedb')[0]
+            conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
-            ingest_status_check = 'processing'
-            table_name = f'stg_{tablename}'
-            file_name = os.path.basename(file_path)
             fakeupsert_query = """UPDATE sync_file 
                                 SET ingest_start_time = %s, 
                                     ingest_file_name = %s, 
-                                    ingest_table_name = %s, 
-                                    ingest_status_check = %s
-                                WHERE id = %s"""
-            cur.execute(fakeupsert_query, (self.load_start_time, file_name, table_name, 
-                                        ingest_status_check, self.syncfile_entryid))
+                                    ingest_table_name = %s
+                                WHERE id = %s
+                                """
+            self.load_start_time = datetime.now()
+            cur.execute(fakeupsert_query, (self.load_start_time, decrypted_file_name, staging_table, 
+                                           self.syncfile_entryid))
             conn.commit()
             cur.close()
-            logger.info('successfully updated sync_file records')
+            logger.info('successfully updated start_time, file_name and stg_table in sync_file')
 
         except Exception as e:
             logger.exception(e)
@@ -187,7 +141,7 @@ class FileLoader:
         - Exception: If an error occurs while updating the file ingestion log.
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
             self.load_end_time = datetime.now()
             load_status_check = proc_status
@@ -222,7 +176,7 @@ class FileLoader:
         - Exception: If an error occurs while updating the synchronization file log.
         '''  
         try: 
-            conn = self._db_connect('filedb')[0]
+            conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
             ingest_status_check = proc_status
             update_query = """UPDATE sync_file 
@@ -252,7 +206,7 @@ class FileLoader:
         - Exception: If an error occurs while updating the central partner mapping.
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
 
             get_patient_count = """
@@ -263,7 +217,7 @@ class FileLoader:
             p_count_per_datemid = cur.fetchone()[0]
             cur.close()
 
-            conn = self._db_connect('filedb')[0]
+            conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
             update_query = """UPDATE central_partner_mapping 
                             SET patient_count = %s
@@ -289,23 +243,18 @@ class FileLoader:
         - Exception: If an error occurs while retrieving or processing files from the sync_file table.
         '''
         try:
-            conn = self._db_connect('filedb')[0]
+            conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 
-            and modified_date >= '2024-12-20 10:00:00'
-            --AND facility_id='th3IMCg3lQ1'
-            AND (decrypted_file_name ilike 'patient_person_%' 
-            --or decrypted_file_name ilike 'mhpss_confirmation_%' 
-            or decrypted_file_name ilike 'prep_eligibility_%' 
-            or decrypted_file_name ILIKE 'prep_clinic_%' 
-            or decrypted_file_name ilike 'pmtct_anc_%' 
-            or decrypted_file_name ilike 'dsd_devolvement%' 
-            or decrypted_file_name ilike 'hiv_art_clinical%'
-                )
-            ORDER BY facility_id, modified_date ASC
-            LIMIT 1"""
+            FROM sync_file WHERE processed = 1 and modified_date >= '2025-01-01'
+            AND (
+                decrypted_file_name ILIKE ANY 
+                (ARRAY['prep_eligibility_%',
+                'prep_clinic_%', 'mhpss_confirmation_%',
+                'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']
+                ))
+            LIMIT 2000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -313,24 +262,29 @@ class FileLoader:
             for file in files:
                 self.syncfile_entryid = file[0]
                 self.facility_id = file[1]
-                decryptedjson_file_name = file[2].replace('.json', '_decrypted.json')
-                local_dir = os.path.join(self.demo_path, self.facility_id, decryptedjson_file_name)
+                encrypted_file_name = file[2]
+                decrypted_file_name = encrypted_file_name.replace('.json', '_decrypted.json')
+                local_dir = os.path.join(self.demo_path, self.facility_id, decrypted_file_name)
+                tablename = self._process_derive_tablename(local_dir)
+                staging_table = f'stg_{tablename}'
 
                 if os.path.exists(local_dir):
-                    logger.info('-----------------------------------------------------------------------------')
+                    logger.info('----------------------------s-------------------------------------------------')
                     logger.info(f"The file '{local_dir}' exists.")
+                    self._fakeupsert_synclog(decrypted_file_name,staging_table)
                     self._process_file_by_name(local_dir)
                 else:
+                    self._fakeupsert_synclog(decrypted_file_name,staging_table)
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
-                    self._update_flag_syncfile('processed in the past', 3, 0, 'No errors') 
-                    pass
+                    self.load_end_time = datetime.now()
+                    self._update_flag_syncfile('loaded in the past', 3, 0, NO_ERRORS)
+
             cur.close()
             logger.info('json files successfully processed')
 
         except Exception as e:
             logger.exception(e)
             raise e
-
 
     def _process_derive_tablename(self, file_path):
         '''
@@ -369,7 +323,7 @@ class FileLoader:
         - Exception: If an error occurs during the database query.    
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
             check_query = """SELECT COUNT(*) FROM file_ingestion_log 
                             WHERE file_name = %s AND facility_id = %s AND load_status_check = 'success' """
@@ -399,7 +353,7 @@ class FileLoader:
         - Exception: If an error occurs during the database query.
         '''
         try:
-            conn = self._db_connect('lamisplus_staging_dwh')[0]
+            conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
             check_query = """SELECT COUNT(*) FROM file_ingestion_log 
                             WHERE file_name = %s AND facility_id = %s 
@@ -569,7 +523,7 @@ class FileLoader:
         Raises:
             Exception: If an error occurs during the ingestion process.
         '''
-        conn, engine = self._db_connect('lamisplus_staging_dwh')[0], self._db_connect('lamisplus_staging_dwh')[1]
+        conn, engine = connect_to_db.connect('lamisplus_staging_dwh')[0], connect_to_db.connect('lamisplus_staging_dwh')[1]
         load_time = datetime.now()
         batch_id = file_path.split('_')[-2]
         datim_id = self.facility_id
