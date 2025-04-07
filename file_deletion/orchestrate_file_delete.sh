@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define the path to your Python script
-SCRIPT_PATH="/home/lamisplus/lamisplus_ingestion_pipeline/file_deletion_process.py"
-LOG_FILE="/home/lamisplus/lamisplus_ingestion_pipeline/logs/file_deletion_pipeline.log"
+SCRIPT_PATH="/home/lamisplus/ingestion_pipeline/file_deletion/file_deletion_process.py"
+LOG_FILE="/home/lamisplus/ingestion_pipeline/file_deletion/logs/file_deletion_pipeline.log"
 
 # Check if the script file exists
 if [ ! -f "$SCRIPT_PATH" ]; then
