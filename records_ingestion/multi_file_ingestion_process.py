@@ -42,7 +42,6 @@ def insert_facility_uploads():
             FROM sync_file
             WHERE processed = 1
               AND modified_date >= '2025-01-01'
-            LIMIT 50
         ) z
         WHERE NOT (
             decrypted_file_name ILIKE ANY (

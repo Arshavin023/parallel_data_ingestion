@@ -1,7 +1,7 @@
 #!/bin/bash
 # Define the path to your Python script
-SCRIPT_PATH="/home/lamisplus/lamisplus_ingestion_pipeline/dsd_ingestion_process.py"
-LOG_FILE="/home/lamisplus/lamisplus_ingestion_pipeline/logs/dsd_pipeline.log"
+SCRIPT_PATH="dsd_ingestion_process.py"
+LOG_FILE="logs/dsd_pipeline.log"
 
 # Change directory to your project directory
 cd /home/lamisplus || { echo "Error: Unable to change directory." >&2; exit 1; }
@@ -10,7 +10,7 @@ cd /home/lamisplus || { echo "Error: Unable to change directory." >&2; exit 1; }
 source lamisplus_venv/bin/activate || { echo "Error: Unable to activate virtual environment." >&2; exit 1; }
 
 # Change to project directory 
-cd /home/lamisplus/lamisplus_ingestion_pipeline || { echo "Error: Unable to change directory." >&2; exit 1; }
+cd /home/lamisplus/ingestion_pipeline/records_ingestion || { echo "Error: Unable to change directory." >&2; exit 1; }
 
 # Function to check if the pipeline is running
 is_pipeline_running() {

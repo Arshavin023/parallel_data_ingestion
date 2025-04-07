@@ -183,10 +183,12 @@ class FileLoader:
                                 ingest_status_check = %s,
                                 json_rec_count = %s,
                                 ingest_error_message = %s
-                            WHERE id = %s
+                            WHERE id = %s AND facility_id = %s
                             """
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
-                                    tab_count, error_msg[0:10000], self.syncfile_entryID))
+                                    tab_count, error_msg[0:10000], self.syncfile_entryID,
+                                    self.facility_id))
+            
             conn.commit()
             cur.close()
             logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
