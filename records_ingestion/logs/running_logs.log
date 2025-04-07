@@ -1258,3 +1258,5 @@
 [2025-04-07 22:56:18,679: INFO: file_loader: The file '/home/server_user/server/temp/iWJPpf18IyU/base_application_codeset_0_20250101045710_decrypted.json' does not exist. Skipping to next file]
 [2025-04-07 22:56:18,711: INFO: file_loader: Sync File log updated for 743d95d5-6f51-4e1e-a739-d0b1ca6e981c successfully]
 [2025-04-07 22:56:18,711: INFO: file_loader: json files successfully processed]
+[2025-04-07 23:00:02,829: INFO: file_loader: json files successfully processed]
+[2025-04-07 23:00:02,847: INFO: dsd_loader: json files successfully processed]

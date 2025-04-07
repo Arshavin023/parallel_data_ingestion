@@ -308,3 +308,9 @@ Job Started
 [2025-04-07 22:56:18,711: INFO: file_loader: json files successfully processed]
 Job was run Successfully
 2025-04-07 22:56:19: Pipeline completed successfully.
+2025-04-07 23:00:01: Starting the pipeline...
+IPID_20250407_23_00
+Job Started
+[2025-04-07 23:00:02,829: INFO: file_loader: json files successfully processed]
+Job was run Successfully
+2025-04-07 23:00:03: Pipeline completed successfully.
