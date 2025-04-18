@@ -1,6 +1,6 @@
 #!/bin/bash
 # Define the path to your Python script
-SCRIPT_PATH="file_ingestion_process.py"
+SCRIPT_PATH="multi_file_ingestion_process.py"
 LOG_FILE="logs/file_ingestion.log"
 
 # Change directory to your project directory

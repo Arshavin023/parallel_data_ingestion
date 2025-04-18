@@ -41,7 +41,7 @@ def main():
         """ 
         cur.execute(update_pipeline_query, (delete_end_time, 'Job Passed', 'No Errors', records_processed, log_id))
         conn.commit()
-        logger.info('Deletion Job for decrypted files was run successfully completed')
+        logger.info('Deletion Job for files was run successfully completed')
 
     except Exception as e:
         error_msg =str(e)

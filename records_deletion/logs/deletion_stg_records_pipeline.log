@@ -1,0 +1,193 @@
+2025-04-08 03:00:01: Starting the pipeline...
+2025-04-08 03:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 09:00:02: Starting the pipeline...
+2025-04-16 09:00:02: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 10:00:01: Starting the pipeline...
+2025-04-16 10:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 11:00:01: Starting the pipeline...
+2025-04-16 11:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 12:00:01: Starting the pipeline...
+2025-04-16 12:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 13:00:01: Starting the pipeline...
+2025-04-16 13:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 14:00:01: Starting the pipeline...
+2025-04-16 14:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 15:00:02: Starting the pipeline...
+2025-04-16 15:00:02: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 16:00:01: Starting the pipeline...
+2025-04-16 16:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 17:00:01: Starting the pipeline...
+2025-04-16 17:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 18:00:01: Starting the pipeline...
+2025-04-16 18:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 19:00:02: Starting the pipeline...
+2025-04-16 19:00:02: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 20:00:01: Starting the pipeline...
+2025-04-16 20:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 21:00:01: Starting the pipeline...
+2025-04-16 21:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 22:00:01: Starting the pipeline...
+2025-04-16 22:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-16 23:00:01: Starting the pipeline...
+2025-04-16 23:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 00:00:01: Starting the pipeline...
+2025-04-17 00:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 01:00:01: Starting the pipeline...
+2025-04-17 01:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 02:00:01: Starting the pipeline...
+2025-04-17 02:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 03:00:01: Pipeline is already running. Exiting.
+2025-04-17 04:00:01: Starting the pipeline...
+2025-04-17 04:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 05:00:01: Starting the pipeline...
+2025-04-17 05:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 06:00:01: Starting the pipeline...
+2025-04-17 06:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 07:00:01: Starting the pipeline...
+2025-04-17 07:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 08:00:01: Starting the pipeline...
+2025-04-17 08:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 09:00:01: Starting the pipeline...
+2025-04-17 09:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 10:00:01: Starting the pipeline...
+2025-04-17 10:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 11:00:01: Starting the pipeline...
+2025-04-17 11:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 12:00:01: Starting the pipeline...
+2025-04-17 12:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 13:00:01: Starting the pipeline...
+2025-04-17 13:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 14:00:01: Starting the pipeline...
+2025-04-17 14:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-17 15:00:01: Starting the pipeline...
+2025-04-17 15:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'
+2025-04-18 00:00:01: Starting the pipeline...
+2025-04-18 00:00:01: Pipeline started successfully.
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ModuleNotFoundError: No module named 'src'

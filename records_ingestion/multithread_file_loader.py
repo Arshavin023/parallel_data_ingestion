@@ -252,7 +252,7 @@ class FileLoader:
             FROM sync_file 
             WHERE processed = 1
             AND modified_date >= '2025-01-01 00:00:00'
-            AND facility_id = '{facility_id}'
+            AND facility_id = '{facility_id}' AND decrypted_file_name != 'hiv_enrollment_0_20250410104014.json'
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 
             'mhpss_confirmation_%','pmtct_anc_%',
@@ -607,10 +607,12 @@ class FileLoader:
                 columns_to_exclude = ['match_type', 'match_person_uuid', 'match_biometric_id']
                 columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
                 df = df[columns_to_include]
-
+            elif staging_table == 'stg_hiv_enrollment':
+                columns_to_exclude = ['target_group_id_original']
+                columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+                df = df[columns_to_include]
             elif staging_table == 'stg_hts_client':
                 df['extra'] = df['extra'].apply(lambda x: {'type': x['type'], 'value': self.mask_pii(x['value'])})
-
             elif staging_table == 'stg_hts_index_elicitation':
                 df['last_name'] = '******'
                 df['first_name'] = '******'

@@ -85,64 +85,72 @@ class FileDelete:
             return check_path
     
     def delete_encrypted_files(self):
-        try:
-            conn = connect_to_db.connect('filedb')[0]
-            cur = conn.cursor()
-            retrieve_query = """SELECT sf.facility_id, sf.file_name, sf.ingest_file_name
-                                FROM public.sync_file sf
-                                WHERE sf.processed IN (2, -2)
-                                  AND sf.modified_date >= '2024-09-01'
-                                  AND sf.ingest_end_time IS NOT NULL
-                                  AND sf.file_name IS NOT NULL
-                                  AND NOT EXISTS (
-                                    SELECT 1
-                                    FROM public.file_deletion_log fdl
-                                    WHERE fdl.file_name = sf.file_name
-                                    AND fdl.deletion_status_check IN ('success', 'failed')
-                                    AND fdl.file_name NOT ILIKE '%_decrypted%')
-                                LIMIT 13000
-                                """
-            cur.execute(retrieve_query)
+        # Connect to the database
+        conn = connect_to_db.connect('filedb')[0]
+        cur = conn.cursor()
+        retrieve_query = """SELECT sf.facility_id, sf.file_name
+                        FROM public.sync_file sf
+                        WHERE sf.processed IN (2, -2)
+                            AND sf.modified_date >= '2024-09-01'
+                            AND sf.ingest_end_time IS NOT NULL
+                            AND sf.file_name IS NOT NULL
+                            AND NOT EXISTS (
+                            SELECT 1
+                            FROM public.file_deletion_log fdl
+                            WHERE fdl.file_name = sf.file_name
+                            AND fdl.deletion_status_check IN ('success', 'failed')
+                            AND fdl.file_name NOT ILIKE '%_decrypted%')
+                        """
+        cur.execute(retrieve_query)
 
-            # Fetch all file associated data from sync_file
-            files = cur.fetchall()
+        # Fetch all file associated data from sync_file
+        files = cur.fetchall()
+        if files:
+            logger.info(f"Number of files to delete: {len(files)}")
             for file in files:
                 self.delete_start_time = datetime.now()
                 self.facility_id = file[0]
                 encryptedjson_file_name = file[1]
-                decryptedjson_file_name = file[2]
+                decryptedjson_file_name = file[1].replace('.json', '_decrypted.json')
                 encrypted_local_dir = os.path.join(self.demo_path,self.facility_id,encryptedjson_file_name)
                 decrypted_local_dir = os.path.join(self.demo_path,self.facility_id,decryptedjson_file_name)
                 encrypted_filelog_id = self._insert_into_log(self._process_derive_tablename(encrypted_local_dir), encryptedjson_file_name, self.facility_id)
                 decrypted_filelog_id = self._insert_into_log(self._process_derive_tablename(decrypted_local_dir), decryptedjson_file_name, self.facility_id)
 
-                try:
-                    if os.path.exists(encrypted_local_dir):
-                        logger.info(f"File: {encrypted_local_dir} exists")
+                if os.path.exists(encrypted_local_dir):
+                    logger.info(f"File: {encrypted_local_dir} exists")
+                    try:
+                        encrypted_count_of_df = self.count_rows_in_json_file(encrypted_local_dir)
                         os.remove(encrypted_local_dir)
                         logger.info(f"File deleted: {encrypted_local_dir}")
                         self.delete_end_time = datetime.now()
-                        self._update_log(encrypted_filelog_id,'success',encryptedjson_file_name,self.count_of_df, 'no errors')
-                    else:
-                        logger.error(f"File {encrypted_local_dir} not found")
-                        self.delete_end_time = datetime.now()
-                        self._update_log(encrypted_filelog_id,'failed',encryptedjson_file_name,self.count_of_df,'file not found')
+                        self._update_log(encrypted_filelog_id,'success',encryptedjson_file_name,encrypted_count_of_df, 'no errors')
+                    except PermissionError as e:
+                        logger.error(f"Permission error deleting {encrypted_local_dir}: {str(e)}")
+                        self.delete_end_time=datetime.now()
+                        self._update_log(encrypted_filelog_id,'failed',encryptedjson_file_name,self.count_of_df,f"Permission error: {str(e)}")
+                else:
+                    logger.error(f"File {encrypted_local_dir} not found")
+                    self.delete_end_time = datetime.now()
+                    self._update_log(encrypted_filelog_id,'failed',encryptedjson_file_name,self.count_of_df,'file not found')
 
-                    if os.path.exists(decrypted_local_dir):
-                        logger.info(f"File: {decrypted_local_dir} exists")
+                if os.path.exists(decrypted_local_dir):
+                    logger.info(f"File: {decrypted_local_dir} exists")
+                    try:
+                        decrypted_count_of_df = self.count_rows_in_json_file(decrypted_local_dir)
                         os.remove(decrypted_local_dir)
                         logger.info(f"File deleted: {decrypted_local_dir}")
                         self.delete_end_time = datetime.now()
-                        self._update_log(decrypted_filelog_id,'success',decryptedjson_file_name,self.count_of_df, 'no errors')
-                    else:
-                        logger.error(f"File {decrypted_local_dir} not found")
-                        self.delete_end_time = datetime.now()
-                        self._update_log(decrypted_filelog_id,'failed',decryptedjson_file_name,self.count_of_df,'file not found')
-
-                except PermissionError as e:
-                    logger.error(f"Permission error deleting {decrypted_local_dir} or {encrypted_local_dir}: {str(e)}")
-                    self.delete_end_time=datetime.now()
-                    self._update_log(encrypted_filelog_id,'failed',encryptedjson_file_name,self.count_of_df,f"Permission error: {str(e)}")
+                        self._update_log(decrypted_filelog_id,'success',decryptedjson_file_name,decrypted_count_of_df, 'no errors')
+                    except PermissionError as e:
+                        logger.error(f"Permission error deleting {decrypted_local_dir}: {str(e)}")
+                        self.delete_end_time=datetime.now()
+                        self._update_log(decrypted_filelog_id,'failed',decryptedjson_file_name,decrypted_count_of_df,f"Permission error: {str(e)}")
+                else:
+                    logger.error(f"File {decrypted_local_dir} not found")
+                    self.delete_end_time = datetime.now()
+                    self._update_log(decrypted_filelog_id,'failed',decryptedjson_file_name,self.count_of_df,'file not found')
+                    
                 logger.info('----------------------------------------------------------------------------------------------')
 
             # Commit the changes and close the connection
@@ -150,5 +158,4 @@ class FileDelete:
             cur.close()
             conn.close()
 
-        except Exception as e:
-            logger.info(f"Error: {str(e)}")
+        
