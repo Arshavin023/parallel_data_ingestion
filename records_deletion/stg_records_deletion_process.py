@@ -45,7 +45,7 @@ def main():
             'stg_pmtct_enrollment','stg_pmtct_infant_arv','stg_pmtct_infant_information','stg_pmtct_infant_mother_art',
             'stg_pmtct_infant_pcr','stg_pmtct_infant_rapid_antibody','stg_pmtct_infant_visit','stg_pmtct_mother_visitation',
             'stg_prep_clinic','stg_prep_eligibility','stg_prep_enrollment','stg_prep_interruption',
-            'stg_triage_vital_sign'
+            'stg_triage_vital_sign','hts_family_index_testing_tracker','stg_hts_client_referral'
             )
         """
                 

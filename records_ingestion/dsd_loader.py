@@ -249,14 +249,14 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2025-01-01'
+            FROM sync_file WHERE processed = 1 and modified_date >= '2025-01-30'
             AND (
                 decrypted_file_name ILIKE ANY 
                 (ARRAY['prep_eligibility_%',
                 'prep_clinic_%', 'mhpss_confirmation_%',
                 'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']
                 ))
-            LIMIT 2000"""
+            LIMIT 20000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()

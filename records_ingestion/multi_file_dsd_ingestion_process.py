@@ -1,6 +1,6 @@
 import psycopg2
 from datetime import datetime
-from multithread_file_loader import FileLoader
+from multithread_dsd_loader import FileLoader
 import configparser
 import concurrent.futures
 from src import logger
@@ -42,8 +42,9 @@ def insert_facility_uploads():
             FROM sync_file
             WHERE processed = 1
               AND modified_date >= '2025-01-01'
+            --LIMIT 1
         ) z
-        WHERE NOT (
+        WHERE (
             decrypted_file_name ILIKE ANY (
                 ARRAY[
                     'prep_eligibility_%', 'prep_clinic_%',

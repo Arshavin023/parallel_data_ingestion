@@ -1,6 +1,6 @@
 #!/bin/bash
 # Define the path to your Python script
-SCRIPT_PATH="dsd_ingestion_process.py"
+SCRIPT_PATH="multi_file_dsd_ingestion_process.py"
 LOG_FILE="logs/dsd_pipeline.log"
 
 # Change directory to your project directory
