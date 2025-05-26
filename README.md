@@ -54,7 +54,7 @@ git clone https://github.com/Data-Fi-Nigeria-server_user/server_user_sync_ingest
 
 Navigate to the ingestion pipeline directory:
 ``` 
-cd server_user_sync_ingestion
+mkdir server_user_sync_ingestion && cd server_user_sync_ingestion
 ```
 
 Create a Virtual & Activate Environment
