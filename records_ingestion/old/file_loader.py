@@ -248,12 +248,20 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
+<<<<<<<< HEAD:records_ingestion/old/file_loader.py
             FROM sync_file WHERE processed = 1 AND modified_date >= '2025-05-23 00:00:00' 
+========
+            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-03-30 00:00:00' 
+>>>>>>>> d76cc648aece6427e93765fbc862a5d108a11628:records_ingestion/file_loader.py
 		AND NOT (decrypted_file_name ILIKE ANY 
 	      (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
 		'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
             ORDER BY modified_date asc, file_name
+<<<<<<<< HEAD:records_ingestion/old/file_loader.py
             LIMIT 5000"""
+========
+            LIMIT 20000"""
+>>>>>>>> d76cc648aece6427e93765fbc862a5d108a11628:records_ingestion/file_loader.py
             cur.execute(retrieve_query)
 
             files = cur.fetchall()

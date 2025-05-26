@@ -61,6 +61,7 @@ def main():
         logger.info('Deletion of records with Y processed status on stg_monitoring table started')
         if staging_tables:
             batch_size = 5  # Adjust based on your system capacity
+            batch_size = 10  # Adjust based on your system capacity
             for i in range(0, len(staging_tables), batch_size):
                 batch = staging_tables[i:i + batch_size]
                 with concurrent.futures.ThreadPoolExecutor() as executor:

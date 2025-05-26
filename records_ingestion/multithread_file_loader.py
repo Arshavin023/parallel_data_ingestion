@@ -19,7 +19,7 @@ from database_connection import connect_to_db
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import logger
 
-NO_ERRORS = ''
+NO_ERRORS = 'No errors'
 
 pd.set_option('display.max_columns', None)
 
@@ -255,7 +255,7 @@ class FileLoader:
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file 
             WHERE processed = 1
-            AND modified_date >= '2025-05-15 00:00:00'
+            AND modified_date >= '2025-01-01 00:00:00'
             AND facility_id = '{facility_id}' AND decrypted_file_name != 'hiv_enrollment_0_20250410104014.json'
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 
@@ -689,8 +689,7 @@ class FileLoader:
             self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             logger.info('Sync File Log updated successfully')
-            logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
-        
+            logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")        
         except ProgrammingError as pe:
             error_msg = str(pe)
             # Regex to extract column and table name
@@ -753,3 +752,4 @@ class FileLoader:
             logger.error(f"An unexpected error occurred: {str(e)}")
             # Handle other unexpected exceptions
         logger.info('-------------------------------------------')
+    

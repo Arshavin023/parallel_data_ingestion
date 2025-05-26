@@ -1,31 +1,30 @@
 import os
-import re
-import sys
 import json
 import uuid
 import numpy as np
 import psycopg2
-from psycopg2 import ProgrammingError
-from psycopg2.errors import UndefinedColumn
 from psycopg2.extras import Json
 import pandas as pd
+import traceback
 from datetime import datetime
 import sqlalchemy
 from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
-# import configparser
-from database_connection import connect_to_db
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import logger
+import configparser
+from database_connection.db_connect import connect_to_db
+
+
 NO_ERRORS = 'No errors'
+server_temp = '/home/lamisplus/server/temp'
+
 pd.set_option('display.max_columns', None)
 
 class FileLoader:
     def __init__(self):
         self.facility_id = None
-        self.syncfile_entryID = None
-        self.demo_path = '/home/lamisplus/server/temp'
+        self.syncfile_entryid = None
+        self.demo_path = server_temp
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
@@ -96,7 +95,6 @@ class FileLoader:
             logger.exception(e)
             raise e 
 
-
     def _fakeupsert_synclog(self, decrypted_file_name, staging_table):
         '''
         Performs a fake upsert operation on the sync_file table.
@@ -119,7 +117,7 @@ class FileLoader:
                                 """
             self.load_start_time = datetime.now()
             cur.execute(fakeupsert_query, (self.load_start_time, decrypted_file_name, staging_table, 
-                                           self.syncfile_entryID))
+                                           self.syncfile_entryid))
             conn.commit()
             cur.close()
             logger.info('successfully updated start_time, file_name and stg_table in sync_file')
@@ -145,6 +143,7 @@ class FileLoader:
         try:
             conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
             cur = conn.cursor()
+            self.load_end_time = datetime.now()
             load_status_check = proc_status
             update_query = """UPDATE file_ingestion_log 
                             SET load_end_time = %s,
@@ -186,14 +185,14 @@ class FileLoader:
                                 ingest_status_check = %s,
                                 json_rec_count = %s,
                                 ingest_error_message = %s
-                            WHERE id = %s
+                            WHERE id = %s AND facility_id = %s
                             """
-            self.load_end_time = datetime.now()
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
-                                    tab_count, error_msg[0:10000], self.syncfile_entryID))
+                                    tab_count, error_msg, self.syncfile_entryid,
+                                    self.facility_id))
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.syncfile_entryid} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -213,8 +212,8 @@ class FileLoader:
             cur = conn.cursor()
 
             get_patient_count = """
-            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_hiv_enrollment
-            WHERE stg_datim_id = %s and archived=0
+            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_patient_person
+            WHERE stg_datim_id = %s 
             """
             cur.execute(get_patient_count, (self.facility_id,))
             p_count_per_datemid = cur.fetchone()[0]
@@ -236,7 +235,7 @@ class FileLoader:
             raise e
         
 
-    def _retrieve_localdir_from_syncfile(self,facility_id):
+    def _retrieve_localdir_from_syncfile(self):
         '''
         Retrieves local directories from the sync_file table.
         This method connects to the filedb database to retrieve information about files from the sync_file table 
@@ -248,23 +247,22 @@ class FileLoader:
         try:
             conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
-            retrieve_query = f"""
+            retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file 
-            WHERE processed = 1
-            AND modified_date >= '2025-01-01 00:00:00'
-            AND facility_id = '{facility_id}'
-            AND (decrypted_file_name ILIKE ANY 
-            (ARRAY['prep_eligibility_%','prep_clinic_%', 
-            'mhpss_confirmation_%','pmtct_anc_%',
-            'dsd_devolvement%','hiv_art_clinical%']))
-            """
+            FROM sync_file WHERE processed = 1 and modified_date >= '2025-01-30'
+            AND (
+                decrypted_file_name ILIKE ANY 
+                (ARRAY['prep_eligibility_%',
+                'prep_clinic_%', 'mhpss_confirmation_%',
+                'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']
+                ))
+            LIMIT 20000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
 
             for file in files:
-                self.syncfile_entryID = file[0]
+                self.syncfile_entryid = file[0]
                 self.facility_id = file[1]
                 encrypted_file_name = file[2]
                 decrypted_file_name = encrypted_file_name.replace('.json', '_decrypted.json')
@@ -282,14 +280,13 @@ class FileLoader:
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
                     self.load_end_time = datetime.now()
                     self._update_flag_syncfile('loaded in the past', 3, 0, NO_ERRORS)
-                    
+
             cur.close()
             logger.info('json files successfully processed')
 
         except Exception as e:
             logger.exception(e)
             raise e
-
 
     def _process_derive_tablename(self, file_path):
         '''
@@ -313,7 +310,6 @@ class FileLoader:
         except Exception as e:
             logger.exception(e)
             raise e
-
 
     def _check_if_previouslyloaded(self, file_name, facility_id):
         '''
@@ -345,7 +341,6 @@ class FileLoader:
             logger.exception(e)
             raise e
 
-
     def _check_if_faillogged(self, file_name, facility_id):
         '''
         Checks if a file has been previously failed to load into the database.
@@ -372,8 +367,8 @@ class FileLoader:
             return count > 0
         except Exception as e:
             logger.exception(e)
-            raise e
-
+            raise e 
+        
     def _process_file_by_name(self, file_path):
         '''
         Processes a file based on its name.
@@ -713,43 +708,9 @@ class FileLoader:
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
 
-        except ProgrammingError as pe:
-            error_msg = str(pe)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed',file_name,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-                self._update_flag_syncfile('failed',-2,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL ProgrammingError: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-            logger.info('Sync File Log updated successfully')
-
-        except UndefinedColumn as udc:
-            error_msg = str(udc)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-        except Exception as e:
-            logger.error(f"An unexpected error occurred: {str(e)}")
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
 
+
+            
         logger.info('-------------------------------------------')

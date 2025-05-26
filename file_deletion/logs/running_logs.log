@@ -1,0 +1,8 @@
+[2025-04-08 09:20:13,938: INFO: file_deletion_process: DPID_20250408_09_20]
+[2025-04-08 09:20:13,939: INFO: file_deletion_process: Deletion of json files started]
+[2025-04-08 09:20:57,483: INFO: file_deletion_process: Deletion of json files completed]
+[2025-04-08 09:20:57,809: INFO: file_deletion_process: Deletion Job for decrypted files was run successfully completed]
+[2025-04-08 09:22:46,952: INFO: file_deletion_process: DPID_20250408_09_22]
+[2025-04-08 09:22:46,955: INFO: file_deletion_process: Deletion of json files started]
+[2025-04-08 09:23:30,867: INFO: file_deletion_process: Deletion of json files completed]
+[2025-04-08 09:23:31,133: INFO: file_deletion_process: Deletion Job for files was run successfully completed]

@@ -30,8 +30,7 @@ def main():
         logger.info('Deletion of json files completed')
         delete_end_time = datetime.now()
         q_check_count = """select count(1) from file_deletion_log 
-        where  
-        deletion_start_time >=  %s and deletion_end_time <=  %s
+        where  deletion_start_time >=  %s and deletion_end_time <=  %s
         """
         cur2.execute(q_check_count, (delete_start_time, delete_end_time))
         records_processed = cur2.fetchall()[0]

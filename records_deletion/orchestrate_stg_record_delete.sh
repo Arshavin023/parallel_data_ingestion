@@ -12,6 +12,14 @@ source lamisplus_venv/bin/activate || { echo "Error: Unable to activate virtual 
 
 # Change to project directory
 cd /home/lamisplus/ingestion_pipeline/records_deletion || { echo "Error: Unable to change directory." >&2; exit 1; }
+SCRIPT_PATH="/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py"
+LOG_FILE="/home/lamisplus/ingestion_pipeline/records_deletion/logs/deletion_stg_records_pipeline.log"
+
+# Check if the script file exists
+if [ ! -f "$SCRIPT_PATH" ]; then
+    echo "$(date +"%Y-%m-%d %H:%M:%S"): Error: Python script '$SCRIPT_PATH' not found. Exiting." >> "$LOG_FILE"
+    exit 1
+fi
 
 # Function to check if the pipeline is running
 is_pipeline_running() {
@@ -32,4 +40,6 @@ else
         echo "$(date +"%Y-%m-%d %H:%M:%S"): Pipeline failed. See log file for details." >> "$LOG_FILE"
         exit 1
     fi
+    python3 "$SCRIPT_PATH" >> "$LOG_FILE" 2>&1 &
+    echo "$(date +"%Y-%m-%d %H:%M:%S"): Pipeline started successfully." >> "$LOG_FILE"
 fi
