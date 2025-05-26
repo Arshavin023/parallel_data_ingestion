@@ -1,8 +1,6 @@
 /home/oluwaloseyi/.vscode-server/
 __pycache__/
 /.wget-hsts/
-/home/oluwaloseyi/.local/
-/home/oluwaloseyi/.cache/
 .bash_history
 .bash_logout
 .bashrc
@@ -19,3 +17,7 @@ __pycache__/
 .local/
 .vscode-server/
 .lamisplus_venv/
+ingestion_pipeline/records_ingestion/logs/
+ingestion_pipeline/records_deletion/logs/
+ingestion_pipeline/file_deletion/logs/
+ingestion_pipeline/records_extraction/logs/

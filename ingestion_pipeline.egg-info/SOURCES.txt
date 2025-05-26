@@ -12,10 +12,8 @@ ingestion_pipeline.egg-info/SOURCES.txt
 ingestion_pipeline.egg-info/dependency_links.txt
 ingestion_pipeline.egg-info/top_level.txt
 records_ingestion/__init__.py
-records_ingestion/dsd_ingestion_process.py
-records_ingestion/dsd_loader.py
-records_ingestion/file_ingestion_process.py
-records_ingestion/file_loader.py
+records_ingestion/multi_file_dsd_ingestion_process.py
 records_ingestion/multi_file_ingestion_process.py
+records_ingestion/multithread_dsd_loader.py
 records_ingestion/multithread_file_loader.py
 src/__init__.py

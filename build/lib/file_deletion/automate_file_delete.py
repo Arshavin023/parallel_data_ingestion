@@ -37,45 +37,24 @@ class FileDelete:
         conn.commit()
         cur.close()
         return log_id
-    
+
     def count_rows_in_json_file(self, file_path):
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                if isinstance(data, list):
-                    return len(data)
-                elif isinstance(data, dict):
-                    return len(data.keys())
-                else:
+            with open(file_path, 'r') as file:
+                try:
+                    data = json.load(file)
+                    num_rows = len(data)
+                    return num_rows
+
+                except json.JSONDecodeError as e:
+                    #logger.info(f"Error decoding JSON file {os.path.basename(file_path)}: {str(e)}")
+                    logger.exception(e)
                     return 0
-        except UnicodeDecodeError as e:
-            logger.error(f"UnicodeDecodeError while reading file {file_path}: {e}")
-            return 0
-        except json.JSONDecodeError as e:
-            logger.error(f"JSONDecodeError while parsing file {file_path}: {e}")
-            return 0
+
         except Exception as e:
-            logger.error(f"Unexpected error while reading {file_path}: {e}")
+            logger.exception(e)
+            #logger.info(f"No such file or directory {os.path.basename(file_path)}: {str(e)}")
             return 0
-
-
-    # def count_rows_in_json_file(self, file_path):
-    #     try:
-    #         with open(file_path, 'r') as file:
-    #             try:
-    #                 data = json.load(file)
-    #                 num_rows = len(data)
-    #                 return num_rows
-
-    #             except json.JSONDecodeError as e:
-    #                 #logger.info(f"Error decoding JSON file {os.path.basename(file_path)}: {str(e)}")
-    #                 logger.exception(e)
-    #                 return 0
-
-    #     except Exception as e:
-    #         logger.exception(e)
-    #         #logger.info(f"No such file or directory {os.path.basename(file_path)}: {str(e)}")
-    #         return 0
 
     def _update_log(self, id, proc_status, file_name, tab_count, error_msg):
             conn=connect_to_db.connect('filedb')[0]
@@ -112,7 +91,7 @@ class FileDelete:
         retrieve_query = """SELECT sf.facility_id, sf.file_name
                         FROM public.sync_file sf
                         WHERE sf.processed IN (2, -2)
-                            AND sf.modified_date >= '2025-05-01'
+                            AND sf.modified_date >= '2024-09-01'
                             AND sf.ingest_end_time IS NOT NULL
                             AND sf.file_name IS NOT NULL
                             AND NOT EXISTS (

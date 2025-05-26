@@ -1,25 +1,20 @@
 import os
-import re
-import sys
 import json
 import uuid
 import numpy as np
 import psycopg2
-from psycopg2 import ProgrammingError
-from psycopg2.errors import UndefinedColumn
-from sqlalchemy.exc import ProgrammingError as SAProgrammingError
 from psycopg2.extras import Json
 import pandas as pd
 from datetime import datetime
 import sqlalchemy
 from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
-from database_connection import connect_to_db
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import logger
+import configparser
+from database_connection.db_connect import connect_to_db
 
-NO_ERRORS = ''
+NO_ERRORS = 'No errors'
+parent_directory = '/home/lamisplus/server/temp'
 
 pd.set_option('display.max_columns', None)
 
@@ -27,7 +22,7 @@ class FileLoader:
     def __init__(self):
         self.facility_id = None
         self.syncfile_entryID = None
-        self.demo_path = '/home/lamisplus/server/temp'
+        self.demo_path = parent_directory
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
@@ -128,7 +123,7 @@ class FileLoader:
 
         except Exception as e:
             logger.exception(e)
-            raise e 
+            raise e  
 
 
     def _update_log(self, proc_status, file_name, tab_count, error_msg):
@@ -190,10 +185,10 @@ class FileLoader:
                                 ingest_error_message = %s
                             WHERE id = %s AND facility_id = %s
                             """
-            self.load_end_time = datetime.now()
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
                                     tab_count, error_msg[0:10000], self.syncfile_entryID,
                                     self.facility_id))
+            
             conn.commit()
             cur.close()
             logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
@@ -239,7 +234,7 @@ class FileLoader:
             raise e
         
 
-    def _retrieve_localdir_from_syncfile(self,facility_id):
+    def _retrieve_localdir_from_syncfile(self):
         '''
         Retrieves local directories from the sync_file table.
         This method connects to the filedb database to retrieve information about files from the sync_file table 
@@ -251,17 +246,14 @@ class FileLoader:
         try:
             conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
-            retrieve_query = f"""
+            retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file 
-            WHERE processed = 1
-            AND modified_date >= '2025-05-15 00:00:00'
-            AND facility_id = '{facility_id}' AND decrypted_file_name != 'hiv_enrollment_0_20250410104014.json'
-            AND NOT (decrypted_file_name ILIKE ANY 
-            (ARRAY['prep_eligibility_%','prep_clinic_%', 
-            'mhpss_confirmation_%','pmtct_anc_%',
-            'dsd_devolvement%','hiv_art_clinical%']))
-            """
+            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-05-23 00:00:00' 
+		AND NOT (decrypted_file_name ILIKE ANY 
+	      (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
+		'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
+            ORDER BY modified_date asc, file_name
+            LIMIT 5000"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -566,7 +558,7 @@ class FileLoader:
         datim_id = self.facility_id
         file_name = file_path.split('/')[-1]
         encrypted_file_name=file_name.replace('_decrypted','')
-
+        
         # Define the type mapping function
         def convert_postgresql_to_sqlalchemy(data_type):
             type_mapping = {
@@ -599,8 +591,7 @@ class FileLoader:
             # Check if DataFrame is empty after reading JSON
             if df.empty:
                 self._update_log('failed', file_name, 0, 'JSON file is empty')
-                # self.load_end_time = datetime.now()
-                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
+                self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty', file_name)
                 logger.info('Sync File Log updated successfully')
                 return
             
@@ -611,12 +602,10 @@ class FileLoader:
                 columns_to_exclude = ['match_type', 'match_person_uuid', 'match_biometric_id']
                 columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
                 df = df[columns_to_include]
-            elif staging_table == 'stg_hiv_enrollment':
-                columns_to_exclude = ['target_group_id_original']
-                columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
-                df = df[columns_to_include]
+
             elif staging_table == 'stg_hts_client':
                 df['extra'] = df['extra'].apply(lambda x: {'type': x['type'], 'value': self.mask_pii(x['value'])})
+
             elif staging_table == 'stg_hts_index_elicitation':
                 df['last_name'] = '******'
                 df['first_name'] = '******'
@@ -652,6 +641,7 @@ class FileLoader:
                 # invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
                 conn.commit()
                 self.count_of_df = len(valid_dates_df)
+                self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
                 self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested')
                 cur = conn.cursor()
@@ -674,6 +664,7 @@ class FileLoader:
                 logger.info(f'{file_name} successfully ingested into {staging_table} table')
                 conn.commit()
                 self.count_of_df = len(df)
+                self.load_end_time = datetime.now()
                 self._update_log('success', file_name, self.count_of_df, NO_ERRORS)
                 self._update_flag_syncfile('success', 2, self.count_of_df, NO_ERRORS)
                 
@@ -690,66 +681,7 @@ class FileLoader:
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
-        
-        except ProgrammingError as pe:
-            error_msg = str(pe)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                missing_table = missing_table.replace('stg_', '')
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed',file_name,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-                self._update_flag_syncfile('failed',-2,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL ProgrammingError: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-            logger.info('Sync File Log updated successfully')
-        
-        except UndefinedColumn as udc:
-            error_msg = str(udc)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                missing_table = missing_table.replace('stg_', '')
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-        except SAProgrammingError as sa_pe:
-            orig = getattr(sa_pe, 'orig', None)
-
-            if isinstance(orig, UndefinedColumn):
-                error_msg = str(orig)
-                match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-                if match:
-                    missing_column = match.group(1)
-                    missing_table = match.group(2)
-                    missing_table = missing_table.replace('stg_', '')  # Remove 'stg_' prefix if present
-                    logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                    self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                    self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                else:
-                    logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
-                    self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                    self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-            else:
-                logger.error(f"SQLAlchemy ProgrammingError (not UndefinedColumn): {str(sa_pe)}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {str(sa_pe)}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {str(sa_pe)}')
-
+            
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
             # Handle other unexpected exceptions
-        logger.info('-------------------------------------------')

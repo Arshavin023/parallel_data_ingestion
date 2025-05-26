@@ -1,3 +1,4 @@
+2025-04-26 20:29:26: Starting the pipeline...
 [2025-04-26 20:29:26,537: INFO: stg_records_deletion_process: DPID_20250426_20_29]
 [2025-04-26 20:29:26,537: INFO: stg_records_deletion_process: Job Started]
 [2025-04-26 20:29:26,538: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -94,6 +95,8 @@
 [2025-04-26 21:05:50,606: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-04-26 21:07:54,142: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-04-26 21:07:54,172: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-04-26 21:07:55: Pipeline completed successfully.
+2025-04-27 02:00:01: Starting the pipeline...
 [2025-04-27 02:00:01,917: INFO: stg_records_deletion_process: DPID_20250427_02_00]
 [2025-04-27 02:00:01,917: INFO: stg_records_deletion_process: Job Started]
 [2025-04-27 02:00:01,917: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -190,6 +193,14 @@
 [2025-04-27 02:20:08,673: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-04-27 02:20:10,648: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-04-27 02:20:10,694: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-04-27 02:20:10: Pipeline completed successfully.
+2025-04-27 03:00:01: Starting the pipeline...
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ImportError: cannot import name 'logger' from 'src' (unknown location)
+2025-04-27 03:00:01: Pipeline failed. See log file for details.
+2025-04-28 02:00:01: Starting the pipeline...
 [2025-04-28 02:00:01,559: INFO: stg_records_deletion_process: DPID_20250428_02_00]
 [2025-04-28 02:00:01,560: INFO: stg_records_deletion_process: Job Started]
 [2025-04-28 02:00:01,560: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -286,6 +297,14 @@
 [2025-04-28 02:19:06,086: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-04-28 02:19:07,619: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-04-28 02:19:07,638: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-04-28 02:19:07: Pipeline completed successfully.
+2025-04-28 03:00:01: Starting the pipeline...
+Traceback (most recent call last):
+  File "/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py", line 3, in <module>
+    from src import logger
+ImportError: cannot import name 'logger' from 'src' (unknown location)
+2025-04-28 03:00:01: Pipeline failed. See log file for details.
+2025-04-29 02:00:01: Starting the pipeline...
 [2025-04-29 02:00:02,119: INFO: stg_records_deletion_process: DPID_20250429_02_00]
 [2025-04-29 02:00:02,120: INFO: stg_records_deletion_process: Job Started]
 [2025-04-29 02:00:02,121: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -382,6 +401,8 @@
 [2025-04-29 02:26:21,247: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-04-29 02:26:26,258: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-04-29 02:26:26,284: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-04-29 02:26:26: Pipeline completed successfully.
+2025-04-30 02:00:01: Starting the pipeline...
 [2025-04-30 02:00:01,757: INFO: stg_records_deletion_process: DPID_20250430_02_00]
 [2025-04-30 02:00:01,758: INFO: stg_records_deletion_process: Job Started]
 [2025-04-30 02:00:01,758: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -478,6 +499,8 @@
 [2025-04-30 02:27:46,965: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-04-30 02:28:07,411: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-04-30 02:28:07,436: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-04-30 02:28:08: Pipeline completed successfully.
+2025-05-01 02:00:01: Starting the pipeline...
 [2025-05-01 02:00:01,914: INFO: stg_records_deletion_process: DPID_20250501_02_00]
 [2025-05-01 02:00:01,915: INFO: stg_records_deletion_process: Job Started]
 [2025-05-01 02:00:01,915: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -574,6 +597,8 @@
 [2025-05-01 02:27:11,481: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-01 02:27:15,442: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-01 02:27:15,466: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-01 02:27:16: Pipeline completed successfully.
+2025-05-02 02:00:01: Starting the pipeline...
 [2025-05-02 02:00:02,073: INFO: stg_records_deletion_process: DPID_20250502_02_00]
 [2025-05-02 02:00:02,074: INFO: stg_records_deletion_process: Job Started]
 [2025-05-02 02:00:02,074: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -670,6 +695,8 @@
 [2025-05-02 02:21:14,824: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-02 02:21:18,860: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-02 02:21:18,890: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-02 02:21:19: Pipeline completed successfully.
+2025-05-03 02:00:01: Starting the pipeline...
 [2025-05-03 02:00:01,529: INFO: stg_records_deletion_process: DPID_20250503_02_00]
 [2025-05-03 02:00:01,530: INFO: stg_records_deletion_process: Job Started]
 [2025-05-03 02:00:01,531: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -766,6 +793,8 @@
 [2025-05-03 02:39:28,794: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-03 02:40:01,878: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-03 02:40:01,913: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-03 02:40:02: Pipeline completed successfully.
+2025-05-04 02:00:01: Starting the pipeline...
 [2025-05-04 02:00:01,999: INFO: stg_records_deletion_process: DPID_20250504_02_00]
 [2025-05-04 02:00:02,000: INFO: stg_records_deletion_process: Job Started]
 [2025-05-04 02:00:02,001: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -862,6 +891,8 @@
 [2025-05-04 02:21:17,688: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-04 02:21:20,700: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-04 02:21:20,733: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-04 02:21:21: Pipeline completed successfully.
+2025-05-05 02:00:01: Starting the pipeline...
 [2025-05-05 02:00:02,014: INFO: stg_records_deletion_process: DPID_20250505_02_00]
 [2025-05-05 02:00:02,015: INFO: stg_records_deletion_process: Job Started]
 [2025-05-05 02:00:02,015: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -958,6 +989,8 @@
 [2025-05-05 02:19:35,727: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-05 02:19:37,412: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-05 02:19:37,426: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-05 02:19:37: Pipeline completed successfully.
+2025-05-06 02:00:01: Starting the pipeline...
 [2025-05-06 02:00:01,572: INFO: stg_records_deletion_process: DPID_20250506_02_00]
 [2025-05-06 02:00:01,573: INFO: stg_records_deletion_process: Job Started]
 [2025-05-06 02:00:01,573: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1054,6 +1087,8 @@
 [2025-05-06 02:22:08,230: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-06 02:22:11,868: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-06 02:22:11,897: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-06 02:22:12: Pipeline completed successfully.
+2025-05-07 02:00:01: Starting the pipeline...
 [2025-05-07 02:00:01,334: INFO: stg_records_deletion_process: DPID_20250507_02_00]
 [2025-05-07 02:00:01,336: INFO: stg_records_deletion_process: Job Started]
 [2025-05-07 02:00:01,336: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1150,6 +1185,8 @@
 [2025-05-07 02:26:17,294: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-07 02:26:35,108: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-07 02:26:35,140: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-07 02:26:35: Pipeline completed successfully.
+2025-05-08 02:00:01: Starting the pipeline...
 [2025-05-08 02:00:01,706: INFO: stg_records_deletion_process: DPID_20250508_02_00]
 [2025-05-08 02:00:01,707: INFO: stg_records_deletion_process: Job Started]
 [2025-05-08 02:00:01,707: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1246,6 +1283,8 @@
 [2025-05-08 02:26:35,427: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-08 02:27:00,326: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-08 02:27:00,354: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-08 02:27:01: Pipeline completed successfully.
+2025-05-09 02:00:01: Starting the pipeline...
 [2025-05-09 02:00:01,937: INFO: stg_records_deletion_process: DPID_20250509_02_00]
 [2025-05-09 02:00:01,939: INFO: stg_records_deletion_process: Job Started]
 [2025-05-09 02:00:01,939: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1342,6 +1381,8 @@
 [2025-05-09 02:22:07,622: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-09 02:22:11,529: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-09 02:22:11,560: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-09 02:22:12: Pipeline completed successfully.
+2025-05-10 02:00:01: Starting the pipeline...
 [2025-05-10 02:00:01,567: INFO: stg_records_deletion_process: DPID_20250510_02_00]
 [2025-05-10 02:00:01,570: INFO: stg_records_deletion_process: Job Started]
 [2025-05-10 02:00:01,570: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1438,6 +1479,8 @@
 [2025-05-10 02:36:17,264: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-10 02:36:48,390: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-10 02:36:48,421: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-10 02:36:48: Pipeline completed successfully.
+2025-05-11 02:00:02: Starting the pipeline...
 [2025-05-11 02:00:02,275: INFO: stg_records_deletion_process: DPID_20250511_02_00]
 [2025-05-11 02:00:02,276: INFO: stg_records_deletion_process: Job Started]
 [2025-05-11 02:00:02,277: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1534,6 +1577,8 @@
 [2025-05-11 02:21:41,056: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-11 02:21:43,444: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-11 02:21:43,492: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-11 02:21:43: Pipeline completed successfully.
+2025-05-12 02:00:01: Starting the pipeline...
 [2025-05-12 02:00:01,727: INFO: stg_records_deletion_process: DPID_20250512_02_00]
 [2025-05-12 02:00:01,728: INFO: stg_records_deletion_process: Job Started]
 [2025-05-12 02:00:01,728: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1630,6 +1675,8 @@
 [2025-05-12 02:19:44,717: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-12 02:19:46,430: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-12 02:19:46,432: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-12 02:19:46: Pipeline completed successfully.
+2025-05-13 02:00:01: Starting the pipeline...
 [2025-05-13 02:00:01,549: INFO: stg_records_deletion_process: DPID_20250513_02_00]
 [2025-05-13 02:00:01,551: INFO: stg_records_deletion_process: Job Started]
 [2025-05-13 02:00:01,551: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1726,6 +1773,8 @@
 [2025-05-13 02:28:04,452: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-13 02:28:27,535: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-13 02:28:27,562: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-13 02:28:28: Pipeline completed successfully.
+2025-05-14 02:00:01: Starting the pipeline...
 [2025-05-14 02:00:02,044: INFO: stg_records_deletion_process: DPID_20250514_02_00]
 [2025-05-14 02:00:02,045: INFO: stg_records_deletion_process: Job Started]
 [2025-05-14 02:00:02,046: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1822,6 +1871,8 @@
 [2025-05-14 02:22:15,511: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-14 02:22:21,837: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-14 02:22:21,873: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-14 02:22:22: Pipeline completed successfully.
+2025-05-15 02:00:01: Starting the pipeline...
 [2025-05-15 02:00:01,913: INFO: stg_records_deletion_process: DPID_20250515_02_00]
 [2025-05-15 02:00:01,915: INFO: stg_records_deletion_process: Job Started]
 [2025-05-15 02:00:01,915: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -1918,6 +1969,8 @@
 [2025-05-15 02:22:11,709: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-15 02:22:17,061: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-15 02:22:17,087: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-15 02:22:17: Pipeline completed successfully.
+2025-05-16 02:00:01: Starting the pipeline...
 [2025-05-16 02:00:01,366: INFO: stg_records_deletion_process: DPID_20250516_02_00]
 [2025-05-16 02:00:01,367: INFO: stg_records_deletion_process: Job Started]
 [2025-05-16 02:00:01,367: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2014,6 +2067,8 @@
 [2025-05-16 02:25:14,191: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-16 02:25:27,402: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-16 02:25:27,433: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-16 02:25:28: Pipeline completed successfully.
+2025-05-17 02:00:01: Starting the pipeline...
 [2025-05-17 02:00:02,303: INFO: stg_records_deletion_process: DPID_20250517_02_00]
 [2025-05-17 02:00:02,304: INFO: stg_records_deletion_process: Job Started]
 [2025-05-17 02:00:02,305: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2110,6 +2165,8 @@
 [2025-05-17 02:48:58,875: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-17 02:49:38,446: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-17 02:49:38,511: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-17 02:49:39: Pipeline completed successfully.
+2025-05-18 02:00:01: Starting the pipeline...
 [2025-05-18 02:00:01,484: INFO: stg_records_deletion_process: DPID_20250518_02_00]
 [2025-05-18 02:00:01,486: INFO: stg_records_deletion_process: Job Started]
 [2025-05-18 02:00:01,486: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2206,6 +2263,8 @@
 [2025-05-18 02:22:53,989: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-18 02:22:56,294: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-18 02:22:56,328: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-18 02:22:56: Pipeline completed successfully.
+2025-05-19 02:00:01: Starting the pipeline...
 [2025-05-19 02:00:01,549: INFO: stg_records_deletion_process: DPID_20250519_02_00]
 [2025-05-19 02:00:01,550: INFO: stg_records_deletion_process: Job Started]
 [2025-05-19 02:00:01,550: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2302,6 +2361,8 @@
 [2025-05-19 02:21:28,641: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-19 02:21:30,399: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-19 02:21:30,438: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-19 02:21:30: Pipeline completed successfully.
+2025-05-20 02:00:01: Starting the pipeline...
 [2025-05-20 02:00:01,421: INFO: stg_records_deletion_process: DPID_20250520_02_00]
 [2025-05-20 02:00:01,422: INFO: stg_records_deletion_process: Job Started]
 [2025-05-20 02:00:01,422: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2398,6 +2459,8 @@
 [2025-05-20 02:29:17,817: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-20 02:29:21,100: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-20 02:29:21,124: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-20 02:29:21: Pipeline completed successfully.
+2025-05-21 02:00:01: Starting the pipeline...
 [2025-05-21 02:00:01,387: INFO: stg_records_deletion_process: DPID_20250521_02_00]
 [2025-05-21 02:00:01,389: INFO: stg_records_deletion_process: Job Started]
 [2025-05-21 02:00:01,389: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2494,6 +2557,8 @@
 [2025-05-21 02:34:55,254: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-21 02:35:01,982: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-21 02:35:02,008: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-21 02:35:02: Pipeline completed successfully.
+2025-05-22 02:00:01: Starting the pipeline...
 [2025-05-22 02:00:02,194: INFO: stg_records_deletion_process: DPID_20250522_02_00]
 [2025-05-22 02:00:02,196: INFO: stg_records_deletion_process: Job Started]
 [2025-05-22 02:00:02,196: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2590,6 +2655,8 @@
 [2025-05-22 02:30:25,703: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-22 02:30:45,770: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-22 02:30:45,807: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-22 02:30:46: Pipeline completed successfully.
+2025-05-23 02:00:01: Starting the pipeline...
 [2025-05-23 02:00:01,656: INFO: stg_records_deletion_process: DPID_20250523_02_00]
 [2025-05-23 02:00:01,657: INFO: stg_records_deletion_process: Job Started]
 [2025-05-23 02:00:01,657: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2686,6 +2753,8 @@
 [2025-05-23 02:30:17,559: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-23 02:30:39,562: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-23 02:30:39,604: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-23 02:30:40: Pipeline completed successfully.
+2025-05-24 02:00:02: Starting the pipeline...
 [2025-05-24 02:00:02,357: INFO: stg_records_deletion_process: DPID_20250524_02_00]
 [2025-05-24 02:00:02,358: INFO: stg_records_deletion_process: Job Started]
 [2025-05-24 02:00:02,358: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2782,6 +2851,8 @@
 [2025-05-24 02:43:21,056: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-24 02:43:53,452: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-24 02:43:53,482: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-24 02:43:54: Pipeline completed successfully.
+2025-05-25 02:00:01: Starting the pipeline...
 [2025-05-25 02:00:01,722: INFO: stg_records_deletion_process: DPID_20250525_02_00]
 [2025-05-25 02:00:01,723: INFO: stg_records_deletion_process: Job Started]
 [2025-05-25 02:00:01,723: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2878,6 +2949,8 @@
 [2025-05-25 02:25:21,413: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-25 02:25:41,516: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-25 02:25:41,544: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-25 02:25:42: Pipeline completed successfully.
+2025-05-26 02:00:01: Starting the pipeline...
 [2025-05-26 02:00:02,105: INFO: stg_records_deletion_process: DPID_20250526_02_00]
 [2025-05-26 02:00:02,106: INFO: stg_records_deletion_process: Job Started]
 [2025-05-26 02:00:02,106: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table started]
@@ -2974,3 +3047,4 @@
 [2025-05-26 02:19:38,708: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table started]
 [2025-05-26 02:19:40,400: INFO: stg_records_deletion_process: Deletion of ods_migrated records from stg_triage_vital_sign table completed]
 [2025-05-26 02:19:40,401: INFO: stg_records_deletion_process: Deletion of records with Y processed status on stg_monitoring table completed]
+2025-05-26 02:19:40: Pipeline completed successfully.

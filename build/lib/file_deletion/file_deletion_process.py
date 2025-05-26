@@ -29,7 +29,7 @@ def main():
         deletion_encrypted.delete_encrypted_files()
         logger.info('Deletion of json files completed')
         delete_end_time = datetime.now()
-        q_check_count = """select count(1) from file_deletion_log 
+        q_check_count = """select count(*) from file_deletion_log 
         where  
         deletion_start_time >=  %s and deletion_end_time <=  %s
         """

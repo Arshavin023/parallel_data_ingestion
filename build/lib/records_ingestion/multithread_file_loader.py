@@ -1,13 +1,9 @@
 import os
-import re
 import sys
 import json
 import uuid
 import numpy as np
 import psycopg2
-from psycopg2 import ProgrammingError
-from psycopg2.errors import UndefinedColumn
-from sqlalchemy.exc import ProgrammingError as SAProgrammingError
 from psycopg2.extras import Json
 import pandas as pd
 from datetime import datetime
@@ -19,7 +15,7 @@ from database_connection import connect_to_db
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import logger
 
-NO_ERRORS = ''
+NO_ERRORS = 'No errors'
 
 pd.set_option('display.max_columns', None)
 
@@ -255,7 +251,7 @@ class FileLoader:
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file 
             WHERE processed = 1
-            AND modified_date >= '2025-05-15 00:00:00'
+            AND modified_date >= '2025-01-01 00:00:00'
             AND facility_id = '{facility_id}' AND decrypted_file_name != 'hiv_enrollment_0_20250410104014.json'
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 
@@ -690,66 +686,7 @@ class FileLoader:
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
-        
-        except ProgrammingError as pe:
-            error_msg = str(pe)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                missing_table = missing_table.replace('stg_', '')
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed',file_name,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-                self._update_flag_syncfile('failed',-2,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL ProgrammingError: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-            logger.info('Sync File Log updated successfully')
-        
-        except UndefinedColumn as udc:
-            error_msg = str(udc)
-            # Regex to extract column and table name
-            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-            if match:
-                missing_column = match.group(1)
-                missing_table = match.group(2)
-                missing_table = missing_table.replace('stg_', '')
-                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-            else:
-                # Fallback logging if regex fails
-                logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-
-        except SAProgrammingError as sa_pe:
-            orig = getattr(sa_pe, 'orig', None)
-
-            if isinstance(orig, UndefinedColumn):
-                error_msg = str(orig)
-                match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
-                if match:
-                    missing_column = match.group(1)
-                    missing_table = match.group(2)
-                    missing_table = missing_table.replace('stg_', '')  # Remove 'stg_' prefix if present
-                    logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
-                    self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                    self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
-                else:
-                    logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
-                    self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
-                    self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
-            else:
-                logger.error(f"SQLAlchemy ProgrammingError (not UndefinedColumn): {str(sa_pe)}")
-                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {str(sa_pe)}')
-                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {str(sa_pe)}')
-
+            
         except Exception as e:
             logger.error(f"An unexpected error occurred: {str(e)}")
             # Handle other unexpected exceptions
-        logger.info('-------------------------------------------')

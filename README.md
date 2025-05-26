@@ -57,6 +57,12 @@ Navigate to the ingestion pipeline directory:
 cd server_user_sync_ingestion
 ```
 
+Create a Virtual & Activate Environment
+```
+python3 -m venv lamisplus_venv
+source lamisplus_venv/bin/activate
+```
+
 Install the required Python packages:
 ```
 pip install -r requirements.txt
@@ -64,6 +70,7 @@ pip install -r requirements.txt
 
 Run Ingestion Pipeline Manually to test
 ```
+cd ingestion_pipeline/records_ingestion/old
 nohup python file_ingestion_process.py &
 nohup python dsd_ingestion_process.py &
 ```
@@ -72,17 +79,18 @@ nohup python dsd_ingestion_process.py &
 Automate bash scripts to run periodically
 ```
 crontab -e
-0 * * * * /home/server_user/server_user_ingestion_pipeline/orchestrate_file_ingestion.sh
-*/30 * * * * /home/server_user/server_user_ingestion_pipeline/orchestrate_dsd_file_ingestion.sh
-0 0 * * 0 /home/server_user/server_user_ingestion_pipeline/orchestrate_file_delete.sh
-0 */1 * * * /home/server_user/server_user_ingestion_pipeline/orchestrate_stg_record_delete.sh
+*/30 * * * * /home/lamisplus/ingestion_pipeline/records_ingestion/orchestrate_file_ingestion.sh
+*/15 * * * * /home/lamisplus/ingestion_pipeline/records_ingestion/orchestrate_dsd_file_ingestion.sh
+#0 */2 * * * /home/lamisplus/lamisplus_ingestion_pipeline/run_report_summary.sh
+0 2 * * * /home/lamisplus/ingestion_pipeline/records_deletion/orchestrate_stg_record_delete.sh
+0 3 1 * * /home/lamisplus/ingestion_pipeline/file_deletion/orchestrate_file_delete.sh
 ```
 
 ## License <a name="license"></a>
 - MIT License
 
 ## Authors & Acknowledgements <a name="authors_and_acknowledgments"></a>
-- Uche 
+- Uche Nnodim: https://github.com/Arshavin023
 
 
 
