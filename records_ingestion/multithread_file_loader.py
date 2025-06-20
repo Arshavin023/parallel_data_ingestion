@@ -19,6 +19,7 @@ from database_connection import connect_to_db
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import logger
 
+
 NO_ERRORS = 'No errors'
 
 pd.set_option('display.max_columns', None)
