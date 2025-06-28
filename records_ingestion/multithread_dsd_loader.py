@@ -621,16 +621,18 @@ class FileLoader:
             cursor = connection.cursor()
 
             num_records_loaded = 0 # Initialize a variable to count the number of records loaded
-
+            EXCLUDED_KEYS = {'ods_datim_id', 'ods_load_time'}
             for record in data:
+                filtered_record = {k: v for k, v in record.items() if k not in EXCLUDED_KEYS}
                 # Assuming record is a dictionary where keys correspond to column names
                 # For keys with nested structures, you may need to handle them accordingly
-                columns = ', '.join(list(record.keys()) + ['stg_load_time', 'stg_batch_id', 'stg_datim_id', 'stg_file_name'])
-                placeholders = ', '.join(['%s'] * (len(record) + 4))
+                columns = ', '.join(list(filtered_record.keys()) + ['stg_load_time', 'stg_batch_id', 
+                                                                    'stg_datim_id', 'stg_file_name'])
+                placeholders = ', '.join(['%s'] * (len(filtered_record) + 4))
                 values = []
                 bad_dates = []
 
-                for key, value in record.items():
+                for key, value in filtered_record.items():
                     if (key.startswith('date_') or key.endswith('_date')):
                         if value == "":
                             values.append(None)

@@ -596,7 +596,9 @@ class FileLoader:
         try:
             # Attempt to read JSON file into DataFrame
             df = pd.read_json(file_path, convert_dates=parse_dates)
-            
+            columns_to_exclude = ['ods_load_time','ods_datim_id']
+            columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+            df = df[columns_to_include]
             # Check if DataFrame is empty after reading JSON
             if df.empty:
                 self._update_log('failed', file_name, 0, 'JSON file is empty')
