@@ -5,15 +5,15 @@ SCRIPT_PATH="stg_records_deletion_process.py"
 LOG_FILE="logs/stg_records_deletion.log"
 
 # Change directory to your project directory
-cd /home/lamisplus || { echo "Error: Unable to change directory." >&2; exit 1; }
+cd /home/lamisplus/lamisplus_ingestion || { echo "Error: Unable to change directory." >&2; exit 1; }
 
 # Activate the virtual environment
 source lamisplus_venv/bin/activate || { echo "Error: Unable to activate virtual environment." >&2; exit 1; }
 
 # Change to project directory
-cd /home/lamisplus/ingestion_pipeline/records_deletion || { echo "Error: Unable to change directory." >&2; exit 1; }
-SCRIPT_PATH="/home/lamisplus/ingestion_pipeline/records_deletion/stg_records_deletion_process.py"
-LOG_FILE="/home/lamisplus/ingestion_pipeline/records_deletion/logs/deletion_stg_records_pipeline.log"
+cd /home/lamisplus/lamisplus_ingestion/records_deletion || { echo "Error: Unable to change directory." >&2; exit 1; }
+SCRIPT_PATH="/home/lamisplus/lamisplus_ingestion/records_deletion/stg_records_deletion_process.py"
+LOG_FILE="/home/lamisplus/lamisplus_ingestion/records_deletion/logs/deletion_stg_records_pipeline.log"
 
 # Check if the script file exists
 if [ ! -f "$SCRIPT_PATH" ]; then

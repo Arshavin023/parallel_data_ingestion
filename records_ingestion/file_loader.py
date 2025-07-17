@@ -191,7 +191,7 @@ class FileLoader:
             
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.facility_id} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -248,7 +248,7 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-03-30 00:00:00' 
+            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-07-01 00:00:00' 
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
             'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))

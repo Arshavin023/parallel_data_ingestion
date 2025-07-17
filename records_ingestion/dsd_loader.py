@@ -249,7 +249,7 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 and modified_date >= '2025-01-30'
+            FROM sync_file WHERE processed = 1 and modified_date >= '2025-07-01'
             AND (
                 decrypted_file_name ILIKE ANY 
                 (ARRAY['prep_eligibility_%',

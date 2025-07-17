@@ -1,8 +1,17 @@
 #!/bin/bash
 
 # Define the path to your Python script
-SCRIPT_PATH="/home/lamisplus/ingestion_pipeline/file_deletion/file_deletion_process.py"
-LOG_FILE="/home/lamisplus/ingestion_pipeline/file_deletion/logs/file_deletion_pipeline.log"
+SCRIPT_PATH="file_deletion_process.py"
+LOG_FILE="logs/file_deletion_pipeline.log"
+
+# Change directory to your project directory
+cd /home/lamisplus/lamisplus_ingestion || { echo "Error: Unable to change directory." >&2; exit 1; }
+
+# Activate the virtual environment
+source lamisplus_venv/bin/activate || { echo "Error: Unable to activate virtual environment." >&2; exit 1; }
+
+# Change to project directory
+cd /home/lamisplus/lamisplus_ingestion/file_deletion || { echo "Error: Unable to change directory." >&2; exit 1; }
 
 # Check if the script file exists
 if [ ! -f "$SCRIPT_PATH" ]; then

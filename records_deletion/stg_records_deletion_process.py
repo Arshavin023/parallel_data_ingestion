@@ -35,17 +35,17 @@ def main():
         AND table_name ILIKE 'stg_%' and table_name NOT ILIKE '%_bad_dates' 
         AND table_name IN (
             'stg_hiv_art_pharmacy_regimens','stg_hiv_eac_out_come','stg_base_organisation_unit','stg_base_application_codeset',
-            'stg_base_organisation_unit_identifier','stg_biometric','stg_case_manager','stg_case_manager_patients',
+            'stg_base_organisation_unit_identifier','stg_case_manager','stg_case_manager_patients',
             'stg_dsd_devolvement','stg_hiv_art_clinical','stg_hiv_art_pharmacy','stg_hiv_eac',
             'stg_hiv_eac_session','stg_hiv_enrollment','stg_hiv_observation','stg_hiv_regimen',
             'stg_hiv_regimen_resolver','stg_hiv_regimen_type','stg_hiv_status_tracker','stg_hts_client',
             'stg_hts_index_elicitation','stg_hts_risk_stratification','stg_laboratory_labtest','stg_laboratory_test',
             'stg_laboratory_order','stg_laboratory_result','stg_laboratory_sample','stg_patient_encounter',
-            'stg_patient_person','stg_patient_visit','stg_pmtct_anc','stg_pmtct_delivery',
+            'stg_patient_person','stg_patient_visit','stg_pmtct_anc','stg_pmtct_delivery','stg_biometric','stg_hivst',
             'stg_pmtct_enrollment','stg_pmtct_infant_arv','stg_pmtct_infant_information','stg_pmtct_infant_mother_art',
             'stg_pmtct_infant_pcr','stg_pmtct_infant_rapid_antibody','stg_pmtct_infant_visit','stg_pmtct_mother_visitation',
-            'stg_prep_clinic','stg_prep_eligibility','stg_prep_enrollment','stg_prep_interruption',
-            'stg_triage_vital_sign','hts_family_index_testing_tracker','stg_hts_client_referral'
+            'stg_prep_clinic','stg_prep_eligibility','stg_prep_enrollment','stg_prep_interruption','stg_hts_family_index','stg_hts_family_index_testing',
+            'stg_triage_vital_sign','stg_hts_family_index_testing_tracker','stg_hts_client_referral','stg_hts_pns_index_client_partner'
             )
         """
                 
@@ -60,8 +60,8 @@ def main():
         logger.info('Job Started')
         logger.info('Deletion of records with Y processed status on stg_monitoring table started')
         if staging_tables:
+            #batch_size = 1  # Adjust based on your system capacity
             batch_size = 5  # Adjust based on your system capacity
-            batch_size = 10  # Adjust based on your system capacity
             for i in range(0, len(staging_tables), batch_size):
                 batch = staging_tables[i:i + batch_size]
                 with concurrent.futures.ThreadPoolExecutor() as executor:

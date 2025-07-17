@@ -197,7 +197,7 @@ class FileLoader:
                                     self.facility_id))
             conn.commit()
             cur.close()
-            logger.info(f'Sync File log updated for {self.syncfile_entryID} successfully')
+            logger.info(f'Sync File log updated for {self.facility_id} successfully')
 
         except Exception as e:
             logger.exception(e)
@@ -256,7 +256,7 @@ class FileLoader:
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file 
             WHERE processed = 1
-            AND modified_date >= '2025-01-01 00:00:00'
+            AND modified_date >= '2025-07-01 00:00:00'
             AND facility_id = '{facility_id}' AND decrypted_file_name != 'hiv_enrollment_0_20250410104014.json'
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 
