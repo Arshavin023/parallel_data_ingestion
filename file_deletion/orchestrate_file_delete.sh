@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the path to your Python script
-SCRIPT_PATH="file_deletion_process.py"
+SCRIPT_PATH="multi_file_deletion_process.py"
 LOG_FILE="logs/file_deletion_pipeline.log"
 
 # Change directory to your project directory

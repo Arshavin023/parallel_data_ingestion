@@ -252,8 +252,8 @@ class FileLoader:
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
             'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
-                ORDER BY modified_date asc, file_name
-            LIMIT 5000"""
+            AND file_name ILIKE '%laboratory_result%'
+            LIMIT 1"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -518,7 +518,27 @@ class FileLoader:
                         record_id = df.at[idx, 'id']
                         indexes_for_bad_dates.append(idx)
                         problematic_dates[col].append(f'record id: {record_id}, invalid_date => {value}')
-        
+            # Second, perform specific 'date_result_reported' validation
+            if col == 'date_result_reported':
+                for idx, date_result_reported in df[col].items():
+                    # Check if the date is not null before processing
+                    if pd.notna(date_result_reported):
+                        try:
+                            date_result_reported_dt = pd.to_datetime(date_result_reported)
+                            date_modified_dt = pd.to_datetime(df['date_modified'][idx])
+                            current_time = datetime.now()
+                            
+                            # Add a check for null date_modified to prevent errors
+                            if pd.notna(date_modified_dt) and (date_result_reported_dt > date_modified_dt or date_result_reported_dt > current_time):
+                                record_id = df.at[idx, 'id']
+                                # Corrected line: call append directly on the list
+                                problematic_dates[col].append(f'record_id: {record_id}, date_result_reported: {date_result_reported_dt} is beyond date result entered {date_modified_dt} or {current_time}')
+                                indexes_for_bad_dates.append(idx)
+                        except (TypeError, ValueError):
+                            # Handle cases where conversion to datetime fails inside the loop
+                            pass
+                        
+                
         return problematic_dates,indexes_for_bad_dates
     
     def mask_pii(self, json_str):

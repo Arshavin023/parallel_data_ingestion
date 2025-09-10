@@ -130,7 +130,7 @@ class FileDelete:
         retrieve_query = """SELECT sf.facility_id, sf.file_name
                         FROM public.sync_file sf
                         WHERE sf.processed IN (2, -2)
-                            AND sf.modified_date >= CURRENT_DATE - INTERVAL '30 DAYS' --AND sf.modified_date < CURRENT_DATE
+                            AND sf.modified_date BETWEEN '2025-08-01' AND CURRENT_DATE -- INTERVAL '1 DAYS'
                             AND sf.ingest_end_time IS NOT NULL
                             AND sf.file_name IS NOT NULL
                             AND NOT EXISTS (
@@ -138,7 +138,7 @@ class FileDelete:
                             FROM public.file_deletion_log fdl
                             WHERE fdl.file_name = sf.file_name
                             AND fdl.deletion_status_check IN ('success', 'failed')
-                            AND fdl.file_name NOT ILIKE '%_decrypted%') 
+                            AND fdl.file_name NOT ILIKE '%_decrypted%')
                         """
         cur.execute(retrieve_query)
 
@@ -159,7 +159,7 @@ class FileDelete:
                 if os.path.exists(encrypted_local_dir):
                     logger.info(f"File: {encrypted_local_dir} exists")
                     try:
-                        encrypted_count_of_df = self.count_rows_in_json_file(decrypted_local_dir)
+                        encrypted_count_of_df = 0 #self.count_rows_in_json_file(decrypted_local_dir)
                         os.remove(encrypted_local_dir)
                         logger.info(f"File deleted: {encrypted_local_dir}")
                         self.delete_end_time = datetime.now()
@@ -176,7 +176,7 @@ class FileDelete:
                 if os.path.exists(decrypted_local_dir):
                     logger.info(f"File: {decrypted_local_dir} exists")
                     try:
-                        decrypted_count_of_df = self.count_rows_in_json_file(decrypted_local_dir)
+                        decrypted_count_of_df = 0 # self.count_rows_in_json_file(decrypted_local_dir)
                         os.remove(decrypted_local_dir)
                         logger.info(f"File deleted: {decrypted_local_dir}")
                         self.delete_end_time = datetime.now()

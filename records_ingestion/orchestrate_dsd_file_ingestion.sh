@@ -9,7 +9,7 @@ cd /home/lamisplus/lamisplus_ingestion || { echo "Error: Unable to change direct
 # Activate the virtual environment
 source lamisplus_venv/bin/activate || { echo "Error: Unable to activate virtual environment." >&2; exit 1; }
 
-# Change to project directory 
+# Change to project directory
 cd /home/lamisplus/lamisplus_ingestion/records_ingestion || { echo "Error: Unable to change directory." >&2; exit 1; }
 
 # Function to check if the pipeline is running
@@ -23,6 +23,12 @@ if is_pipeline_running; then
     exit 0
 else
     echo "$(date +"%Y-%m-%d %H:%M:%S"): Starting the pipeline..." >> "$LOG_FILE"
-    python3 "$SCRIPT_PATH" >> "$LOG_FILE" 2>&1 &
-    echo "$(date +"%Y-%m-%d %H:%M:%S"): Pipeline started successfully." >> "$LOG_FILE"
+    # Run the script and capture both stdout and stderr
+    if python3 "$SCRIPT_PATH" >> "$LOG_FILE" 2>&1; then
+        echo "$(date +"%Y-%m-%d %H:%M:%S"): Pipeline completed successfully." >> "$LOG_FILE"
+        exit 0
+    else
+        echo "$(date +"%Y-%m-%d %H:%M:%S"): Pipeline failed. See log file for details." >> "$LOG_FILE"
+        exit 1
+    fi
 fi

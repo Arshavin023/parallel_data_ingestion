@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 # Directory to search
@@ -12,18 +13,18 @@ for dir in "$base_dir"/*/; do
     cd "$dir" || continue
 
     # Run the find commands to delete files
-    find . -type f -name '*202405*' -exec rm {} +
-    find . -type f -name '*202406*' -exec rm {} +
-    find . -type f -name '*202407*' -exec rm {} +
+    find . -type f -name '*202501*' -exec rm {} +
+    find . -type f -name '*202502*' -exec rm {} +
+    find . -type f -name '*202503*' -exec rm {} +
+    find . -type f -name '*202504*' -exec rm {} +
+    find . -type f -name '*202505*' -exec rm {} +
+    find . -type f -name '*202506*' -exec rm {} +
+    find . -type f -name '*202507*' -exec rm {} +
     find . -type f -name '*202408*' -exec rm {} +
     find . -type f -name '*202409*' -exec rm {} +
     find . -type f -name '*202410*' -exec rm {} +
-    find . -type f -name '*202404*' -exec rm {} +
-    find . -type f -name '*202403*' -exec rm {} +
-    find . -type f -name '*202402*' -exec rm {} +
-    find . -type f -name '*202401*' -exec rm {} +
-    find . -type f -name '*202405*' -exec rm {} +
-    find . -type f -name '*202409*' -exec rm {} +
+    find . -type f -name '*202411*' -exec rm {} +
+    find . -type f -name '*202412*' -exec rm {} +
 
     # Return to the base directory
     cd "$base_dir" || exit

@@ -252,7 +252,7 @@ class FileLoader:
             SELECT id, facility_id, decrypted_file_name 
             FROM sync_file 
             WHERE processed = 1
-            AND modified_date >= '2025-07-01 00:00:00'
+            AND modified_date >= '2025-04-01 00:00:00'
             AND facility_id = '{facility_id}'
             AND (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 

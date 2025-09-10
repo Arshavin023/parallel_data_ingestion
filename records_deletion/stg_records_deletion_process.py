@@ -9,7 +9,7 @@ from database_connection.db_connect import connect_to_db
 def create_single_instance(staging_table:str):
     stg_conn = connect_to_db.connect('lamisplus_staging_dwh')[0]
     stg_cur = stg_conn.cursor()
-    delete_query_template = "CALL proc_delete_stg_records(%s)"
+    delete_query_template = "CALL proc_delete_stg_records_v2(%s)"
     try:
         logger.info(f"Deletion of ods_migrated records from {staging_table[0]} table started")
         stg_cur.execute(delete_query_template, (staging_table[0],))
@@ -41,7 +41,7 @@ def main():
             'stg_hiv_regimen_resolver','stg_hiv_regimen_type','stg_hiv_status_tracker','stg_hts_client',
             'stg_hts_index_elicitation','stg_hts_risk_stratification','stg_laboratory_labtest','stg_laboratory_test',
             'stg_laboratory_order','stg_laboratory_result','stg_laboratory_sample','stg_patient_encounter',
-            'stg_patient_person','stg_patient_visit','stg_pmtct_anc','stg_pmtct_delivery','stg_biometric','stg_hivst',
+            'stg_patient_person','stg_patient_visit','stg_pmtct_anc','stg_pmtct_delivery','stg_hivst',
             'stg_pmtct_enrollment','stg_pmtct_infant_arv','stg_pmtct_infant_information','stg_pmtct_infant_mother_art',
             'stg_pmtct_infant_pcr','stg_pmtct_infant_rapid_antibody','stg_pmtct_infant_visit','stg_pmtct_mother_visitation',
             'stg_prep_clinic','stg_prep_eligibility','stg_prep_enrollment','stg_prep_interruption','stg_hts_family_index','stg_hts_family_index_testing',
