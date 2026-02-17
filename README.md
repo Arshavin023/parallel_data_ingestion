@@ -1,6 +1,6 @@
 # File Ingestion Process
 
-![System Architecture](images/architecture.png)
+![System Architecture](images/architecture.jpg)
 
 ## Overview
 A production-grade Python pipeline engineered to ingest high-volume JSON datasets into a PostgreSQL environment. This project focuses on high-throughput data movement, leveraging Python’s concurrency models and optimized database drivers to bridge the gap between raw file storage and relational analytics.
