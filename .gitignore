@@ -16,8 +16,15 @@ __pycache__/
 .cache/
 .local/
 .vscode-server/
-.lamisplus_venv/
+lamisplus_venv/
+logs/
 records_ingestion/logs/*
+records_ingestion/__pycache__/*
 records_deletion/logs/*
+records_deletion/__pycache__/*
 file_deletion/logs/*
+file_deletion/__pycache__/*
+file_deletion/nohup.out
 records_extraction/logs/*
+records_extraction/__pycache__/*
+records_ingestion/nohup.out

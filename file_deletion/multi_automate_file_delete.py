@@ -91,7 +91,7 @@ class FileDelete:
             retrieve_query = f"""SELECT sf.facility_id, sf.file_name, sf.ingest_file_name
                                 FROM public.sync_file sf
                                 WHERE sf.processed IN (2, -2)
-                                  AND sf.modified_date BETWEEN CURRENT_DATE - INTERVAL '45 DAYS' AND CURRENT_DATE - INTERVAL '8 DAYS'
+                                  AND sf.modified_date >= CURRENT_DATE - INTERVAL '240 DAYS' AND sf.modified_date <= CURRENT_DATE - INTERVAL '1 DAYS'
                                   AND sf.ingest_end_time IS NOT NULL
                                   AND sf.file_name IS NOT NULL
                                   AND facility_id = '{facility_id}'

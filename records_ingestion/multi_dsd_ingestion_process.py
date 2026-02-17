@@ -41,8 +41,7 @@ def insert_facility_uploads():
             SELECT facility_id, decrypted_file_name
             FROM sync_file
             WHERE processed = 1
-              AND modified_date >= '2025-01-01'
-            --LIMIT 1
+              AND modified_date >= CURRENT_DATE - INTERVAL '14 DAYS'
         ) z
         WHERE (
             decrypted_file_name ILIKE ANY (
@@ -104,7 +103,7 @@ def create_single_instance(facility:tuple):
         update_facility_uploads('FAILED', start_time, end_time, str(e), facility_id, batch_id, 'UNPROCESSED')
         logger.exception(f'ingestion of {file_count} files for {facility_id} failed', exc_info=True)
 
-def process_facilities_in_batches(facilities, batch_size=10):
+def process_facilities_in_batches(facilities, batch_size=3):
     """
     Processes facilities in batches using multithreading.
     """

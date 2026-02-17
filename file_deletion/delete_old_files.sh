@@ -20,10 +20,10 @@ for dir in "$base_dir"/*/; do
     find . -type f -name '*202505*' -exec rm {} +
     find . -type f -name '*202506*' -exec rm {} +
     find . -type f -name '*202507*' -exec rm {} +
-    find . -type f -name '*202408*' -exec rm {} +
-    find . -type f -name '*202409*' -exec rm {} +
-    find . -type f -name '*202410*' -exec rm {} +
-    find . -type f -name '*202411*' -exec rm {} +
+    find . -type f -name '*202508*' -exec rm {} +
+    find . -type f -name '*202509*' -exec rm {} +
+    find . -type f -name '*202510*' -exec rm {} +
+    find . -type f -name '*202511*' -exec rm {} +
     find . -type f -name '*202412*' -exec rm {} +
 
     # Return to the base directory

@@ -248,12 +248,12 @@ class FileLoader:
             cur = conn.cursor()
             retrieve_query = """
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-07-01 00:00:00' 
+            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-12-31 00:00:00' 
             AND NOT (decrypted_file_name ILIKE ANY 
             (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
             'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
-            AND file_name ILIKE '%laboratory_result%'
-            LIMIT 1"""
+            --AND file_name ILIKE '%laboratory_result_8_20251016121255.json%'
+            LIMIT 5"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -495,51 +495,94 @@ class FileLoader:
         except Exception as e:
             logger.exception(e)
             raise e
-	
+
     def _date_validation(self,df):
         date_columns = [col for col in df.columns if col.startswith('date_') or col.endswith('_date')]
         if not date_columns:
             return {}, []  # No date columns to validate
         problematic_dates = {}
         indexes_for_bad_dates = []
+
         for col in date_columns:
+            problematic_dates.setdefault(col, [])
             try:
                 pd.to_datetime(df[col], errors='raise')
             except (TypeError, ValueError) as e:
-                problematic_dates[col] = []
                 for idx, value in df[col].items():
                     try:
                         pd.to_datetime(value, errors='raise')
                     except (TypeError, ValueError):
-
-                        indexes_for_bad_dates.append(idx)
-                        problematic_dates[col].append(f'record {idx+1}, value => {value}')
-
                         record_id = df.at[idx, 'id']
                         indexes_for_bad_dates.append(idx)
                         problematic_dates[col].append(f'record id: {record_id}, invalid_date => {value}')
-            # Second, perform specific 'date_result_reported' validation
+
             if col == 'date_result_reported':
                 for idx, date_result_reported in df[col].items():
-                    # Check if the date is not null before processing
+                    date_modified = df['date_modified'].get(idx) # Use .get() for safer access
                     if pd.notna(date_result_reported):
                         try:
                             date_result_reported_dt = pd.to_datetime(date_result_reported)
-                            date_modified_dt = pd.to_datetime(df['date_modified'][idx])
+                            date_modified_dt = pd.to_datetime(date_modified) if pd.notna(date_modified) else None
                             current_time = datetime.now()
-                            
-                            # Add a check for null date_modified to prevent errors
-                            if pd.notna(date_modified_dt) and (date_result_reported_dt > date_modified_dt or date_result_reported_dt > current_time):
+                            if date_modified_dt and date_result_reported_dt >= pd.to_datetime('2025-06-30') and (date_result_reported_dt > date_modified_dt) or (date_result_reported_dt > current_time):
                                 record_id = df.at[idx, 'id']
-                                # Corrected line: call append directly on the list
-                                problematic_dates[col].append(f'record_id: {record_id}, date_result_reported: {date_result_reported_dt} is beyond date result entered {date_modified_dt} or {current_time}')
-                                indexes_for_bad_dates.append(idx)
-                        except (TypeError, ValueError):
-                            # Handle cases where conversion to datetime fails inside the loop
+                                problematic_dates[col].append(
+                                    f"record_id: {record_id}, date_result_reported: {date_result_reported_dt} is beyond date_modified ({date_modified_dt}) or current time ({current_time})")
+                                if idx not in indexes_for_bad_dates:
+                                    indexes_for_bad_dates.append(idx)
+                        except (TypeError, ValueError, KeyError):
                             pass
-                        
-                
-        return problematic_dates,indexes_for_bad_dates
+
+        indexes_for_bad_dates = list(set(indexes_for_bad_dates))
+        problematic_dates = {k: v for k, v in problematic_dates.items() if v}
+
+        return problematic_dates, indexes_for_bad_dates
+
+
+#     def _date_validation(self,df):
+#         date_columns = [col for col in df.columns if col.startswith('date_') or col.endswith('_date')]
+#         if not date_columns:
+#             return {}, []  # No date columns to validate
+#         problematic_dates = {}
+#         indexes_for_bad_dates = []
+#         for col in date_columns:
+#             try:
+#                 pd.to_datetime(df[col], errors='raise')
+#             except (TypeError, ValueError) as e:
+#                 problematic_dates[col] = []
+#                 for idx, value in df[col].items():
+#                     try:
+#                         pd.to_datetime(value, errors='raise')
+#                     except (TypeError, ValueError):
+#
+#                         indexes_for_bad_dates.append(idx)
+#                         problematic_dates[col].append(f'record {idx+1}, value => {value}')
+#
+#                         record_id = df.at[idx, 'id']
+#                         indexes_for_bad_dates.append(idx)
+#                         problematic_dates[col].append(f'record id: {record_id}, invalid_date => {value}')
+#             # Second, perform specific 'date_result_reported' validation
+#             if col == 'date_result_reported':
+#                 for idx, date_result_reported in df[col].items():
+#                     # Check if the date is not null before processing
+#                     if pd.notna(date_result_reported):
+#                         try:
+#                             date_result_reported_dt = pd.to_datetime(date_result_reported)
+#                             date_modified_dt = pd.to_datetime(df['date_modified'][idx])
+#                             current_time = datetime.now()
+#
+#                             # Add a check for null date_modified to prevent errors
+#                             if pd.notna(date_modified_dt) and (date_result_reported_dt > date_modified_dt or date_result_reported_dt > current_time):
+#                                 record_id = df.at[idx, 'id']
+#                                 # Corrected line: call append directly on the list
+#                                 problematic_dates[col].append(f'record_id: {record_id}, date_result_reported: {date_result_reported_dt} is beyond date result entered {date_modified_dt} or {current_time}')
+#                                 indexes_for_bad_dates.append(idx)
+#                         except (TypeError, ValueError):
+#                             # Handle cases where conversion to datetime fails inside the loop
+#                             pass
+#
+#
+#         return problematic_dates,indexes_for_bad_dates
     
     def mask_pii(self, json_str):
         data = json.loads(json_str)  # Parse JSON string to Python dict
