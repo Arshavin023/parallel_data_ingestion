@@ -1,6 +1,9 @@
 # File Ingestion Process
+
+![System Architecture](images/architecture.png)
+
 ## Overview
-The File Ingestion Process is a Python-based data pipeline designed to ingest JSON files into a PostgreSQL database. This README provides an overview of the key components and functionality of the pipeline.
+A production-grade Python pipeline engineered to ingest high-volume JSON datasets into a PostgreSQL environment. This project focuses on high-throughput data movement, leveraging Python’s concurrency models and optimized database drivers to bridge the gap between raw file storage and relational analytics.
 
 # Table of Contents
 - [Introduction](#introduction)
