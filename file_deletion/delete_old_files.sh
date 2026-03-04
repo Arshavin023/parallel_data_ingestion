@@ -13,7 +13,7 @@ for dir in "$base_dir"/*/; do
     cd "$dir" || continue
 
     # Run the find commands to delete files
-    find . -type f -name '*202501*' -exec rm {} +
+    find . -type f -name '*202601*' -exec rm {} +
     find . -type f -name '*202502*' -exec rm {} +
     find . -type f -name '*202503*' -exec rm {} +
     find . -type f -name '*202504*' -exec rm {} +
@@ -21,10 +21,6 @@ for dir in "$base_dir"/*/; do
     find . -type f -name '*202506*' -exec rm {} +
     find . -type f -name '*202507*' -exec rm {} +
     find . -type f -name '*202508*' -exec rm {} +
-    find . -type f -name '*202509*' -exec rm {} +
-    find . -type f -name '*202510*' -exec rm {} +
-    find . -type f -name '*202511*' -exec rm {} +
-    find . -type f -name '*202412*' -exec rm {} +
 
     # Return to the base directory
     cd "$base_dir" || exit

@@ -253,7 +253,7 @@ class FileLoader:
             (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
             'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
             --AND file_name ILIKE '%laboratory_result_8_20251016121255.json%'
-            LIMIT 5"""
+            LIMIT 50"""
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -276,7 +276,7 @@ class FileLoader:
                     self._fakeupsert_synclog(decrypted_file_name,staging_table)
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
                     self.load_end_time = datetime.now()
-                    self._update_flag_syncfile('loaded in the past', 3, 0, NO_ERRORS)
+                    self._update_flag_syncfile('loaded in the past', 2, 0, NO_ERRORS)
                     
             cur.close()
             logger.info('json files successfully processed')

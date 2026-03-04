@@ -1,11 +1,17 @@
 # File Ingestion Process
 
-![System Architecture](images/architecture.jpg)
+![System Architecture](images/ingestion_architecture.jpg)
 
 ## Overview
-A production-grade Python pipeline engineered to ingest high-volume JSON datasets into a PostgreSQL environment. This project focuses on high-throughput data movement, leveraging Python’s concurrency models and optimized database drivers to bridge the gap between raw file storage and relational analytics.
+The core objective of this system is to bridge the gap between raw edge-node data (JSON) and a structured Data Warehouse, while strictly managing the physical and logical storage footprint.
 
-# Table of Contents
+#### Key Components
+- Parallel Ingestion Engine: Utilizes concurrent workers to monitor and ingest JSON files from facility-specific directories into the database.
+- Partitioned Staging Layer: Data is loaded into staging tables partitioned by Facility_ID (List Partitioning) to facilitate rapid downstream processing and easy management.
+- Source Cleanup Pipeline: A post-ingestion trigger that identifies successfully processed files and removes them from the local file system to prevent disk saturation.
+- Staging Purge Pipeline: A synchronization-aware cleanup process that deletes records from the staging environment only after verification of a successful migration to the remote Data Warehouse.
+
+## Table of Contents
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
@@ -17,13 +23,15 @@ A production-grade Python pipeline engineered to ingest high-volume JSON dataset
 - [Authors & Acknoledgements](#authors_and_acknowledgments)
 
 ## Introduction <a name="introduction"></a>
-The File Ingestion Process consists of Python scripts that facilitate the ingestion of JSON files into a PostgreSQL database. It leverages the psycopg2 and sqlalchemy libraries for database connectivity and the pandas library for data manipulation.
+In modern healthcare informatics, the ability to process high volumes of facility-specific data with low latency is critical. This project implements a high-performance Concurrent Data Ingestion Pipeline designed to ingest JSON-based clinical records from multiple source directories into a centralized staging environment. 
+The system is engineered to handle data from various hospital facilities simultaneously, utilizing List Partitioning to ensure data isolation, security, and query optimization. Beyond ingestion, the framework incorporates automated Data Lifecycle Management (DLM) pipelines to maintain storage hygiene by purging processed files and archived staging records, ensuring the system remains performant and cost-effective.
 
 ## Installation <a name="installation"></a>
 #### Prerequisites <a name="prerequisites"></a>
 Before running the File Ingestion Process, ensure you have the following prerequisites installed:
-- Python 3.x
-- PostgreSQL database
+- Database: A SQL instance supporting partitioning (e.g., PostgreSQL 14+).
+- Environment: Python 3.9+ with pip installed.
+- Storage: Read/Write permissions on all source JSON directories.
 
 ## Configuration <a name="configuration"></a>
 Create database_credentials file and fill in the info

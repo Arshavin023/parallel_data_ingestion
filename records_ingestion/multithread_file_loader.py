@@ -285,7 +285,7 @@ class FileLoader:
                     self._fakeupsert_synclog(decrypted_file_name,staging_table)
                     logger.info(f"The file '{local_dir}' does not exist. Skipping to next file")
                     self.load_end_time = datetime.now()
-                    self._update_flag_syncfile('loaded in the past', 3, 0, NO_ERRORS)
+                    self._update_flag_syncfile('loaded in the past', 2, 0, NO_ERRORS)
                     
             cur.close()
             logger.info('json files successfully processed')

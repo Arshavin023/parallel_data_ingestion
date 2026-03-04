@@ -129,7 +129,7 @@ class FileDelete:
         cur = conn.cursor()
         retrieve_query = """SELECT sf.facility_id, sf.file_name
                         FROM public.sync_file sf
-                        WHERE sf.processed IN (2, -2)
+                        WHERE sf.processed IN (2, -2) AND sf.json_rec_count > 0
                             AND sf.modified_date BETWEEN '2025-08-01' AND CURRENT_DATE -- INTERVAL '1 DAYS'
                             AND sf.ingest_end_time IS NOT NULL
                             AND sf.file_name IS NOT NULL
