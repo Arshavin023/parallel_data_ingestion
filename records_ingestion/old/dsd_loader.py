@@ -12,7 +12,7 @@ from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Bo
 from sqlalchemy.dialects.postgresql import JSONB
 from src import logger
 import configparser
-from database_connection.db_connect import connect_to_db
+from database_connection import connect_to_db
 
 
 NO_ERRORS = 'No errors'

@@ -1,10 +1,8 @@
 import psycopg2
 from datetime import datetime
-import logging
-from dsd_loader import FileLoader
-from src import logger
+from records_ingestion.old.file_loader import FileLoader
 import configparser
-from database_connection.db_connect import connect_to_db
+from database_connection import connect_to_db
 
 def insert_pipeline_log(cur, log_id, start_time):
     insert_pipeline_query = """
