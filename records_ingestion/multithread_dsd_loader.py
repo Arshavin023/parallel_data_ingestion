@@ -20,12 +20,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from src import logger
 NO_ERRORS = 'No errors'
 pd.set_option('display.max_columns', None)
-
+file_directory = os.environ.get('FILE_DIRECTORY')
 class FileLoader:
     def __init__(self):
         self.facility_id = None
         self.syncfile_entryID = None
-        self.demo_path = '/home/ubuntu/server/temp'
+        self.demo_path = file_directory
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None

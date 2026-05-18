@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/lamisplus/lamisplus_ingestion
-            git pull origin main
+            git pull personal main
             
             # Inject secrets
             echo "DB_USER=${{ secrets.DB_USER }}" > .env
@@ -30,4 +30,7 @@ jobs:
             echo "DB_NAME_LAMISPLUS_STAGING_DWH=${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}" >> .env
             
             # Pre-build the container images so they are ready for the cron job to use
-            /usr/local/bin/docker-compose build
+            docker compose down
+            docker network prune -f
+            /usr/local/bin/docker-compose build --no-cache
+            # /usr/local/bin/docker-compose build

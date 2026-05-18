@@ -9,11 +9,12 @@ from src import logger
 import configparser
 from database_connection import connect_to_db
 
+file_directory = os.environ.get('FILE_DIRECTORY')
 class FileDelete:
     def __init__(self):
         self.facility_id = None
         self.syncfile_entryID = None
-        self.demo_path = '/home/ubuntu/server/temp'
+        self.demo_path = file_directory
         self.count_of_df = 0
         self.delete_end_time = None
         self.delete_start_time = None
