@@ -16,3 +16,6 @@ records_deletion/logs/*
 
 file_deletion/logs/*
 !file_deletion/logs/.gitkeep
+
+logs/*
+!logs/.gitkeep

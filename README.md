@@ -37,7 +37,7 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 ## Configuration <a name="configuration"></a>
 Create database_credentials file and fill in the info
 ```
-nano /home/server_user/.env
+nano /home/server_user/lamisplus_ingestion/.env
 # Database connection settings
 DB_USER=database_username
 DB_PASSWORD=database_password
