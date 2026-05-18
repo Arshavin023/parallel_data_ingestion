@@ -13,7 +13,7 @@
 #       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
 #       - ./records_ingestion/logs:/app/logs
 #     environment:
-#       - PYTHONUNBUFFERED=1
+#       - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
 #       - DB_HOST=host.docker.internal
 #       - DB_USER=${DB_USER}
 #       - DB_PASSWORD=${DB_PASSWORD}
@@ -38,7 +38,7 @@
 #       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
 #       - ./records_ingestion/logs:/app/logs
 #     environment:
-#       - PYTHONUNBUFFERED=1
+#       - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
 #       - DB_HOST=host.docker.internal
 #       - DB_USER=${DB_USER}
 #       - DB_PASSWORD=${DB_PASSWORD}
@@ -61,7 +61,7 @@
 #     volumes:
 #       - ./records_deletion/logs:/app/logs
 #     environment:
-#       - PYTHONUNBUFFERED=1
+#       - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
 #       - DB_HOST=host.docker.internal
 #       - DB_USER=${DB_USER}
 #       - DB_PASSWORD=${DB_PASSWORD}
@@ -83,7 +83,7 @@
 #       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
 #       - ./file_deletion/logs:/app/logs
 #     environment:
-#       - PYTHONUNBUFFERED=1
+#       - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
 #       - DB_HOST=host.docker.internal
 #       - DB_USER=${DB_USER}
 #       - DB_PASSWORD=${DB_PASSWORD}
@@ -110,7 +110,7 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -127,7 +127,7 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -144,7 +144,7 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -159,7 +159,7 @@ services:
     env_file:
       - .env
     environment:
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
