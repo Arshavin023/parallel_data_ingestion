@@ -1,102 +1,159 @@
-services:
-  # Standard File Ingestion
-  file-ingestion-service:
-    build:
-      context: .
-      dockerfile: records_ingestion/Dockerfile
-    container_name: lamisplus_file_ingestion
-    user: "${UID}:${GID}"
-    command: python records_ingestion/multi_file_ingestion_process.py
-    networks:
-      - lamisplus_net
-    volumes:
-      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./records_ingestion/logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=host.docker.internal
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME_FILEDB=${DB_NAME_FILEDB}
-      - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
-      - FILE_DIRECTORY=${FILE_DIRECTORY}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+# services:
+#   # Standard File Ingestion
+#   file-ingestion-service:
+#     build:
+#       context: .
+#       dockerfile: records_ingestion/Dockerfile
+#     container_name: lamisplus_file_ingestion
+#     user: "${UID}:${GID}"
+#     command: python records_ingestion/multi_file_ingestion_process.py
+#     networks:
+#       - lamisplus_net
+#     volumes:
+#       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+#       - ./records_ingestion/logs:/app/logs
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#       - DB_HOST=host.docker.internal
+#       - DB_USER=${DB_USER}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_PORT=${DB_PORT}
+#       - DB_NAME_FILEDB=${DB_NAME_FILEDB}
+#       - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
+#       - FILE_DIRECTORY=${FILE_DIRECTORY}
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
 
-  # DSD Ingestion 
-  dsd-ingestion-service:
-    build:
-      context: .
-      dockerfile: records_ingestion/Dockerfile
-    container_name: lamisplus_dsd_ingestion
-    user: "${UID}:${GID}"
-    command: python records_ingestion/multi_dsd_ingestion_process.py
-    networks:
-      - lamisplus_net
-    volumes:
-      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./records_ingestion/logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=host.docker.internal
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - DB_NAME_FILEDB=${DB_NAME_FILEDB}
-      - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
-      - FILE_DIRECTORY=${FILE_DIRECTORY}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+#   # DSD Ingestion 
+#   dsd-ingestion-service:
+#     build:
+#       context: .
+#       dockerfile: records_ingestion/Dockerfile
+#     container_name: lamisplus_dsd_ingestion
+#     user: "${UID}:${GID}"
+#     command: python records_ingestion/multi_dsd_ingestion_process.py
+#     networks:
+#       - lamisplus_net
+#     volumes:
+#       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+#       - ./records_ingestion/logs:/app/logs
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#       - DB_HOST=host.docker.internal
+#       - DB_USER=${DB_USER}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_PORT=${DB_PORT}
+#       - DB_NAME_FILEDB=${DB_NAME_FILEDB}
+#       - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
+#       - FILE_DIRECTORY=${FILE_DIRECTORY}
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
   
-  # Records Deletion
+#   # Records Deletion
+#   records-deletion-service:
+#     build:
+#       context: .
+#       dockerfile: records_deletion/Dockerfile
+#     container_name: lamisplus_records_deletion
+#     user: "${UID}:${GID}"
+#     networks:
+#       - lamisplus_net
+#     volumes:
+#       - ./records_deletion/logs:/app/logs
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#       - DB_HOST=host.docker.internal
+#       - DB_USER=${DB_USER}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_PORT=${DB_PORT}
+#       - FILE_DIRECTORY=${FILE_DIRECTORY}
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+
+#   # File Deletion
+#   file-deletion-service:
+#     build:
+#       context: .
+#       dockerfile: file_deletion/Dockerfile
+#     container_name: lamisplus_file_deletion
+#     user: "${UID}:${GID}"
+#     networks:
+#       - lamisplus_net
+#     volumes:
+#       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+#       - ./file_deletion/logs:/app/logs
+#     environment:
+#       - PYTHONUNBUFFERED=1
+#       - DB_HOST=host.docker.internal
+#       - DB_USER=${DB_USER}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_PORT=${DB_PORT}
+#       - FILE_DIRECTORY=${FILE_DIRECTORY}
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
+
+# networks:
+#   lamisplus_net:
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.31.0.0/16
+#           gateway: 172.31.0.1
+
+services:
+  file-ingestion-service:
+    image: ghcr.io/arshavin023/lamisplus_ingestion/file-ingestion-service:latest
+    build:
+      context: .
+      dockerfile: ./records_ingestion/Dockerfile
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
+    # user: "${UID}:${GID}"
+    volumes:
+      - ${FILE_DIRECTORY}:/app/data
+    restart: "no"
+    command: python /app/records_ingestion/multi_file_ingestion_process.py  # <--- ADD THIS LINE (adjust to your actual script path)
+
+  dsd-ingestion-service:
+    image: ghcr.io/arshavin023/lamisplus_ingestion/dsd-ingestion-service:latest
+    build:
+      context: .
+      dockerfile: ./records_ingestion/Dockerfile # Adjust path if DSD uses a different Dockerfile
+    env_file:
+      - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
+    # user: "${UID}:${GID}"
+    volumes:
+      - ${FILE_DIRECTORY}:/app/data
+    restart: "no"
+    command: python /app/records_ingestion/multi_dsd_ingestion_process.py  # <--- ADD THIS LINE (adjust to your actual script path)
+  
   records-deletion-service:
+    image: ghcr.io/arshavin023/lamisplus_ingestion/records-deletion-service:latest
     build:
       context: .
-      dockerfile: records_deletion/Dockerfile
-    container_name: lamisplus_records_deletion
-    user: "${UID}:${GID}"
-    networks:
-      - lamisplus_net
-    volumes:
-      - ./records_deletion/logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=host.docker.internal
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - FILE_DIRECTORY=${FILE_DIRECTORY}
+      dockerfile: ./records_deletion/Dockerfile
+    env_file:
+      - .env
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
+    # user: "${UID}:${GID}"
+    restart: "no"
 
-  # File Deletion
   file-deletion-service:
+    image: ghcr.io/arshavin023/lamisplus_ingestion/file-deletion-service:latest
     build:
       context: .
-      dockerfile: file_deletion/Dockerfile
-    container_name: lamisplus_file_deletion
-    user: "${UID}:${GID}"
-    networks:
-      - lamisplus_net
-    volumes:
-      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./file_deletion/logs:/app/logs
-    environment:
-      - PYTHONUNBUFFERED=1
-      - DB_HOST=host.docker.internal
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - FILE_DIRECTORY=${FILE_DIRECTORY}
+      dockerfile: ./file_deletion/Dockerfile
+    env_file:
+      - .env
     extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-networks:
-  lamisplus_net:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.31.0.0/16
-          gateway: 172.31.0.1
+      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
+    # user: "${UID}:${GID}"
+    volumes:
+      - ${FILE_DIRECTORY}:/app/data
+    restart: "no"
