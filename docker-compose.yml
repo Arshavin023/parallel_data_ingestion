@@ -109,11 +109,13 @@ services:
       dockerfile: ./records_ingestion/Dockerfile
     env_file:
       - .env
+    environment:
+      - PYTHONUNBUFFERED=1
     extra_hosts:
-      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
-    # user: "${UID}:${GID}"
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ${FILE_DIRECTORY}:/app/data
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./records_ingestion/logs:/app/logs
     restart: "no"
     command: python /app/records_ingestion/multi_file_ingestion_process.py  # <--- ADD THIS LINE (adjust to your actual script path)
 
@@ -124,11 +126,13 @@ services:
       dockerfile: ./records_ingestion/Dockerfile # Adjust path if DSD uses a different Dockerfile
     env_file:
       - .env
+    environment:
+      - PYTHONUNBUFFERED=1
     extra_hosts:
-      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
-    # user: "${UID}:${GID}"
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ${FILE_DIRECTORY}:/app/data
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./records_ingestion/logs:/app/logs
     restart: "no"
     command: python /app/records_ingestion/multi_dsd_ingestion_process.py  # <--- ADD THIS LINE (adjust to your actual script path)
   
@@ -139,9 +143,12 @@ services:
       dockerfile: ./records_deletion/Dockerfile
     env_file:
       - .env
+    environment:
+      - PYTHONUNBUFFERED=1
     extra_hosts:
-      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
-    # user: "${UID}:${GID}"
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./records_deletion/logs:/app/logs
     restart: "no"
 
   file-deletion-service:
@@ -151,9 +158,11 @@ services:
       dockerfile: ./file_deletion/Dockerfile
     env_file:
       - .env
+    environment:
+      - PYTHONUNBUFFERED=1
     extra_hosts:
-      - "host.docker.internal:host-gateway"  # <--- ADD THIS BACK IF YOU NEED DB ACCESS
-    # user: "${UID}:${GID}"
+      - "host.docker.internal:host-gateway"
     volumes:
-      - ${FILE_DIRECTORY}:/app/data
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./file_deletion/logs:/app/logs
     restart: "no"
