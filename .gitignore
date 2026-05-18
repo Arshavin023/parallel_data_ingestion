@@ -8,3 +8,11 @@ __pycache__/
 ingestion_pipeline.egg-info/
 dist/  
 build/  
+records_ingestion/logs/*
+!records_ingestion/logs/.gitkeep
+
+records_deletion/logs/*
+!records_deletion/logs/.gitkeep
+
+file_deletion/logs/*
+!file_deletion/logs/.gitkeep

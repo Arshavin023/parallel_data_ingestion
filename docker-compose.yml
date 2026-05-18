@@ -5,13 +5,15 @@ services:
       context: .
       dockerfile: records_ingestion/Dockerfile
     container_name: lamisplus_file_ingestion
+    user: "${UID}:${GID}"
     command: python records_ingestion/multi_file_ingestion_process.py
     networks:
       - lamisplus_net
     volumes:
-      - ${FILE_DIRECTORY}/data
-      - ./records_ingestion/logs:/app/records_ingestion/logs
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./records_ingestion/logs:/app/logs
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOST=host.docker.internal
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -28,13 +30,15 @@ services:
       context: .
       dockerfile: records_ingestion/Dockerfile
     container_name: lamisplus_dsd_ingestion
+    user: "${UID}:${GID}"
     command: python records_ingestion/multi_dsd_ingestion_process.py
     networks:
       - lamisplus_net
     volumes:
-      - ${FILE_DIRECTORY}/data
-      - ./records_ingestion/logs:/app/records_ingestion/logs
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./records_ingestion/logs:/app/logs
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOST=host.docker.internal
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -51,11 +55,13 @@ services:
       context: .
       dockerfile: records_deletion/Dockerfile
     container_name: lamisplus_records_deletion
+    user: "${UID}:${GID}"
     networks:
       - lamisplus_net
     volumes:
-      - ./records_deletion/logs:/app/records_deletion/logs
+      - ./records_deletion/logs:/app/logs
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOST=host.docker.internal
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -70,12 +76,14 @@ services:
       context: .
       dockerfile: file_deletion/Dockerfile
     container_name: lamisplus_file_deletion
+    user: "${UID}:${GID}"
     networks:
       - lamisplus_net
     volumes:
-      - ${FILE_DIRECTORY}/data
-      - ./file_deletion/logs:/app/file_deletion/logs
+      - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
+      - ./file_deletion/logs:/app/logs
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOST=host.docker.internal
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
