@@ -1,0 +1,10 @@
+.env
+lamisplus_venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python     
+ingestion_pipeline.egg-info/
+dist/  
+build/  

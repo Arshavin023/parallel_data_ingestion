@@ -1,0 +1,90 @@
+services:
+  # Standard File Ingestion
+  file-ingestion-service:
+    build:
+      context: .
+      dockerfile: records_ingestion/Dockerfile
+    container_name: lamisplus_file_ingestion
+    command: python records_ingestion/multi_file_ingestion_process.py
+    networks:
+      - lamisplus_net
+    volumes:
+      - /home/ubuntu/server/temp:/home/ubuntu/server/temp
+      - ./records_ingestion/logs:/app/records_ingestion/logs
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME_FILEDB=${DB_NAME_FILEDB}
+      - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # DSD Ingestion 
+  dsd-ingestion-service:
+    build:
+      context: .
+      dockerfile: records_ingestion/Dockerfile
+    container_name: lamisplus_dsd_ingestion
+    command: python records_ingestion/multi_dsd_ingestion_process.py
+    networks:
+      - lamisplus_net
+    volumes:
+      - /home/ubuntu/server/temp:/home/ubuntu/server/temp
+      - ./records_ingestion/logs:/app/records_ingestion/logs
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME_FILEDB=${DB_NAME_FILEDB}
+      - DB_NAME_LAMISPLUS_STAGING_DWH=${DB_NAME_LAMISPLUS_STAGING_DWH}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  # Records Deletion
+  records-deletion-service:
+    build:
+      context: .
+      dockerfile: records_deletion/Dockerfile
+    container_name: lamisplus_records_deletion
+    networks:
+      - lamisplus_net
+    volumes:
+      - ./records_deletion/logs:/app/records_deletion/logs
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # File Deletion
+  file-deletion-service:
+    build:
+      context: .
+      dockerfile: file_deletion/Dockerfile
+    container_name: lamisplus_file_deletion
+    networks:
+      - lamisplus_net
+    volumes:
+      - /home/ubuntu/server/temp:/home/ubuntu/server/temp
+      - ./file_deletion/logs:/app/file_deletion/logs
+    environment:
+      - DB_HOST=host.docker.internal
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  lamisplus_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.0.0/16
+          gateway: 172.31.0.1
