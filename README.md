@@ -37,65 +37,53 @@ Before running the File Ingestion Process, ensure you have the following prerequ
 ## Configuration <a name="configuration"></a>
 Create database_credentials file and fill in the info
 ```
-nano /home/server_user/database_credentials/config.ini
-[database]
-ods_host=localhost
-ods_port=5432
-ods_username=database_username
-ods_password=database_password
-ods_database_name=database_name
+nano /home/server_user/.env
+# Database connection settings
+DB_USER=database_username
+DB_PASSWORD=database_password
+DB_PORT=6432
 
-stg_host=localhost
-stg_port=5432
-stg_username=database_username
-stg_password=database_password
-stg_database_name=database_name
+# Database names used by your python scripts
+DB_NAME_FILEDB=filedb
+DB_NAME_LAMISPLUS_STAGING_DWH=lamisplus_staging_dwh
 ```
 
 ## Usage <a name="usage"></a>
 Navigate to server_user folder and create virtual environment
 ```
 cd /home/server_user
-python3 -m venv server_user_venv
 ```
 
 Clone the repository to your local machine:
 ``` 
-git clone https://github.com/Data-Fi-Nigeria-server_user/server_user_sync_ingestion.git
+git clone https://github.com/Arshavin023/parallel_data_ingestion.git
 ```
 
 Navigate to the ingestion pipeline directory:
 ``` 
-mkdir server_user_sync_ingestion && cd server_user_sync_ingestion
+docker compose down
+docker network prune -f
+docker compose build --no-cache
+docker compose run --rm file-ingestion-service
+docker compose run --rm dsd-ingestion-service
+docker compose run --rm records-deletion-service
+docker compose run --rm file-deletion-service
 ```
 
-Create a Virtual & Activate Environment
+Schedule Pipeline
 ```
-python3 -m venv lamisplus_venv
-source lamisplus_venv/bin/activate
-```
+crontab -e 
+# 1. Run Standard File Ingestion every 30 minutes
+*/30 * * * * cd /home/server_user/lamisplus_ingestion && /usr/local/bin/docker-compose run --rm file-ingestion-service
 
-Install the required Python packages:
-```
-pip install -r requirements.txt
-```
+# 2. Run DSD Ingestion every hour (at minute 15 to offset the database load)
+15 * * * * cd /home/server_user/lamisplus_ingestion && /usr/local/bin/docker-compose run --rm dsd-ingestion-service
 
-Run Ingestion Pipeline Manually to test
-```
-cd ingestion_pipeline/records_ingestion/old
-nohup python file_ingestion_process.py &
-nohup python dsd_ingestion_process.py &
-```
+# 3. Run Records Deletion every day at midnight
+0 0 * * * cd /home/server_user/lamisplus_ingestion && /usr/local/bin/docker-compose run --rm records-deletion-service
 
-## Deployment <a name="deployment"></a>
-Automate bash scripts to run periodically
-```
-crontab -e
-*/30 * * * * /home/lamisplus/ingestion_pipeline/records_ingestion/orchestrate_file_ingestion.sh
-*/15 * * * * /home/lamisplus/ingestion_pipeline/records_ingestion/orchestrate_dsd_file_ingestion.sh
-#0 */2 * * * /home/lamisplus/lamisplus_ingestion_pipeline/run_report_summary.sh
-0 2 * * * /home/lamisplus/ingestion_pipeline/records_deletion/orchestrate_stg_record_delete.sh
-0 3 1 * * /home/lamisplus/ingestion_pipeline/file_deletion/orchestrate_file_delete.sh
+# 4. Run File Deletion every Sunday at 2:00 AM
+0 2 * * 0 cd /home/server_user/lamisplus_ingestion && /usr/local/bin/docker-compose run --rm file-deletion-service
 ```
 
 ## License <a name="license"></a>
