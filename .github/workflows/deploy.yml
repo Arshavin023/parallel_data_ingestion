@@ -106,7 +106,7 @@ jobs:
             GID: ${{ secrets.GID }}
           script: |
             set -e
-            cd /home/lamisplus/lamisplus_ingestion
+            cd /home/lamisplus/lamisplus_ingestion_v2
 
             # Grab updates to the compose configuration file or code tweaks
             git pull personal main

@@ -1,7 +1,7 @@
 services:
   # The unified single image build target
   file-ingestion-service:
-    image: ghcr.io/arshavin023/lamisplus_ingestion/records-ingestion:latest
+    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.0
     build:
       context: .
       dockerfile: ./records_ingestion/Dockerfile
@@ -20,7 +20,7 @@ services:
 
   # This service completely inherits the exact image built above, bypassing a second build step!
   dsd-ingestion-service:
-    image: ghcr.io/arshavin023/lamisplus_ingestion/records-ingestion:latest
+    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.0
     env_file:
       - .env
     environment:
@@ -35,7 +35,7 @@ services:
     command: python records_ingestion/multi_dsd_ingestion_process.py
   
   records-deletion-service:
-    image: ghcr.io/arshavin023/lamisplus_ingestion/records-deletion-service:latest
+    image: ghcr.io/arshavin023/lamisplus-records-deletion:v1.0
     build:
       context: .
       dockerfile: ./records_deletion/Dockerfile
@@ -50,7 +50,7 @@ services:
     restart: "no"
 
   file-deletion-service:
-    image: ghcr.io/arshavin023/lamisplus_ingestion/file-deletion-service:latest
+    image: ghcr.io/arshavin023/lamisplus-file-deletion:v1.0
     build:
       context: .
       dockerfile: ./file_deletion/Dockerfile
