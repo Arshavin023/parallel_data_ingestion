@@ -202,17 +202,14 @@ jobs:
             fi
 
             echo "Generating .env file..."
-            cat << 'EOF' > .env
-            DB_USER=$DB_USER
-            DB_PASSWORD=$DB_PASSWORD
-            DB_PORT=$DB_PORT
-            DB_NAME_FILEDB=$DB_NAME_FILEDB
-            DB_NAME_LAMISPLUS_STAGING_DWH=$DB_NAME_LAMISPLUS_STAGING_DWH
-            FILE_DIRECTORY=$FILE_DIRECTORY
-            # Maps the safely transferred parameters to your required standard compose file variables
-            UID=$APP_UID
-            GID=$APP_GID
-            EOF
+            echo "DB_USER=\"$DB_USER\"" > .env
+            echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
+            echo "DB_PORT=\"$DB_PORT\"" >> .env
+            echo "DB_NAME_FILEDB=\"$DB_NAME_FILEDB\"" >> .env
+            echo "DB_NAME_LAMISPLUS_STAGING_DWH=\"$DB_NAME_LAMISPLUS_STAGING_DWH\"" >> .env
+            echo "FILE_DIRECTORY=\"$FILE_DIRECTORY\"" >> .env
+            echo "UID=\"$APP_UID\"" >> .env
+            echo "GID=\"$APP_GID\"" >> .env
 
             echo "Authenticating Docker..."
             echo "$CR_PAT" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
