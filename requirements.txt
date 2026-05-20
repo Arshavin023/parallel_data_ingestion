@@ -11,3 +11,4 @@ SQLAlchemy==1.4.26
 python-dotenv==1.0.0
 pytest
 pytest-mock
+asyncpg
