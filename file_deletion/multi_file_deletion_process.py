@@ -1,4 +1,4 @@
-from multi_automate_file_delete import FileDelete
+from file_deletion.multi_automate_file_delete import FileDelete
 from datetime import datetime
 import psycopg2
 from src import logger

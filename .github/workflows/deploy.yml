@@ -1,120 +1,49 @@
-name: Deploy Data Pipeline (Artifact-Based)
+name: Deploy Data Pipeline
 
 on:
   push:
     branches:
-      - test
+      - main
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    outputs:
-      repo_owner: ${{ steps.prep.outputs.repo_owner }}
-      repo_name: ${{ steps.prep.outputs.repo_name }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare Image Metadata
-        id: prep
-        run: |
-          REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
-          echo "repo_owner=${REPO_OWNER}" >> $GITHUB_OUTPUT
-          echo "repo_name=${REPO_NAME}" >> $GITHUB_OUTPUT
-
-      # 1. FILE INGESTION
-      - name: Build and Push File Ingestion Service
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./records_ingestion/Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.prep.outputs.repo_owner }}/${{ steps.prep.outputs.repo_name }}/file-ingestion-service:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # 2. DSD INGESTION (Fixed Dockerfile path)
-      - name: Build and Push DSD Ingestion Service
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./records_ingestion/Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.prep.outputs.repo_owner }}/${{ steps.prep.outputs.repo_name }}/dsd-ingestion-service:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # 3. RECORDS DELETION (Added)
-      - name: Build and Push Records Deletion Service
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./records_deletion/Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.prep.outputs.repo_owner }}/${{ steps.prep.outputs.repo_name }}/records-deletion-service:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      # 4. FILE DELETION (Added)
-      - name: Build and Push File Deletion Service
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./file_deletion/Dockerfile
-          push: true
-          tags: ghcr.io/${{ steps.prep.outputs.repo_owner }}/${{ steps.prep.outputs.repo_name }}/file-deletion-service:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
   deploy:
-    needs: build-and-push
     runs-on: ubuntu-latest
+
     steps:
       - name: Deploy to Server via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: lamisplus
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd /home/lamisplus/lamisplus_ingestion
-            
-            git pull personal main
+            git pull origin main
 
-            echo "DB_USER=${{ secrets.DB_USER }}" > .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-            echo "DB_NAME_FILEDB=${{ secrets.DB_NAME_FILEDB }}" >> .env
-            echo "DB_NAME_LAMISPLUS_STAGING_DWH=${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}" >> .env
-            echo "FILE_DIRECTORY=${{ secrets.FILE_DIRECTORY }}" >> .env
-            echo "UID=${{ secrets.UID }}" >> .env
-            echo "GID=${{ secrets.GID }}" >> .env
+            # Enforce unquoted EOF to let GitHub replace the secrets before execution
+            cat << EOF > .env
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME_FILEDB=${{ secrets.DB_NAME_FILEDB }}
+            DB_NAME_LAMISPLUS_STAGING_DWH=${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
+            FILE_DIRECTORY=${{ secrets.FILE_DIRECTORY }}
+            UID=${{ secrets.UID }}
+            GID=${{ secrets.GID }}
+            EOF
 
-            # Recommended: Replace GITHUB_TOKEN here with a persistent PAT if you plan to spin containers up/down manually on the VPS later
-            # echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Log in to GHCR cleanly
+            echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-            # Use repository stored PAT instead of ephemeral GITHUB_TOKEN
-            echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
+            # Pull updates, recreate infrastructure, and spin the app back up
             docker compose pull
-            docker compose down
-            docker network prune -f
-            
-            # Start your services up cleanly!
-            # docker compose up -d
+            docker compose down --remove-orphans
+            docker compose up -d
+
+            echo "Deployment successful!"

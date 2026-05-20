@@ -1,21 +1,26 @@
 .env
 lamisplus_venv/
 __pycache__/
+tests/__pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python     
+.Python    
+.pytest_cache/ 
 ingestion_pipeline.egg-info/
 dist/  
 build/  
 records_ingestion/logs/*
 !records_ingestion/logs/.gitkeep
+records_ingestion/__pycache__/
 
 records_deletion/logs/*
 !records_deletion/logs/.gitkeep
+records_deletion/__pycache__/
 
 file_deletion/logs/*
 !file_deletion/logs/.gitkeep
+file_deletion/__pycache__/
 
 logs/*
 !logs/.gitkeep
