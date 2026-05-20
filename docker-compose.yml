@@ -13,7 +13,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./records_ingestion/logs:/app/logs
+      - ./records_ingestion/logs:/app/records_ingestion/logs
     restart: "no"
     # This acts as the default command if none is provided
     command: python records_ingestion/multi_file_ingestion_process.py
@@ -29,7 +29,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./records_ingestion/logs:/app/logs
+      - ./records_ingestion/logs:/app/records_ingestion/logs
     restart: "no"
     # Simply override the script execution at runtime
     command: python records_ingestion/multi_dsd_ingestion_process.py
@@ -46,7 +46,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./records_deletion/logs:/app/logs
+      - ./records_deletion/logs:/app/records_deletion/logs
     restart: "no"
 
   file-deletion-service:
@@ -62,5 +62,5 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-      - ./file_deletion/logs:/app/logs
+      - ./file_deletion/logs:/app/file_deletion/logs
     restart: "no"

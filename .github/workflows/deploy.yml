@@ -148,7 +148,8 @@ jobs:
       - name: Build Docker Images
         run: |
           touch .env
-          docker compose build
+          # docker compose build
+          docker compose build --no-cache
 
       - name: Push Docker Images
         run: |
@@ -168,6 +169,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_NAME_FILEDB: ${{ secrets.DB_NAME_FILEDB }}
           DB_NAME_LAMISPLUS_STAGING_DWH: ${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
@@ -180,7 +182,7 @@ jobs:
           username: lamisplus
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          envs: CR_PAT,DB_USER,DB_PASSWORD,DB_PORT,DB_NAME_FILEDB,DB_NAME_LAMISPLUS_STAGING_DWH,FILE_DIRECTORY,APP_UID,APP_GID
+          envs: CR_PAT,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT,DB_NAME_FILEDB,DB_NAME_LAMISPLUS_STAGING_DWH,FILE_DIRECTORY,APP_UID,APP_GID
           script: |
             set -e
 
@@ -204,6 +206,7 @@ jobs:
             echo "Generating .env file..."
             echo "DB_USER=\"$DB_USER\"" > .env
             echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
+            echo "DB_HOST=\"$DB_HOST\"" >> .env
             echo "DB_PORT=\"$DB_PORT\"" >> .env
             echo "DB_NAME_FILEDB=\"$DB_NAME_FILEDB\"" >> .env
             echo "DB_NAME_LAMISPLUS_STAGING_DWH=\"$DB_NAME_LAMISPLUS_STAGING_DWH\"" >> .env
