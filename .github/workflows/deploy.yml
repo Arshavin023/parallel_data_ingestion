@@ -148,8 +148,8 @@ jobs:
       - name: Build Docker Images
         run: |
           touch .env
-          # docker compose build
-          docker compose build --no-cache
+          docker compose build
+          # docker compose build --no-cache
 
       - name: Push Docker Images
         run: |

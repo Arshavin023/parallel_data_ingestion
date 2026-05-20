@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./records_ingestion/Dockerfile
+    user: "${UID}:${GID}"
     env_file:
       - .env
     environment:
@@ -21,6 +22,7 @@ services:
   # This service completely inherits the exact image built above, bypassing a second build step!
   dsd-ingestion-service:
     image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.0
+    user: "${UID}:${GID}"
     env_file:
       - .env
     environment:
@@ -39,6 +41,7 @@ services:
     build:
       context: .
       dockerfile: ./records_deletion/Dockerfile
+    user: "${UID}:${GID}"
     env_file:
       - .env
     environment:
