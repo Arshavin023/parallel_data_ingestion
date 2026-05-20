@@ -67,3 +67,4 @@ services:
       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
       - ./file_deletion/logs:/app/file_deletion/logs
     restart: "no"
+    
