@@ -9,3 +9,5 @@ schedule==1.2.2
 six==1.16.0
 SQLAlchemy==1.4.26
 python-dotenv==1.0.0
+pytest
+pytest-mock
