@@ -38,7 +38,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-create the logs directory while still running as root
-RUN mkdir -p /app/logs
+RUN mkdir -p /app/records_ingestion/logs
 
 # Copy your application source code layers
 COPY records_ingestion/ ./records_ingestion/
