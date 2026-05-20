@@ -44,7 +44,6 @@
 
 #             echo "Deployment successful! Images are baked and cached for Cron execution."
 
-
 name: Deploy Data Pipeline
 
 on:
@@ -64,24 +63,23 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Uses the built-in GITHUB_TOKEN instead of requiring a manual CR_PAT secret
-      幕- name: Log in to GitHub Container Registry (GHCR)
+      # Log in to GHCR using your Personal Access Token (CR_PAT) for long-term server access
+      - name: Log in to GitHub Container Registry (GHCR)
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CR_PAT }}
 
-      - name: Set up Docker Buildx (Enables smart caching)
+      - name: Set up Docker Buildx (Enables smart layer caching)
         uses: docker/setup-buildx-action@v3
 
       - name: Build and Push Images
         run: |
-          # Set the buildx builder as the default for compose
           docker compose build
           docker compose push
 
-  # JOB 2: Ship the changes to the server only after a successful build
+  # JOB 2: Ship the changes to the server securely
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -93,28 +91,41 @@ jobs:
           username: lamisplus
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          # 1. Register variables to expose them within the remote shell context
+          envs: CR_PAT,DB_USER,DB_PASSWORD,DB_PORT,DB_NAME_FILEDB,DB_NAME_LAMISPLUS_STAGING_DWH,FILE_DIRECTORY,UID,GID
+          # 2. Safely bind your GitHub secrets to those registered environment keys
+          env:
+            CR_PAT: ${{ secrets.CR_PAT }}
+            DB_USER: ${{ secrets.DB_USER }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_PORT: ${{ secrets.DB_PORT }}
+            DB_NAME_FILEDB: ${{ secrets.DB_NAME_FILEDB }}
+            DB_NAME_LAMISPLUS_STAGING_DWH: ${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
+            FILE_DIRECTORY: ${{ secrets.FILE_DIRECTORY }}
+            UID: ${{ secrets.UID }}
+            GID: ${{ secrets.GID }}
           script: |
             set -e
             cd /home/lamisplus/lamisplus_ingestion
 
-            # Grab updates to the compose file or config tweaks
+            # Grab updates to the compose configuration file or code tweaks
             git pull personal main
 
-            # Inject the latest environment production variables safely
-            cat << EOF > .env
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME_FILEDB=${{ secrets.DB_NAME_FILEDB }}
-            DB_NAME_LAMISPLUS_STAGING_DWH=${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
-            FILE_DIRECTORY=${{ secrets.FILE_DIRECTORY }}
-            UID=${{ secrets.UID }}
-            GID=${{ secrets.GID }}
+            # 3. Using single quotes 'EOF' prevents premature parsing on the runner, 
+            # writing the host variables directly into your production .env file
+            cat << 'EOF' > .env
+            DB_USER=$DB_USER
+            DB_PASSWORD=$DB_PASSWORD
+            DB_PORT=$DB_PORT
+            DB_NAME_FILEDB=$DB_NAME_FILEDB
+            DB_NAME_LAMISPLUS_STAGING_DWH=$DB_NAME_LAMISPLUS_STAGING_DWH
+            FILE_DIRECTORY=$FILE_DIRECTORY
+            UID=$UID
+            GID=$GID
             EOF
 
-            # Authorize the server daemon to talk to GHCR 
-            # Note: The server still needs authentication; using the built-in token here avoids sharing PATs
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+            # 4. Authorize the server's Docker daemon to pull layers securely using your token
+            echo "$CR_PAT" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
             echo "Downloading fresh pre-built image layers..."
             docker compose pull
