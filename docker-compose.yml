@@ -57,6 +57,7 @@ services:
     build:
       context: .
       dockerfile: ./file_deletion/Dockerfile
+    user: "${UID}:${GID}"
     env_file:
       - .env
     environment:
@@ -67,4 +68,3 @@ services:
       - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
       - ./file_deletion/logs:/app/file_deletion/logs
     restart: "no"
-    
