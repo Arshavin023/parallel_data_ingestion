@@ -31,3 +31,6 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 ENV PYTHONPATH="/app"
+
+# Execute safely as a non-root user
+CMD ["python", "records_ingestion/multi_file_ingestion_process_v2.py"]

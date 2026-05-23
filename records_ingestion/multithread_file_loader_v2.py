@@ -1,28 +1,34 @@
 import os
+import re
+import sys
 import json
 import uuid
 import numpy as np
 import psycopg2
+from psycopg2 import ProgrammingError
+from psycopg2.errors import UndefinedColumn
+from sqlalchemy.exc import ProgrammingError as SAProgrammingError
 from psycopg2.extras import Json, execute_values
 import pandas as pd
 from datetime import datetime
 import sqlalchemy
 from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
-from src import logger
-import configparser
 from database_connection import connect_to_db
 
-NO_ERRORS = 'No errors'
-parent_directory = '/home/lamisplus/server/temp'
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src import logger
 
+
+NO_ERRORS = 'No errors'
+file_directory = os.environ.get('FILE_DIRECTORY')
 pd.set_option('display.max_columns', None)
 
 class FileLoader:
     def __init__(self):
         self.facility_id = None
         self.syncfile_entryID = None
-        self.demo_path = parent_directory
+        self.demo_path = file_directory
         self.count_of_df = 0
         self.load_end_time = None
         self.load_start_time = None
@@ -123,7 +129,7 @@ class FileLoader:
 
         except Exception as e:
             logger.exception(e)
-            raise e  
+            raise e 
 
 
     def _update_log(self, proc_status, file_name, tab_count, error_msg):
@@ -185,10 +191,10 @@ class FileLoader:
                                 ingest_error_message = %s
                             WHERE id = %s AND facility_id = %s
                             """
+            self.load_end_time = datetime.now()
             cur.execute(update_query, (proc_val, self.load_end_time, ingest_status_check, 
                                     tab_count, error_msg[0:10000], self.syncfile_entryID,
                                     self.facility_id))
-            
             conn.commit()
             cur.close()
             logger.info(f'Sync File log updated for {self.facility_id} successfully')
@@ -234,7 +240,7 @@ class FileLoader:
             raise e
         
 
-    def _retrieve_localdir_from_syncfile(self):
+    def _retrieve_localdir_from_syncfile(self,facility_id):
         '''
         Retrieves local directories from the sync_file table.
         This method connects to the filedb database to retrieve information about files from the sync_file table 
@@ -246,14 +252,13 @@ class FileLoader:
         try:
             conn = connect_to_db.connect('filedb')[0]
             cur = conn.cursor()
-            retrieve_query = """
+            retrieve_query = f"""
             SELECT id, facility_id, decrypted_file_name 
-            FROM sync_file WHERE processed = 1 AND modified_date >= '2025-12-31 00:00:00' 
-            AND NOT (decrypted_file_name ILIKE ANY 
-            (ARRAY['prep_eligibility_%','prep_clinic_%', 'mhpss_confirmation_%',
-            'pmtct_anc_%','dsd_devolvement%','hiv_art_clinical%']))
-            --AND file_name ILIKE '%laboratory_result_8_20251016121255.json%'
-            LIMIT 1"""
+            FROM sync_file 
+            WHERE processed = 1
+            AND modified_date >= '2026-01-01 00:00:00'
+            AND facility_id = '{facility_id}'
+            """
             cur.execute(retrieve_query)
 
             files = cur.fetchall()
@@ -495,48 +500,31 @@ class FileLoader:
         except Exception as e:
             logger.exception(e)
             raise e
-
+	
     def _date_validation(self,df):
         date_columns = [col for col in df.columns if col.startswith('date_') or col.endswith('_date')]
         if not date_columns:
             return {}, []  # No date columns to validate
         problematic_dates = {}
         indexes_for_bad_dates = []
-
         for col in date_columns:
-            problematic_dates.setdefault(col, [])
             try:
                 pd.to_datetime(df[col], errors='raise')
             except (TypeError, ValueError) as e:
+                problematic_dates[col] = []
                 for idx, value in df[col].items():
                     try:
                         pd.to_datetime(value, errors='raise')
                     except (TypeError, ValueError):
+
+                        indexes_for_bad_dates.append(idx)
+                        problematic_dates[col].append(f'record {idx+1}, value => {value}')
+
                         record_id = df.at[idx, 'id']
                         indexes_for_bad_dates.append(idx)
                         problematic_dates[col].append(f'record id: {record_id}, invalid_date => {value}')
-
-            if col == 'date_result_reported':
-                for idx, date_result_reported in df[col].items():
-                    date_modified = df['date_modified'].get(idx) # Use .get() for safer access
-                    if pd.notna(date_result_reported):
-                        try:
-                            date_result_reported_dt = pd.to_datetime(date_result_reported)
-                            date_modified_dt = pd.to_datetime(date_modified) if pd.notna(date_modified) else None
-                            current_time = datetime.now()
-                            if date_modified_dt and date_result_reported_dt >= pd.to_datetime('2025-06-30') and (date_result_reported_dt > date_modified_dt) or (date_result_reported_dt > current_time):
-                                record_id = df.at[idx, 'id']
-                                problematic_dates[col].append(
-                                    f"record_id: {record_id}, date_result_reported: {date_result_reported_dt} is beyond date_modified ({date_modified_dt}) or current time ({current_time})")
-                                if idx not in indexes_for_bad_dates:
-                                    indexes_for_bad_dates.append(idx)
-                        except (TypeError, ValueError, KeyError):
-                            pass
-
-        indexes_for_bad_dates = list(set(indexes_for_bad_dates))
-        problematic_dates = {k: v for k, v in problematic_dates.items() if v}
-
-        return problematic_dates, indexes_for_bad_dates
+        
+        return problematic_dates,indexes_for_bad_dates
     
     def mask_pii(self, json_str):
         data = json.loads(json_str)  # Parse JSON string to Python dict
@@ -575,7 +563,7 @@ class FileLoader:
         datim_id = self.facility_id
         file_name = file_path.split('/')[-1]
         encrypted_file_name=file_name.replace('_decrypted','')
-        
+
         # Define the type mapping function
         def convert_postgresql_to_sqlalchemy(data_type):
             type_mapping = {
@@ -604,11 +592,13 @@ class FileLoader:
         try:
             # Attempt to read JSON file into DataFrame
             df = pd.read_json(file_path, convert_dates=parse_dates)
-            
+            columns_to_exclude = ['ods_load_time','ods_datim_id']
+            columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+            df = df[columns_to_include]
             # Check if DataFrame is empty after reading JSON
             if df.empty:
-                self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, 0, 'JSON file is empty')
+                # self.load_end_time = datetime.now()
                 self._update_flag_syncfile('failed', -2, 0, 'JSON file is empty')
                 logger.info('Sync File Log updated successfully')
                 return
@@ -617,13 +607,15 @@ class FileLoader:
             if staging_table == 'stg_mhpss_confirmation':
                 pass
             elif staging_table == 'stg_biometric':
-                columns_to_exclude = ['match_type', 'match_person_uuid', 'match_biometric_id']
+                columns_to_exclude = ['match_person_uuid', 'match_biometric_id']
                 columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
                 df = df[columns_to_include]
-
+            elif staging_table == 'stg_hiv_enrollment':
+                columns_to_exclude = ['target_group_id_original']
+                columns_to_include = [col for col in df.columns if col not in columns_to_exclude]
+                df = df[columns_to_include]
             elif staging_table == 'stg_hts_client':
                 df['extra'] = df['extra'].apply(lambda x: {'type': x['type'], 'value': self.mask_pii(x['value'])})
-
             elif staging_table == 'stg_hts_index_elicitation':
                 df['last_name'] = '******'
                 df['first_name'] = '******'
@@ -651,16 +643,13 @@ class FileLoader:
                 df['stg_file_name'] = file_name
                 df['stg_datim_id'] = datim_id
                 self._replace_empty_strings_with_null(df)
-                #invalid_dates_df = df.loc[bad_indexes, :]
-                #invalid_dates_df['error_message'] = f'{file_name} has invalid dates: {validation_result}'
                 valid_dates_df = df.drop(bad_indexes)
-                # staging_table_bad_dates = f'{staging_table}_bad_dates'
-                # valid_dates_df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                
+                # CHANGED HERE: Vectorized batch insert replacing SQLAlchemy .to_sql()
                 self._execute_vectorized_batch_insert(conn, staging_table, valid_dates_df)
-                # invalid_dates_df.to_sql(staging_table_bad_dates, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                
                 conn.commit()
                 self.count_of_df = len(valid_dates_df)
-                self.load_end_time = datetime.now()
                 self._update_log('failed', file_name, self.count_of_df, 'Few date errors spotted but files ingested')
                 self._update_flag_syncfile('failed', -2, self.count_of_df, f'{encrypted_file_name} has invalid dates: {validation_result}. Bad date records were filtered and {self.count_of_df} records successfully ingested')
                 cur = conn.cursor()
@@ -679,12 +668,13 @@ class FileLoader:
                 df['stg_file_name'] = file_name
                 df['stg_datim_id'] = datim_id
                 self._replace_empty_strings_with_null(df)
-                # df.to_sql(staging_table, con=engine, index=False, if_exists='append', dtype=dtype_mapping)
+                
+                # CHANGED HERE: Vectorized batch insert replacing SQLAlchemy .to_sql()
                 self._execute_vectorized_batch_insert(conn, staging_table, df)
+                
                 logger.info(f'{file_name} successfully ingested into {staging_table} table')
                 conn.commit()
                 self.count_of_df = len(df)
-                self.load_end_time = datetime.now()
                 self._update_log('success', file_name, self.count_of_df, NO_ERRORS)
                 self._update_flag_syncfile('success', 2, self.count_of_df, NO_ERRORS)
                 
@@ -697,37 +687,82 @@ class FileLoader:
                 conn.commit()
             
         except ValueError as ve:
-            self.load_end_time = datetime.now()
             self._update_log('failed', file_name, 0, f'Error processing JSON file: {file_name} file is empty')
             self._update_flag_syncfile('failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} file is empty')
             logger.info('Sync File Log updated successfully')
-            logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")
-            
+            logger.error(f"Error processing JSON file: {file_path} - {str(ve)}")        
+        except ProgrammingError as pe:
+            error_msg = str(pe)
+            # Regex to extract column and table name
+            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
+            if match:
+                missing_column = match.group(1)
+                missing_table = match.group(2)
+                missing_table = missing_table.replace('stg_', '')
+                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
+                self._update_log('failed',file_name,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
+                self._update_flag_syncfile('failed',-2,0,f"Column '{missing_column}' in {encrypted_file_name} does not exists in '{missing_table}' table")
+            else:
+                # Fallback logging if regex fails
+                logger.error(f"PostgreSQL ProgrammingError: {error_msg}")
+                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
+                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
+
+            logger.info('Sync File Log updated successfully')
+        
+        except UndefinedColumn as udc:
+            error_msg = str(udc)
+            # Regex to extract column and table name
+            match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
+            if match:
+                missing_column = match.group(1)
+                missing_table = match.group(2)
+                missing_table = missing_table.replace('stg_', '')
+                logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
+                self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
+                self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
+            else:
+                # Fallback logging if regex fails
+                logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
+                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
+                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
+
+        except SAProgrammingError as sa_pe:
+            orig = getattr(sa_pe, 'orig', None)
+
+            if isinstance(orig, UndefinedColumn):
+                error_msg = str(orig)
+                match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
+                if match:
+                    missing_column = match.group(1)
+                    missing_table = match.group(2)
+                    missing_table = missing_table.replace('stg_', '')  # Remove 'stg_' prefix if present
+                    logger.error(f"Missing column '{missing_column}' in table '{missing_table}'")
+                    self._update_log('failed', file_name, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
+                    self._update_flag_syncfile('failed', -2, 0, f"Column '{missing_column}' in {encrypted_file_name} does not exist in '{missing_table}' table")
+                else:
+                    logger.error(f"PostgreSQL UndefinedColumn error: {error_msg}")
+                    self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
+                    self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
+            else:
+                logger.error(f"SQLAlchemy ProgrammingError (not UndefinedColumn): {str(sa_pe)}")
+                self._update_log('failed', file_name, 0, f'{file_name} has a DB error: {str(sa_pe)}')
+                self._update_flag_syncfile('failed', -2, 0, f'{encrypted_file_name} has a DB error: {str(sa_pe)}')
+
         except Exception as e:
-            self.load_end_time = datetime.now()
-            error_msg = f'{type(e).__name__}: {e}'
-            logger.error("Unexpected error ingesting %s: %s", file_path, error_msg)
-            self._update_log('failed', file_name, self.count_of_df, error_msg)
-            self._update_flag_syncfile('failed', -2, self.count_of_df, error_msg)
+            logger.error(f"An unexpected error occurred: {str(e)}")
+            # Handle other unexpected exceptions
+        logger.info('-------------------------------------------')
 
     # ----------------------------------------------------------------------
-    # PLACE THE NEW METHOD HERE AT THE VERY BOTTOM OF THE FILELOADER CLASS
+    # ADDED METHODS AT THE BOTTOM OF THE CLASS EXACTLY AS IN file_loader.py
     # ----------------------------------------------------------------------
     @staticmethod
     def _sanitise_value(val):
         """
         Convert a single cell value to a Python-native type that psycopg2 can
         serialise.  Called once per cell inside _execute_vectorized_batch_insert.
-        Handles:
-        - numpy integer scalars  (np.int8/16/32/64 …)  → int
-        - numpy floating scalars (np.float32/64 …)     → float  (NaN → None)
-        - numpy bool scalars                            → bool
-        - pandas NaT                                    → None
-        - pandas / numpy NA sentinels                  → None
-        - dict / list (JSONB columns)                  → json.dumps(…)
-        - everything else                              → unchanged
         """
-
         if val is pd.NaT:
             return None
 
@@ -758,11 +793,6 @@ class FileLoader:
         """
         Insert all rows of *df* into *table_name* using psycopg2's fast
         execute_values path.
-
-        Every cell is passed through _sanitise_value so that NumPy scalar
-        types (np.int64, np.float64, np.bool_, …), NaT, and NA sentinels are
-        converted to Python-native equivalents before psycopg2 sees them.
-        Without this step psycopg2 raises "can't adapt type 'numpy.int64'".
         """
         if df.empty:
             return
@@ -771,8 +801,7 @@ class FileLoader:
         column_identifiers = ", ".join(f'"{c}"' for c in columns)
         insert_query = f'INSERT INTO "{table_name}" ({column_identifiers}) VALUES %s'
 
-        # Build sanitised row tuples eagerly so that any conversion error is
-        # raised before we open the cursor, making the traceback actionable.
+        # Build sanitised row tuples eagerly
         rows = [
             tuple(self._sanitise_value(val) for val in row)
             for row in df.itertuples(index=False, name=None)
