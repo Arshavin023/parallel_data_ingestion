@@ -1,6 +1,6 @@
 import psycopg2
 from datetime import datetime
-from records_ingestion.multithread_file_loader import FileLoader
+from records_ingestion.old.multithread_dsd_loader import FileLoader
 import configparser
 import concurrent.futures
 from src import logger
@@ -43,7 +43,7 @@ def insert_facility_uploads():
             WHERE processed = 1
               AND modified_date >= CURRENT_DATE - INTERVAL '14 DAYS'
         ) z
-        WHERE NOT (
+        WHERE (
             decrypted_file_name ILIKE ANY (
                 ARRAY[
                     'prep_eligibility_%', 'prep_clinic_%',
@@ -103,7 +103,7 @@ def create_single_instance(facility:tuple):
         update_facility_uploads('FAILED', start_time, end_time, str(e), facility_id, batch_id, 'UNPROCESSED')
         logger.exception(f'ingestion of {file_count} files for {facility_id} failed', exc_info=True)
 
-def process_facilities_in_batches(facilities, batch_size=5):
+def process_facilities_in_batches(facilities, batch_size=3):
     """
     Processes facilities in batches using multithreading.
     """

@@ -1,7 +1,7 @@
 services:
   # The unified single image build target
   file-ingestion-service:
-    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.1
+    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.2
     build:
       context: .
       dockerfile: ./records_ingestion/Dockerfile
@@ -53,7 +53,7 @@ services:
     restart: "no"
 
   file-deletion-service:
-    image: ghcr.io/arshavin023/lamisplus-file-deletion:v1.0
+    image: ghcr.io/arshavin023/lamisplus-file-deletion:v1.1
     build:
       context: .
       dockerfile: ./file_deletion/Dockerfile

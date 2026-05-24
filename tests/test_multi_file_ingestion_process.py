@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
-from records_ingestion.multi_file_ingestion_process import (
+from records_ingestion.old.multi_file_ingestion_process import (
     insert_pipeline_log,
     update_pipeline_log,
     create_single_instance,

@@ -33,4 +33,4 @@ USER appuser
 ENV PYTHONPATH="/app"
 
 # Execute safely as a non-root user
-CMD ["python", "file_deletion/multi_file_deletion_process.py"]
+CMD ["python", "file_deletion/multi_file_deletion_process_v2.py"]

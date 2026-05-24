@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 
-from file_deletion.multi_file_deletion_process import (
+from file_deletion.old.multi_file_deletion_process import (
     fetch_datim_ids,
     create_single_instance,
     main

@@ -1,6 +1,6 @@
 import psycopg2
 from datetime import datetime
-from records_ingestion.multithread_file_loader_v2 import FileLoader
+from records_ingestion.multithread_file_loader_v3 import FileLoader
 import configparser
 import concurrent.futures
 from src import logger
