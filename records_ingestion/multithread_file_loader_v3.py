@@ -174,7 +174,7 @@ class FileLoader:
             # Query the staging database connection
             cur_staging = staging_conn.cursor()
             get_patient_count = """
-            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_hiv_patient_person
+            SELECT COUNT(DISTINCT uuid) AS p_count FROM stg_patient_person
             WHERE stg_datim_id = %s and archived=0
             """
             cur_staging.execute(get_patient_count, (self.facility_id,))
