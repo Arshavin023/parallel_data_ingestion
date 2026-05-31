@@ -14,6 +14,7 @@ from datetime import datetime
 import sqlalchemy
 from sqlalchemy import create_engine, JSON, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import JSONB
+# from database_connection import connect_to_db_v2 as connect_to_db
 from database_connection import connect_to_db
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

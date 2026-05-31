@@ -3,6 +3,7 @@ from datetime import datetime
 
 import psycopg2
 from src import logger
+# from database_connection import connect_to_db_v2 as connect_to_db
 from database_connection import connect_to_db
 from file_deletion.multi_automate_file_delete_v2 import FileDelete
 

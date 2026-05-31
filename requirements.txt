@@ -12,3 +12,5 @@ python-dotenv==1.0.0
 pytest
 pytest-mock
 asyncpg
+sshtunnel
+paramiko==3.5.1
