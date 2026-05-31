@@ -11,7 +11,7 @@ import os
 from database_connection import connect_to_db
 import atexit
 from database_connection.connect_to_db_v2 import _server_a_tunnel
-from schema_alignment import run_schema_alignment
+from records_ingestion.schema_alignment import run_schema_alignment
 
 
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
