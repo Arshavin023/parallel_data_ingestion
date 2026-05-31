@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from src import logger
+# from database_connection import connect_to_db_v2 as connect_to_db
 from database_connection import connect_to_db
 
 file_directory = os.environ.get('FILE_DIRECTORY')

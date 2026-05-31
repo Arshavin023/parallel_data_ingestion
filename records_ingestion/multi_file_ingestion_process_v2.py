@@ -7,7 +7,12 @@ from src import logger
 from sqlalchemy import create_engine
 import sys
 import os
+# from database_connection import connect_to_db_v2 as connect_to_db
 from database_connection import connect_to_db
+import atexit
+from database_connection.connect_to_db_v2 import _server_a_tunnel
+from schema_alignment import run_schema_alignment
+
 
 # sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -120,11 +125,21 @@ def process_facilities_in_batches(facilities, batch_size=5):
     except Exception as e:
         logger.exception("Error processing facilities in batches {e}", exc_info=True)
 
+# Automatically stop the tunnel when the script safely exits
+def close_ssh_tunnel():
+    if _server_a_tunnel and _server_a_tunnel.is_active:
+        print("[SSH] Tearing down secure tunnel...")
+        _server_a_tunnel.stop()
+
 def main():
     """
     Main function to orchestrate the file ingestion process.
     """
     try:
+        # ── Step 1: Align ServerB schema with ServerA before any data moves ──
+        # run_schema_alignment(source_db_key="server_a", dest_db_key="server_b")
+
+        # ── Step 2: Facility ingestion ────────────────────────────────────────
         insert_facility_uploads()
 
         with connect_to_db.connect('filedb')[0] as filedb_conn:
@@ -140,6 +155,8 @@ def main():
             process_facilities_in_batches(facilities)
         else:
             logger.info("No unprocessed facilities found.")
+        atexit.register(close_ssh_tunnel)
+        logger.info("Successfully registered SSH tunnel cleanup on exit.")
 
     except Exception as e:
         logger.exception(f"An error occurred in the main function {e}", exc_info=True)

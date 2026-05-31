@@ -4,6 +4,7 @@ from src import logger
 import configparser
 from sqlalchemy import create_engine
 import concurrent.futures
+# from database_connection import connect_to_db_v2 as connect_to_db
 from database_connection import connect_to_db
 
 def create_single_instance(staging_table:str):
