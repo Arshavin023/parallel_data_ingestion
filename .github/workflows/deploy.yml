@@ -87,9 +87,15 @@ jobs:
               git clone https://github.com/Arshavin023/parallel_data_ingestion.git .
               # Link your remote nickname just in case
               git remote add personal https://github.com/Arshavin023/parallel_data_ingestion.git || true
+            # else
+            #   echo "Pulling fresh code changes..."
+            #   git pull personal main
+            # fi
             else
               echo "Pulling fresh code changes..."
-              git pull personal main
+              git fetch personal
+              git reset --hard personal/main
+              git clean -fd
             fi
 
             echo "Generating .env file..."
