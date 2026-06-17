@@ -155,8 +155,8 @@ def main():
             process_facilities_in_batches(facilities)
         else:
             logger.info("No unprocessed facilities found.")
-        atexit.register(close_ssh_tunnel)
-        logger.info("Successfully registered SSH tunnel cleanup on exit.")
+        # atexit.register(close_ssh_tunnel)
+        # logger.info("Successfully registered SSH tunnel cleanup on exit.")
 
     except Exception as e:
         logger.exception(f"An error occurred in the main function {e}", exc_info=True)
