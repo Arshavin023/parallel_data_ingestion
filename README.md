@@ -178,8 +178,6 @@ crontab -e
 0 2 * * 0 cd /home/server_user/lamisplus_ingestion && /usr/local/bin/docker-compose run --rm file-deletion-service
 ```
 
-> The `dsd-ingestion-service` referenced in earlier pipeline versions has been consolidated into the current `file-ingestion-service`. Update cron entries if your deployment still runs a separate DSD service.
-
 ## License
 
 MIT License
