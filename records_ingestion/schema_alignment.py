@@ -65,20 +65,28 @@ SCHEMA_QUERY = """
         AND t.table_schema = c.table_schema
     WHERE c.table_schema = 'public'
       AND t.table_type = 'BASE TABLE'
+      AND t.table_name NOT IN ('base_application_user','base_application_flag_config','base_application_notification_config',
+		'base_application_sms_config','base_application_user_organisation_unit','base_application_user_role',
+		'base_menu','base_module','base_permission','base_form','base_menu_authorities','base_authority',
+        'base_standard_codeset','biometric_device','administrable_role_authorizations',
+         'biometric_device','biometric_pims_config','biometricmodule_chart','biomettric_pims_tracker',
+		'base_application_codeset_standard_codeset','system_settings','across_locks','acrossmodules',
+		'base_module_artifact','base_module_authorities','base_module_dependencies','base_program',
+		'base_role','base_role_menu','base_role_permission','base_standard_codeset_source',
+		'base_web_module','base_web_module_authorities','databasechangelog','databasechangeloglock',
+		'sms_output','sync_facility_app_key','sync_config','sync_config_module','sync_config_table',
+		'sync_queue','tables','triage_post_service','dhis2_uploads','dhis2_configuration','appr_period',
+		'data_element','category_option','radet_table')
     ORDER BY c.table_name, c.ordinal_position;
 """
 
-
-def fetch_schema(conn) -> dict[str, dict[str, ColumnInfo]]:
-    """
-    Returns a nested dict:  { table_name: { column_name: ColumnInfo } }
-    """
+def fetch_schema(conn, prefix: str = "") -> dict[str, dict[str, ColumnInfo]]:
     schema: dict[str, dict[str, ColumnInfo]] = {}
     with conn.cursor() as cur:
         cur.execute(SCHEMA_QUERY)
         for row in cur.fetchall():
             col = ColumnInfo(
-                table_name=row[0],
+                table_name=f"{prefix}{row[0]}",
                 column_name=row[1],
                 data_type=row[2],
                 is_nullable=row[3],
@@ -87,7 +95,6 @@ def fetch_schema(conn) -> dict[str, dict[str, ColumnInfo]]:
             )
             schema.setdefault(col.table_name, {})[col.column_name] = col
     return schema
-
 
 # ──────────────────────────────────────────────
 # Diff computation
@@ -180,6 +187,10 @@ def build_create_table_ddl(table_name: str, columns: dict[str, ColumnInfo]) -> s
       - Is partitioned by LIST on stg_datim_id so partitions can be created
         per facility/datim ID at load time.
 
+    NOTE: Intentionally excludes PRIMARY KEY, UNIQUE, FOREIGN KEY, and CHECK
+    constraints. The destination staging schema is append-only and partitioned;
+    constraints from the source are not appropriate here.
+
     To attach a partition later:
         CREATE TABLE "<table>_<datim_id>"
             PARTITION OF "<table>"
@@ -190,13 +201,14 @@ def build_create_table_ddl(table_name: str, columns: dict[str, ColumnInfo]) -> s
         sql_type = _udt_to_sql(col.data_type)
         nullable = "" if col.is_nullable else " NOT NULL"
         default = f" DEFAULT {col.column_default}" if col.column_default else ""
-        col_defs.append(f'    "{col.column_name}" {sql_type}{default}{nullable}')
+        # col_defs.append(f'    {col.column_name} {sql_type}{default}{nullable}')
+        col_defs.append(f'    {col.column_name} {sql_type}{nullable}')
 
     col_defs.append(_STG_COLUMN_DEFS)
     cols_sql = ",\n".join(col_defs)
 
     return (
-        f'CREATE TABLE IF NOT EXISTS "{table_name}" (\n{cols_sql}\n)'
+        f'CREATE TABLE IF NOT EXISTS {table_name} (\n{cols_sql}\n)'
         f" PARTITION BY LIST (stg_datim_id);"
     )
 
@@ -216,8 +228,9 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
         nullable = "" if col.is_nullable else " NOT NULL"
         default = f" DEFAULT {col.column_default}" if col.column_default else ""
         ddl = (
-            f'ALTER TABLE "{col.table_name}" '
-            f'ADD COLUMN IF NOT EXISTS "{col.column_name}" {sql_type}{default}{nullable};'
+            f'ALTER TABLE {col.table_name} '
+            # f'ADD COLUMN IF NOT EXISTS {col.column_name} {sql_type}{default}{nullable};'
+            f'ADD COLUMN IF NOT EXISTS {col.column_name} {sql_type}{nullable};'
         )
         statements.append(ddl)
         logger.info(f"[SCHEMA] Will ADD COLUMN: {col.table_name}.{col.column_name} ({sql_type})")
@@ -226,9 +239,9 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
     for change in diff.type_changes:
         new_sql_type = _udt_to_sql(change["new_type"])
         ddl = (
-            f'ALTER TABLE "{change["table"]}" '
-            f'ALTER COLUMN "{change["column"]}" TYPE {new_sql_type} '
-            f'USING "{change["column"]}"::{new_sql_type};'
+            f'ALTER TABLE {change["table"]} '
+            f'ALTER COLUMN {change["column"]} TYPE {new_sql_type} '
+            f'USING {change["column"]}::{new_sql_type};'
         )
         statements.append(ddl)
         logger.info(
@@ -239,7 +252,7 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
     # 4. Nullable changes
     for change in diff.nullable_changes:
         action = "DROP NOT NULL" if change["new_nullable"] else "SET NOT NULL"
-        ddl = f'ALTER TABLE "{change["table"]}" ALTER COLUMN "{change["column"]}" {action};'
+        ddl = f'ALTER TABLE {change["table"]} ALTER COLUMN {change["column"]} {action};'
         statements.append(ddl)
         logger.info(
             f"[SCHEMA] Will {action}: {change['table']}.{change['column']} "
@@ -253,21 +266,46 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
 # Applying DDL to ServerB
 # ──────────────────────────────────────────────
 
-def apply_ddl(dest_conn, statements: list[str]) -> None:
-    """Execute all DDL statements on the destination connection."""
+def apply_ddl(dest_conn, statements: list[str], new_tables: list[str] = None) -> None:
+    """Execute all DDL statements on the destination connection.
+
+    For every CREATE TABLE statement, automatically calls
+    proc_create_table_partitions_v3(<table_name>) immediately after,
+    so partitions are provisioned before any data is loaded.
+    """
     if not statements:
         logger.info("[SCHEMA] No DDL changes required. Schemas are in sync.")
         return
+
+    new_tables_set = set(new_tables or [])
 
     with dest_conn.cursor() as cur:
         for stmt in statements:
             try:
                 cur.execute(stmt)
                 logger.info(f"[SCHEMA] Applied: {stmt[:120].strip()}{'...' if len(stmt) > 120 else ''}")
+
+                # For every new table, immediately provision its partitions
+                if stmt.strip().upper().startswith("CREATE TABLE"):
+                    matched_table = next(
+                        (t for t in new_tables_set if f' {t} ' in stmt or stmt.endswith(f' {t})')),
+                        None
+                    )
+                    if matched_table:
+                        partition_call = f"CALL public.proc_create_table_partitions_v3('{matched_table}');"
+                        cur.execute(partition_call)
+                        logger.info(f"[SCHEMA] Partitions created for: {matched_table}")
+                    else:
+                        logger.warning(
+                            f"[SCHEMA] CREATE TABLE detected but could not resolve table name "
+                            f"from statement: {stmt[:120]}"
+                        )
+
             except psycopg2.Error as e:
                 dest_conn.rollback()
                 logger.exception(f"[SCHEMA] Failed to apply DDL:\n{stmt}\nError: {e}", exc_info=True)
                 raise
+
         dest_conn.commit()
     logger.info(f"[SCHEMA] {len(statements)} DDL statement(s) applied to destination successfully.")
 
@@ -337,7 +375,7 @@ def run_schema_alignment(
 
     try:
         logger.info("[SCHEMA] Fetching schema from ServerA (source) …")
-        source_schema = fetch_schema(source_conn)
+        source_schema = fetch_schema(source_conn, prefix="stg_")
 
         logger.info("[SCHEMA] Fetching schema from ServerB (destination) …")
         dest_schema = fetch_schema(dest_conn)
@@ -353,7 +391,7 @@ def run_schema_alignment(
             for stmt in statements:
                 logger.info(f"[DRY-RUN] {stmt}")
         else:
-            apply_ddl(dest_conn, statements)
+            apply_ddl(dest_conn, statements, new_tables=diff.new_tables)
 
         logger.info("[SCHEMA] Schema alignment complete.")
         return diff
@@ -381,4 +419,3 @@ if __name__ == "__main__":
         dest_db_key=args.dest,
         dry_run=args.dry_run,
     )
-    run_schema_alignment(dest_db_key="server_b")

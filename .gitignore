@@ -21,6 +21,7 @@ records_deletion/__pycache__/
 file_deletion/logs/*
 !file_deletion/logs/.gitkeep
 file_deletion/__pycache__/
+database_schema/*
 
 logs/*
 !logs/.gitkeep

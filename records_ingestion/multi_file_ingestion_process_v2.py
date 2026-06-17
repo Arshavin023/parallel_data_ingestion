@@ -136,7 +136,7 @@ def main():
     Main function to orchestrate the file ingestion process.
     """
     try:
-        # ── Step 1: Align ServerB schema with ServerA before any data moves ──
+        # # ── Step 1: Align ServerB schema with ServerA before any data moves ──
         # run_schema_alignment(source_db_key="server_a", dest_db_key="server_b")
 
         # ── Step 2: Facility ingestion ────────────────────────────────────────
@@ -155,8 +155,8 @@ def main():
             process_facilities_in_batches(facilities)
         else:
             logger.info("No unprocessed facilities found.")
-        # atexit.register(close_ssh_tunnel)
-        # logger.info("Successfully registered SSH tunnel cleanup on exit.")
+        atexit.register(close_ssh_tunnel)
+        logger.info("Successfully registered SSH tunnel cleanup on exit.")
 
     except Exception as e:
         logger.exception(f"An error occurred in the main function {e}", exc_info=True)
