@@ -19,23 +19,6 @@ services:
     # This acts as the default command if none is provided
     # command: python records_ingestion/multi_file_ingestion_process.py
 
-  # This service completely inherits the exact image built above, bypassing a second build step!
-  # dsd-ingestion-service:
-  #   image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.0
-  #   user: "${UID}:${GID}"
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     - PYTHONUNBUFFERED=${PYTHONUNBUFFERED:-1}
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #   volumes:
-  #     - ${FILE_DIRECTORY}:${FILE_DIRECTORY}
-  #     - ./records_ingestion/logs:/app/records_ingestion/logs
-  #   restart: "no"
-  #   # Simply override the script execution at runtime
-  #   command: python records_ingestion/multi_dsd_ingestion_process.py
-  
   records-deletion-service:
     image: ghcr.io/arshavin023/lamisplus-records-deletion:v1.0
     build:

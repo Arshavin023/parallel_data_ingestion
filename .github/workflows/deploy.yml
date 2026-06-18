@@ -1,131 +1,131 @@
-name: Deploy Data Pipeline
+# name: Deploy Data Pipeline
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-permissions:
-  contents: read
-  packages: write
+# permissions:
+#   contents: read
+#   packages: write
 
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
+# concurrency:
+#   group: production-deploy
+#   cancel-in-progress: false
 
-jobs:
-  # ---------------------------------------------------
-  # BUILD AND PUSH IMAGES
-  # ---------------------------------------------------
-  build-and-push:
-    runs-on: ubuntu-latest
+# jobs:
+#   # ---------------------------------------------------
+#   # BUILD AND PUSH IMAGES
+#   # ---------------------------------------------------
+#   build-and-push:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
+#       - name: Log in to GHCR
+#         uses: docker/login-action@v3
+#         with:
+#           registry: ghcr.io
+#           username: ${{ github.repository_owner }}
+#           password: ${{ secrets.CR_PAT }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker Images
-        run: |
-          touch .env
-          docker compose build
-          # docker compose build --no-cache
+#       - name: Build Docker Images
+#         run: |
+#           touch .env
+#           docker compose build
+#           # docker compose build --no-cache
 
-      - name: Push Docker Images
-        run: |
-          docker compose push
+#       - name: Push Docker Images
+#         run: |
+#           docker compose push
 
-  # ---------------------------------------------------
-  # DEPLOY TO SERVER
-  # ---------------------------------------------------
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
+#   # ---------------------------------------------------
+#   # DEPLOY TO SERVER
+#   # ---------------------------------------------------
+#   deploy:
+#     needs: build-and-push
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          CR_PAT: ${{ secrets.CR_PAT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME_FILEDB: ${{ secrets.DB_NAME_FILEDB }}
-          DB_NAME_LAMISPLUS_STAGING_DWH: ${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
-          FILE_DIRECTORY: ${{ secrets.FILE_DIRECTORY }}
-          APP_UID: ${{ secrets.UID }}
-          APP_GID: ${{ secrets.GID }}
-          # Added Server A Secrets
-          SERVER_A_SSH_HOST: ${{ secrets.SERVER_A_SSH_HOST }}
-          SERVER_A_SSH_USER: ${{ secrets.SERVER_A_SSH_USER }}
-          SERVER_A_SSH_PASSWORD: ${{ secrets.SERVER_A_SSH_PASSWORD }}
-          SERVER_A_DB_NAME: ${{ secrets.SERVER_A_DB_NAME }}
-          SERVER_A_DB_USER: ${{ secrets.SERVER_A_DB_USER }}
-          SERVER_A_DB_PASSWORD: ${{ secrets.SERVER_A_DB_PASSWORD }}
-          SERVER_A_DB_PORT: ${{ secrets.SERVER_A_DB_PORT }}
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: lamisplus
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          envs: CR_PAT,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT,DB_NAME_FILEDB,DB_NAME_LAMISPLUS_STAGING_DWH,FILE_DIRECTORY,APP_UID,APP_GID,SERVER_A_SSH_HOST,SERVER_A_SSH_USER,SERVER_A_SSH_PASSWORD,SERVER_A_DB_NAME,SERVER_A_DB_USER,SERVER_A_DB_PASSWORD,SERVER_A_DB_PORT
-          script: |
-            set -e
+#     steps:
+#       - name: Deploy via SSH
+#         uses: appleboy/ssh-action@v1.0.3
+#         env:
+#           CR_PAT: ${{ secrets.CR_PAT }}
+#           DB_USER: ${{ secrets.DB_USER }}
+#           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#           DB_HOST: ${{ secrets.DB_HOST }}
+#           DB_PORT: ${{ secrets.DB_PORT }}
+#           DB_NAME_FILEDB: ${{ secrets.DB_NAME_FILEDB }}
+#           DB_NAME_LAMISPLUS_STAGING_DWH: ${{ secrets.DB_NAME_LAMISPLUS_STAGING_DWH }}
+#           FILE_DIRECTORY: ${{ secrets.FILE_DIRECTORY }}
+#           APP_UID: ${{ secrets.UID }}
+#           APP_GID: ${{ secrets.GID }}
+#           # Added Server A Secrets
+#           SERVER_A_SSH_HOST: ${{ secrets.SERVER_A_SSH_HOST }}
+#           SERVER_A_SSH_USER: ${{ secrets.SERVER_A_SSH_USER }}
+#           SERVER_A_SSH_PASSWORD: ${{ secrets.SERVER_A_SSH_PASSWORD }}
+#           SERVER_A_DB_NAME: ${{ secrets.SERVER_A_DB_NAME }}
+#           SERVER_A_DB_USER: ${{ secrets.SERVER_A_DB_USER }}
+#           SERVER_A_DB_PASSWORD: ${{ secrets.SERVER_A_DB_PASSWORD }}
+#           SERVER_A_DB_PORT: ${{ secrets.SERVER_A_DB_PORT }}
+#         with:
+#           host: ${{ secrets.SERVER_HOST }}
+#           username: lamisplus
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           port: ${{ secrets.SSH_PORT }}
+#           envs: CR_PAT,DB_USER,DB_PASSWORD,DB_HOST,DB_PORT,DB_NAME_FILEDB,DB_NAME_LAMISPLUS_STAGING_DWH,FILE_DIRECTORY,APP_UID,APP_GID,SERVER_A_SSH_HOST,SERVER_A_SSH_USER,SERVER_A_SSH_PASSWORD,SERVER_A_DB_NAME,SERVER_A_DB_USER,SERVER_A_DB_PASSWORD,SERVER_A_DB_PORT
+#           script: |
+#             set -e
 
-            TARGET_DIR="/home/lamisplus/lamisplus_ingestion_v2"
+#             TARGET_DIR="/home/lamisplus/lamisplus_ingestion_v2"
             
-            # Ensure the directory exists
-            mkdir -p "$TARGET_DIR"
-            cd "$TARGET_DIR"
+#             # Ensure the directory exists
+#             mkdir -p "$TARGET_DIR"
+#             cd "$TARGET_DIR"
 
-            # Check if this folder is an initialized git repository
-            if [ ! -d ".git" ]; then
-              echo "Directory is not tracked. Initializing repository codebase..."
-              git clone https://github.com/Arshavin023/parallel_data_ingestion.git .
-              # Link your remote nickname just in case
-              git remote add personal https://github.com/Arshavin023/parallel_data_ingestion.git || true
-            else
-              echo "Pulling fresh code changes..."
-              git fetch personal
-              git reset --hard personal/main
-              git clean -fd
-            fi
+#             # Check if this folder is an initialized git repository
+#             if [ ! -d ".git" ]; then
+#               echo "Directory is not tracked. Initializing repository codebase..."
+#               git clone https://github.com/Arshavin023/parallel_data_ingestion.git .
+#               # Link your remote nickname just in case
+#               git remote add personal https://github.com/Arshavin023/parallel_data_ingestion.git || true
+#             else
+#               echo "Pulling fresh code changes..."
+#               git fetch personal
+#               git reset --hard personal/main
+#               git clean -fd
+#             fi
 
-            echo "Generating .env file..."
-            echo "DB_USER=\"$DB_USER\"" > .env
-            echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
-            echo "DB_HOST=\"$DB_HOST\"" >> .env
-            echo "DB_PORT=\"$DB_PORT\"" >> .env
-            echo "DB_NAME_FILEDB=\"$DB_NAME_FILEDB\"" >> .env
-            echo "DB_NAME_LAMISPLUS_STAGING_DWH=\"$DB_NAME_LAMISPLUS_STAGING_DWH\"" >> .env
-            echo "FILE_DIRECTORY=\"$FILE_DIRECTORY\"" >> .env
-            echo "UID=\"$APP_UID\"" >> .env
-            echo "GID=\"$APP_GID\"" >> .env
-            echo "PYTHONUNBUFFERED=1" >> .env
+#             echo "Generating .env file..."
+#             echo "DB_USER=\"$DB_USER\"" > .env
+#             echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> .env
+#             echo "DB_HOST=\"$DB_HOST\"" >> .env
+#             echo "DB_PORT=\"$DB_PORT\"" >> .env
+#             echo "DB_NAME_FILEDB=\"$DB_NAME_FILEDB\"" >> .env
+#             echo "DB_NAME_LAMISPLUS_STAGING_DWH=\"$DB_NAME_LAMISPLUS_STAGING_DWH\"" >> .env
+#             echo "FILE_DIRECTORY=\"$FILE_DIRECTORY\"" >> .env
+#             echo "UID=\"$APP_UID\"" >> .env
+#             echo "GID=\"$APP_GID\"" >> .env
+#             echo "PYTHONUNBUFFERED=1" >> .env
             
-            # Injecting Server A Configurations at runtime
-            echo "SERVER_A_SSH_HOST=\"$SERVER_A_SSH_HOST\"" >> .env
-            echo "SERVER_A_SSH_USER=\"$SERVER_A_SSH_USER\"" >> .env
-            echo "SERVER_A_SSH_PASSWORD=\"$SERVER_A_SSH_PASSWORD\"" >> .env
-            echo "SERVER_A_DB_NAME=\"$SERVER_A_DB_NAME\"" >> .env
-            echo "SERVER_A_DB_USER=\"$SERVER_A_DB_USER\"" >> .env
-            echo "SERVER_A_DB_PASSWORD=\"$SERVER_A_DB_PASSWORD\"" >> .env
-            echo "SERVER_A_DB_PORT=\"$SERVER_A_DB_PORT\"" >> .env
+#             # Injecting Server A Configurations at runtime
+#             echo "SERVER_A_SSH_HOST=\"$SERVER_A_SSH_HOST\"" >> .env
+#             echo "SERVER_A_SSH_USER=\"$SERVER_A_SSH_USER\"" >> .env
+#             echo "SERVER_A_SSH_PASSWORD=\"$SERVER_A_SSH_PASSWORD\"" >> .env
+#             echo "SERVER_A_DB_NAME=\"$SERVER_A_DB_NAME\"" >> .env
+#             echo "SERVER_A_DB_USER=\"$SERVER_A_DB_USER\"" >> .env
+#             echo "SERVER_A_DB_PASSWORD=\"$SERVER_A_DB_PASSWORD\"" >> .env
+#             echo "SERVER_A_DB_PORT=\"$SERVER_A_DB_PORT\"" >> .env
 
-            echo "Authenticating Docker..."
-            echo "$CR_PAT" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+#             echo "Authenticating Docker..."
+#             echo "$CR_PAT" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
             
-            echo "Pulling latest containers..."
-            docker compose pull
+#             echo "Pulling latest containers..."
+#             docker compose pull
 
-            echo "Deployment successful! Images are cached and secure for Cron execution."
+#             echo "Deployment successful! Images are cached and secure for Cron execution."
