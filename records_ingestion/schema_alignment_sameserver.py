@@ -68,18 +68,7 @@ SCHEMA_QUERY = """
         AND t.table_schema = c.table_schema
     WHERE c.table_schema = 'public'
       AND t.table_type = 'BASE TABLE'
-      AND t.table_name NOT IN ('base_application_user','base_application_flag_config','base_application_notification_config',
-		'base_application_sms_config','base_application_user_organisation_unit','base_application_user_role',
-		'base_menu','base_module','base_permission','base_form','base_menu_authorities','base_authority',
-        'base_standard_codeset','biometric_device','administrable_role_authorizations',
-         'biometric_device','biometric_pims_config','biometricmodule_chart','biomettric_pims_tracker',
-		'base_application_codeset_standard_codeset','system_settings','across_locks','acrossmodules',
-		'base_module_artifact','base_module_authorities','base_module_dependencies','base_program',
-		'base_role','base_role_menu','base_role_permission','base_standard_codeset_source',
-		'base_web_module','base_web_module_authorities','databasechangelog','databasechangeloglock',
-		'sms_output','sync_facility_app_key','sync_config','sync_config_module','sync_config_table',
-		'sync_queue','tables','triage_post_service','dhis2_uploads','dhis2_configuration','appr_period',
-		'data_element','category_option','radet_table')
+      AND t.table_name IN ('hts_encounter', 'hts_ict_contact', 'hts_ict_encounter', 'hiv_adherence_preparation', 'hiv_patient_transfer_in', 'hiv_enrollment_commencement', 'hiv_initial_clinical_evaluation', 'prophylaxis_screening', 'prophylaxis_initiation', 'prophylaxis_interruptions', 'prep_followup_visit', 'pep_followup_visit', 'pmtct_pregnancy_cycle', 'pmtct_anc', 'pmtct_enrollment', 'pmtct_delivery', 'pmtct_mother_visitation', 'pmtct_infant_information', 'pmtct_infant_visit', 'hiv_adherence_preparation', 'hiv_art_clinical', 'hiv_art_pharmacy', 'hiv_art_pharmacy_regimens', 'hiv_drug', 'hiv_eac', 'hiv_eac_out_come', 'hiv_eac_session', 'hiv_enrollment_commencement', 'hiv_initial_clinical_evaluation', 'hiv_observation', 'hiv_ovc_linkage', 'hiv_patient_tracker', 'hiv_patient_transfer_in', 'hiv_regimen', 'hiv_regimen_drug', 'hiv_regimen_resolver', 'hiv_regimen_type', 'hiv_status_tracker')
     ORDER BY c.table_name, c.ordinal_position;
 """
 
@@ -106,16 +95,19 @@ def fetch_schema(conn, prefix: str = "") -> dict[str, dict[str, ColumnInfo]]:
 def compute_diff(source: dict, dest: dict) -> SchemaDiff:
     diff = SchemaDiff()
 
+    # normalize destination: remove stg_
+    dest_normalized = {k.replace("stg_", ""): v for k, v in dest.items()}
+
     for table_name, src_cols in source.items():
-        if table_name not in dest:
-            diff.new_tables.append(table_name)
-            # All columns in this table need to be created — tracked via new_tables
+        if table_name not in dest_normalized:
+            diff.new_tables.append(f"stg_{table_name}")
             continue
 
-        dest_cols = dest[table_name]
+        dest_cols = dest_normalized[table_name]
 
         for col_name, src_col in src_cols.items():
             if col_name not in dest_cols:
+                src_col.table_name = f"stg_{table_name}"
                 diff.new_columns.append(src_col)
                 continue
 
@@ -123,16 +115,44 @@ def compute_diff(source: dict, dest: dict) -> SchemaDiff:
 
             if src_col.data_type != dest_col.data_type:
                 diff.type_changes.append({
-                    "table": table_name,
+                    "table": f"stg_{table_name}",
                     "column": col_name,
                     "old_type": dest_col.data_type,
                     "new_type": src_col.data_type,
                 })
 
+    return diff
+
+#def compute_diff(source: dict, dest: dict) -> SchemaDiff:
+#    diff = SchemaDiff()
+#
+#    for table_name, src_cols in source.items():
+#        if table_name not in dest:
+#            diff.new_tables.append(table_name)
+            # All columns in this table need to be created — tracked via new_tables
+#            continue
+#
+#        dest_cols = dest[table_name]
+
+#        for col_name, src_col in src_cols.items():
+#            if col_name not in dest_cols:
+#                diff.new_columns.append(src_col)
+#                continue
+
+#            dest_col = dest_cols[col_name]
+
+#            if src_col.data_type != dest_col.data_type:
+#                diff.type_changes.append({
+#                    "table": table_name,
+#                    "column": col_name,
+#                    "old_type": dest_col.data_type,
+#                    "new_type": src_col.data_type,
+#                })
+
             # Nullable/NOT NULL constraints are intentionally ignored —
             # staging tables on ServerB are constraint-free.
 
-    return diff
+#    return diff
 
 
 # ──────────────────────────────────────────────
@@ -411,10 +431,10 @@ def run_schema_alignment(
 
     try:
         logger.info("[SCHEMA] Fetching schema from ServerA (source) …")
-        source_schema = fetch_schema(source_conn, prefix="stg_")
+        source_schema = fetch_schema(source_conn)
 
         logger.info("[SCHEMA] Fetching schema from ServerB (destination) …")
-        dest_schema = fetch_schema(dest_conn)
+        dest_schema = fetch_schema(dest_conn, prefix="stg_")
 
         logger.info("[SCHEMA] Computing diff …")
         diff = compute_diff(source_schema, dest_schema)

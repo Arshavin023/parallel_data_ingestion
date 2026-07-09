@@ -8,9 +8,7 @@ Checks:
   - New tables in ServerA not present in ServerB  → CREATE TABLE
   - New columns in ServerA not present in ServerB → ALTER TABLE ... ADD COLUMN
   - Data type mismatches                           → ALTER TABLE ... ALTER COLUMN TYPE
-
-NOTE: NOT NULL, UNIQUE, DEFAULT, and all other constraints are intentionally
-excluded. Staging tables on ServerB are constraint-free and partitioned.
+  - Nullable constraint mismatches                 → ALTER TABLE ... SET/DROP NOT NULL
 
 Usage (standalone):
     python schema_alignment.py
@@ -24,7 +22,6 @@ import psycopg2
 from dataclasses import dataclass, field
 from typing import Optional
 from database_connection import connect_to_db_v2 as connect_to_db
-# from database_connection.schema_alignment_connect import connect as connect_to_db
 from src import logger
 
 
@@ -129,8 +126,13 @@ def compute_diff(source: dict, dest: dict) -> SchemaDiff:
                     "new_type": src_col.data_type,
                 })
 
-            # Nullable/NOT NULL constraints are intentionally ignored —
-            # staging tables on ServerB are constraint-free.
+            if src_col.is_nullable != dest_col.is_nullable:
+                diff.nullable_changes.append({
+                    "table": table_name,
+                    "column": col_name,
+                    "old_nullable": dest_col.is_nullable,
+                    "new_nullable": src_col.is_nullable,
+                })
 
     return diff
 
@@ -197,8 +199,10 @@ def build_create_table_ddl(table_name: str, columns: dict[str, ColumnInfo]) -> s
     col_defs = []
     for col in sorted(columns.values(), key=lambda c: c.ordinal_position):
         sql_type = _udt_to_sql(col.data_type)
-        # No NOT NULL / DEFAULT — staging tables are constraint-free
-        col_defs.append(f'    {col.column_name} {sql_type}')
+        nullable = "" if col.is_nullable else " NOT NULL"
+        default = f" DEFAULT {col.column_default}" if col.column_default else ""
+        # col_defs.append(f'    {col.column_name} {sql_type}{default}{nullable}')
+        col_defs.append(f'    {col.column_name} {sql_type}{nullable}')
 
     col_defs.append(_STG_COLUMN_DEFS)
     cols_sql = ",\n".join(col_defs)
@@ -221,10 +225,12 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
     # 2. New columns
     for col in diff.new_columns:
         sql_type = _udt_to_sql(col.data_type)
-        # No NOT NULL / DEFAULT — staging tables are constraint-free
+        nullable = "" if col.is_nullable else " NOT NULL"
+        default = f" DEFAULT {col.column_default}" if col.column_default else ""
         ddl = (
             f'ALTER TABLE {col.table_name} '
-            f'ADD COLUMN IF NOT EXISTS {col.column_name} {sql_type};'
+            # f'ADD COLUMN IF NOT EXISTS {col.column_name} {sql_type}{default}{nullable};'
+            f'ADD COLUMN IF NOT EXISTS {col.column_name} {sql_type}{nullable};'
         )
         statements.append(ddl)
         logger.info(f"[SCHEMA] Will ADD COLUMN: {col.table_name}.{col.column_name} ({sql_type})")
@@ -232,60 +238,26 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
     # 3. Type changes
     for change in diff.type_changes:
         new_sql_type = _udt_to_sql(change["new_type"])
-        col = change["column"]
-
-        # Boolean: map common truthy string values
-        if new_sql_type == "BOOLEAN":
-            using_clause = (
-                f"CASE WHEN {col}::text IN ('1', 'true', 't', 'yes', 'y') THEN TRUE "
-                f"ELSE FALSE END"
-            )
-
-        # Integer types: cast via NUMERIC first to safely handle float-formatted
-        # strings like "1710.0" that would fail a direct ::BIGINT / ::INTEGER cast
-        elif new_sql_type in ("SMALLINT", "INTEGER", "BIGINT"):
-            using_clause = f"CAST(CAST({col} AS NUMERIC) AS {new_sql_type})"
-
-        # Real / double: standard cast covers all string representations
-        elif new_sql_type in ("REAL", "DOUBLE PRECISION"):
-            using_clause = f"CAST({col} AS {new_sql_type})"
-
-        # Date: values must already be ISO-formatted strings
-        elif new_sql_type == "DATE":
-            using_clause = f"CAST({col} AS DATE)"
-
-        # Timestamp variants
-        elif new_sql_type in ("TIMESTAMP", "TIMESTAMPTZ"):
-            using_clause = f"CAST({col} AS {new_sql_type})"
-
-        # UUID
-        elif new_sql_type == "UUID":
-            using_clause = f"CAST({col} AS UUID)"
-
-        # All other types: generic cast
-        else:
-            using_clause = f"{col}::{new_sql_type}"
-
-        # Drop any existing DEFAULT first — a default on the old type cannot be
-        # automatically cast and will block the ALTER COLUMN TYPE even when the
-        # data itself converts cleanly. Staging tables are constraint-free so we
-        # never restore the default.
-        statements.append(f'ALTER TABLE {change["table"]} ALTER COLUMN {col} DROP DEFAULT;')
-
         ddl = (
             f'ALTER TABLE {change["table"]} '
-            f'ALTER COLUMN {col} TYPE {new_sql_type} '
-            f'USING {using_clause};'
+            f'ALTER COLUMN {change["column"]} TYPE {new_sql_type} '
+            f'USING {change["column"]}::{new_sql_type};'
         )
         statements.append(ddl)
         logger.info(
-            f"[SCHEMA] Will CHANGE TYPE: {change['table']}.{col} "
-            f"{change['old_type']} → {change['new_type']} (USING {using_clause})"
+            f"[SCHEMA] Will CHANGE TYPE: {change['table']}.{change['column']} "
+            f"{change['old_type']} → {change['new_type']}"
         )
 
-    # NOTE: Nullable constraint changes are intentionally skipped.
-    # Staging tables on ServerB are constraint-free; NOT NULL / DROP NOT NULL
-    # DDL is never emitted regardless of what the source schema declares.
+    # 4. Nullable changes
+    for change in diff.nullable_changes:
+        action = "DROP NOT NULL" if change["new_nullable"] else "SET NOT NULL"
+        ddl = f'ALTER TABLE {change["table"]} ALTER COLUMN {change["column"]} {action};'
+        statements.append(ddl)
+        logger.info(
+            f"[SCHEMA] Will {action}: {change['table']}.{change['column']} "
+            f"(nullable: {change['old_nullable']} → {change['new_nullable']})"
+        )
 
     return statements
 
@@ -297,55 +269,45 @@ def build_ddl_statements(diff: SchemaDiff, source_schema: dict) -> list[str]:
 def apply_ddl(dest_conn, statements: list[str], new_tables: list[str] = None) -> None:
     """Execute all DDL statements on the destination connection.
 
-    Each statement is committed individually so that AccessExclusiveLocks
-    acquired on partitioned table partitions are released immediately after
-    each DDL. Accumulating all DDL in one transaction exhausts
-    max_locks_per_transaction when tables have hundreds of partitions.
-
     For every CREATE TABLE statement, automatically calls
-    proc_create_table_partitions_v3(<table_name>) immediately after
-    (also committed individually), so partitions are provisioned before
-    any data is loaded.
+    proc_create_table_partitions_v3(<table_name>) immediately after,
+    so partitions are provisioned before any data is loaded.
     """
     if not statements:
         logger.info("[SCHEMA] No DDL changes required. Schemas are in sync.")
         return
 
     new_tables_set = set(new_tables or [])
-    applied = 0
 
-    for stmt in statements:
-        try:
-            with dest_conn.cursor() as cur:
+    with dest_conn.cursor() as cur:
+        for stmt in statements:
+            try:
                 cur.execute(stmt)
-            dest_conn.commit()  # release partition locks immediately
-            applied += 1
-            logger.info(f"[SCHEMA] Applied: {stmt[:120].strip()}{'...' if len(stmt) > 120 else ''}")
+                logger.info(f"[SCHEMA] Applied: {stmt[:120].strip()}{'...' if len(stmt) > 120 else ''}")
 
-            # For every new table, immediately provision its partitions
-            if stmt.strip().upper().startswith("CREATE TABLE"):
-                matched_table = next(
-                    (t for t in new_tables_set if f' {t} ' in stmt or stmt.endswith(f' {t})')),
-                    None
-                )
-                if matched_table:
-                    with dest_conn.cursor() as cur2:
-                        partition_call = f"CALL public.proc_create_table_partitions_v3('{matched_table}');"
-                        cur2.execute(partition_call)
-                    dest_conn.commit()  # commit partition creation separately too
-                    logger.info(f"[SCHEMA] Partitions created for: {matched_table}")
-                else:
-                    logger.warning(
-                        f"[SCHEMA] CREATE TABLE detected but could not resolve table name "
-                        f"from statement: {stmt[:120]}"
+                # For every new table, immediately provision its partitions
+                if stmt.strip().upper().startswith("CREATE TABLE"):
+                    matched_table = next(
+                        (t for t in new_tables_set if f' {t} ' in stmt or stmt.endswith(f' {t})')),
+                        None
                     )
+                    if matched_table:
+                        partition_call = f"CALL public.proc_create_table_partitions_v3('{matched_table}');"
+                        cur.execute(partition_call)
+                        logger.info(f"[SCHEMA] Partitions created for: {matched_table}")
+                    else:
+                        logger.warning(
+                            f"[SCHEMA] CREATE TABLE detected but could not resolve table name "
+                            f"from statement: {stmt[:120]}"
+                        )
 
-        except psycopg2.Error as e:
-            dest_conn.rollback()
-            logger.exception(f"[SCHEMA] Failed to apply DDL:\n{stmt}\nError: {e}", exc_info=True)
-            raise
+            except psycopg2.Error as e:
+                dest_conn.rollback()
+                logger.exception(f"[SCHEMA] Failed to apply DDL:\n{stmt}\nError: {e}", exc_info=True)
+                raise
 
-    logger.info(f"[SCHEMA] {applied} DDL statement(s) applied to destination successfully.")
+        dest_conn.commit()
+    logger.info(f"[SCHEMA] {len(statements)} DDL statement(s) applied to destination successfully.")
 
 
 # ──────────────────────────────────────────────
@@ -357,6 +319,7 @@ def log_diff_summary(diff: SchemaDiff) -> None:
         len(diff.new_tables)
         + len(diff.new_columns)
         + len(diff.type_changes)
+        + len(diff.nullable_changes)
     )
     if total == 0:
         logger.info("[SCHEMA] Schema comparison complete — no differences found.")
@@ -372,6 +335,10 @@ def log_diff_summary(diff: SchemaDiff) -> None:
         logger.info(f"  Type changes  : {len(diff.type_changes)}")
         for c in diff.type_changes:
             logger.info(f"    {c['table']}.{c['column']}: {c['old_type']} → {c['new_type']}")
+    if diff.nullable_changes:
+        logger.info(f"  Nullable chgs : {len(diff.nullable_changes)}")
+        for c in diff.nullable_changes:
+            logger.info(f"    {c['table']}.{c['column']}: nullable={c['old_nullable']} → {c['new_nullable']}")
 
 
 # ──────────────────────────────────────────────
@@ -405,9 +372,6 @@ def run_schema_alignment(
 
     source_conn = connect_to_db.connect(source_db_key)[0]
     dest_conn = connect_to_db.connect(dest_db_key)[0]
-
-    # source_conn = connect_to_db(source_db_key)[0]
-    # dest_conn = connect_to_db(dest_db_key)[0]
 
     try:
         logger.info("[SCHEMA] Fetching schema from ServerA (source) …")

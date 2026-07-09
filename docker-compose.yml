@@ -1,7 +1,7 @@
 services:
   # The unified single image build target
   file-ingestion-service:
-    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.2
+    image: ghcr.io/arshavin023/lamisplus-records-ingestion:v1.3
     build:
       context: .
       dockerfile: ./records_ingestion/Dockerfile
