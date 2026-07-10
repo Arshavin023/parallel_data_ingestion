@@ -7,6 +7,7 @@ import numpy as np
 import psycopg2
 from psycopg2 import ProgrammingError
 from psycopg2.errors import UndefinedColumn
+from psycopg2 import DataError
 from sqlalchemy.exc import ProgrammingError as SAProgrammingError
 from psycopg2.extras import Json, execute_values
 import pandas as pd
@@ -651,12 +652,14 @@ class FileLoader:
                 cur.close()
             
         except ValueError as ve:
+            staging_conn.rollback()
             error_detail = str(ve)[:500]
             self._update_log(staging_conn, 'failed', file_name, 0, f'Error processing JSON file: {file_name} - {error_detail}')
             self._update_flag_syncfile(filedb_conn, 'failed', -2, 0, f'Error processing JSON file: {encrypted_file_name} - {error_detail}')
             logger.info('Sync File Log updated successfully')
             logger.error(f"Error processing JSON file: {file_path} - {error_detail}")        
         except ProgrammingError as pe:
+            staging_conn.rollback()
             error_msg = str(pe)
             match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
             if match:
@@ -672,6 +675,7 @@ class FileLoader:
             logger.info('Sync File Log updated successfully')
         
         except UndefinedColumn as udc:
+            staging_conn.rollback()
             error_msg = str(udc)
             match = re.search(r'column "(.*?)" of relation "(.*?)"', error_msg)
             if match:
@@ -685,7 +689,20 @@ class FileLoader:
                 self._update_log(staging_conn, 'failed', file_name, 0, f'{file_name} has a DB error: {error_msg}')
                 self._update_flag_syncfile(filedb_conn, 'failed', -2, 0, f'{encrypted_file_name} has a DB error: {error_msg}')
 
+        except DataError as de:
+            # Covers date/time field overflow (e.g. "000-11-30") and similar malformed
+            # values that Postgres rejects outright. Roll back first - the failed insert
+            # already aborted this transaction, so staging_conn can't run the log UPDATE
+            # below until it's cleared.
+            staging_conn.rollback()
+            error_detail = str(de)[:500]
+            logger.error(f"PostgreSQL DataError: {error_detail}")
+            self._update_log(staging_conn, 'failed', file_name, 0, f'{file_name} has invalid data: {error_detail}')
+            self._update_flag_syncfile(filedb_conn, 'failed', -2, 0, f'{encrypted_file_name} has invalid data: {error_detail}')
+            logger.info('Sync File Log updated successfully')
+
         except SAProgrammingError as sa_pe:
+            staging_conn.rollback()
             orig = getattr(sa_pe, 'orig', None)
             if isinstance(orig, UndefinedColumn):
                 error_msg = str(orig)
@@ -706,7 +723,21 @@ class FileLoader:
                 self._update_flag_syncfile(filedb_conn, 'failed', -2, 0, f'{encrypted_file_name} has a DB error: {str(sa_pe)}')
 
         except Exception as e:
-            logger.error(f"An unexpected error occurred: {str(e)}")
+            # Catch-all for anything not explicitly handled above (e.g. a new/unforeseen
+            # psycopg2 error type). Roll back defensively so this connection doesn't stay
+            # poisoned for every subsequent file processed on it in this run, and persist
+            # the failure so it shows up in sync_file instead of vanishing into the log file.
+            try:
+                staging_conn.rollback()
+            except Exception:
+                pass
+            error_detail = str(e)[:500]
+            logger.error(f"An unexpected error occurred: {error_detail}")
+            try:
+                self._update_log(staging_conn, 'failed', file_name, 0, f'{file_name} - unexpected error: {error_detail}')
+                self._update_flag_syncfile(filedb_conn, 'failed', -2, 0, f'{encrypted_file_name} - unexpected error: {error_detail}')
+            except Exception as log_err:
+                logger.error(f"Failed to persist unexpected-error status for {file_name}: {log_err}")
         logger.info('-------------------------------------------')
 
 
